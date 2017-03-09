@@ -13,9 +13,10 @@ import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
 
 // Customize bottom tab bar height here if desired
-const TAB_BAR_HEIGHT = 50;
+const TAB_BAR_HEIGHT = 100;
 
 class NavigationView extends Component {
+  
   static displayName = 'NavigationView';
 
   static propTypes = {
@@ -29,7 +30,8 @@ class NavigationView extends Component {
         })).isRequired
       }).isRequired,
       HomeTab: NavigationPropTypes.navigationState.isRequired,
-      ProfileTab: NavigationPropTypes.navigationState.isRequired
+      ProfileTab: NavigationPropTypes.navigationState.isRequired,
+      EventTab: NavigationPropTypes.navigationState.isRequired
     }),
     switchTab: PropTypes.func.isRequired,
     pushRoute: PropTypes.func.isRequired
@@ -69,7 +71,7 @@ class NavigationView extends Component {
     const scenes = this.props.navigationState[tabKey];
     return (
       <View style={styles.container}>
-        <NavigationCardStack
+        <NavigationCardStack style={{backgroundColor: "#48E2FF"}}
           key={'stack_' + tabKey}
           onNavigateBack={this.props.onNavigateBack}
           navigationState={scenes}
@@ -89,10 +91,12 @@ class NavigationView extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor : "#48E2FF"
   },
   sceneContainer: {
     flex: 1,
+    backgroundColor : "#48E2FF",
     marginBottom: TAB_BAR_HEIGHT
   }
 });

@@ -37,6 +37,7 @@ class TabBar extends Component {
 
 const styles = StyleSheet.create({
   navigationBar: {
+    width: 200,
     position: 'absolute',
     bottom: 0,
     left: 0,

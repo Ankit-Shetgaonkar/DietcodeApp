@@ -22,6 +22,5 @@ export default function AppRouter(props) {
       />
     );
   }
-
   throw new Error('Unknown navigation key: ' + key);
 }

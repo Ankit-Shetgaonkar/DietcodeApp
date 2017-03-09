@@ -100,7 +100,7 @@ class CounterView extends Component {
             accessibilityLabel={'Randomize counter'}
             onPress={this.random}>
           <Text style={styles.linkButton}>
-            Random
+            Vishnu View
           </Text>
         </TouchableOpacity>
 

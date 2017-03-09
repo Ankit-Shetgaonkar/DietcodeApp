@@ -34,7 +34,8 @@ const initialState = fromJS({
     index: 0,
     routes: [
       {key: 'HomeTab', title: 'HOME'},
-      {key: 'ProfileTab', title: 'PROFILE'}
+      {key: 'ProfileTab', title: 'PROFILE'},
+      {key: 'EventTab', title: 'EVENTS'}
     ]
   },
   // Scenes for the `HomeTab` tab.
@@ -87,7 +88,6 @@ export default function NavigationReducer(state = initialState, action) {
     case SWITCH_TAB: {
       // Switches the tab.
       const tabs = state.get('tabs').toJS();
-
       let nextTabs;
       try {
         nextTabs = isNumber(action.payload)
@@ -96,7 +96,6 @@ export default function NavigationReducer(state = initialState, action) {
       } catch (e) {
         nextTabs = tabs;
       }
-
       if (tabs !== nextTabs) {
         return state.set('tabs', fromJS(nextTabs));
       }
