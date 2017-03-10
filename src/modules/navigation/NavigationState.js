@@ -35,7 +35,8 @@ const initialState = fromJS({
     routes: [
       {key: 'HomeTab', title: 'HOME'},
       {key: 'ProfileTab', title: 'PROFILE'},
-      {key: 'EventTab', title: 'EVENTS'}
+      {key: 'EventTab', title: 'EVENTS'},
+      {key: 'Vishnu', title: 'VISHNU'}
     ]
   },
   // Scenes for the `HomeTab` tab.

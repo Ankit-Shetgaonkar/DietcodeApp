@@ -41,7 +41,7 @@ class AppView extends Component {
         if (!this.props.isReady) {
             return (
                 <View style={styles.loadingLayout}>
-                    {<ActivityIndicator style={styles.centered}/>}
+                    <ActivityIndicator style={styles.centered} />
                 </View>
             );
         }
@@ -53,6 +53,7 @@ class AppView extends Component {
                 dispatch(SessionStateActions.checkedLoginSessionState());
             }
         });
+        
 
         if (!this.props.isLogin) {
             return (

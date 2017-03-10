@@ -1,13 +1,13 @@
 {
-  "name": "PepperoniAppTemplate",
-  "author": "Futurice",
-  "description": "React Native App Starter Kit for Android and iOS",
+  "name": "DietcodeApp",
+  "author": "Dietcode",
+  "description": "Dietcode app to maintais employees checkin checkout and ease for leave and work from home",
   "license": "MIT",
-  "homepage": "http://getpepperoni.com",
-  "bugs": "https://github.com/futurice/pepperoni-app-kit/issues",
+  "homepage": "http://dietco.de",
+  "bugs": "https://github.com/divyanshunegi/DietcodeApp",
   "repository": {
     "type": "git",
-    "url": "https://github.com/futurice/pepperoni-app-kit"
+    "url": "https://github.com/divyanshunegi/DietcodeApp"
   },
   "keywords": [
     "React Native",
@@ -30,6 +30,11 @@
   "jest": {
     "preset": "react-native"
   },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts"
+    ]
+  },
   "dependencies": {
     "bluebird": "^3.3.5",
     "es6-symbol": "^3.0.2",
@@ -40,6 +45,7 @@
     "react": "~15.4.2",
     "react-dom": "~15.4.2",
     "react-native": "0.41.2",
+    "react-native-linear-gradient": "^2.0.0",
     "react-native-vector-icons": "^4.0.0",
     "react-redux": "^4.4.5",
     "redux": "^3.4.0",
@@ -65,9 +71,9 @@
     "istanbul": "1.0.0-alpha.2",
     "jest": "^17.0.2",
     "react-addons-test-utils": "~15.4.2",
-    "remote-redux-devtools": "^0.5.7",
     "react-native-mock": "~0.2.5",
     "react-test-renderer": "~15.4.2",
+    "remote-redux-devtools": "^0.5.7",
     "rimraf": "^2.5.2"
   }
 }

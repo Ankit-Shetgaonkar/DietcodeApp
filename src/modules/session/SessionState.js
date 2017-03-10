@@ -4,6 +4,7 @@ export const RESET_STATE = 'SessionState/RESET';
 export const INITIALIZE_STATE = 'SessionState/INITIALIZE';
 export const CHECKED_LOGIN = 'SessionState/CHECKEDLOGIN';
 export const LOGOUT_SESSION = 'SessionState/LOGOUT';
+export const CALCULATE = 'SessionState/CALCULATE';
 
 // Initial state
 const initialState = Map({

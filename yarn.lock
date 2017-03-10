@@ -3862,6 +3862,10 @@ react-dom@^15.4.0, react-dom@~15.4.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
 
+react-native-linear-gradient@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.0.0.tgz#7442c00e1fcd9fca329119dcbaf744d12bcd1b5a"
+
 react-native-mock@~0.2.5:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/react-native-mock/-/react-native-mock-0.2.9.tgz#e213c714a20f532ba0df03474205e5276683c298"
