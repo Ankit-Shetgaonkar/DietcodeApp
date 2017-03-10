@@ -3,19 +3,19 @@
 import React, {PropTypes, Component} from 'react';
 import {View, StyleSheet, ActivityIndicator, Text, Image, TouchableHighlight} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import * as LoginStates from './LoginState';
 
 class LoginView extends Component {
 
     static displayName = 'LoginView';
 
     static propTypes = {
-        // isReady: PropTypes.bool.isRequired,
-        // isLogin: PropTypes.bool.isRequired,
+        showProgress: PropTypes.bool.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     render() {
-        const {dispatch} = this.props;
+        const {dispatch, showProgress} = this.props;
         return (
             <LinearGradient
                 start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
@@ -33,22 +33,25 @@ class LoginView extends Component {
 
                 <TouchableHighlight onPress={function()
                     {
-                        console.log("test");
-                    }}>
+                        dispatch(LoginStates.showProgress());
+                    }}
+                                    underlayColor="transparent"
+                >
+
                     <Image style={styles.slack_button}
                            source={require('../../../images/sign_in_with_slack.png')}
                     />
                 </TouchableHighlight>
 
+                <ActivityIndicator style={ showProgress?styles.progressBar:styles.hideProgressBar }/>
+
                 <Text style={styles.desc}>
                     Login with Slack to manage your checkin & checkout ,
                     you can also manage your Redmine tickets directly from this app
                 </Text>
-
                 <Text style={styles.foot}>
                     made with (love) & (code) at Dietcode
                 </Text>
-
             </LinearGradient>
         );
     }
@@ -136,6 +139,20 @@ const styles = StyleSheet.create({
         backgroundColor: "#00ff00",
         position: "absolute",
         bottom: 0
+    },
+    progressBar: {
+        opacity: 1,
+        height: 20,
+        alignSelf: "center",
+        margin: 20
+    },
+    hideProgressBar: {
+        opacity: 0,
+        height: 0,
+        width: 0,
+        position: "absolute",
+        alignSelf: "center",
+        margin: 20
     }
 
 
