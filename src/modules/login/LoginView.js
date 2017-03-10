@@ -1,7 +1,7 @@
 'use strict';
 
 import React, {PropTypes, Component} from 'react';
-import {View, StyleSheet, ActivityIndicator, Text, Image, TouchableHighlight} from 'react-native';
+import {View, StyleSheet, ActivityIndicator, Text, Image, TouchableHighlight,StatusBar} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import * as LoginStates from './LoginState';
 
@@ -21,6 +21,11 @@ class LoginView extends Component {
                 start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
                 locations={[0.0,0.5,1.0]}
                 colors={['#48E2FF', '#508FF5', '#5933EA']} style={styles.linearGradient}>
+
+                <StatusBar
+                    backgroundColor="#48E2FF"
+                    barStyle="light-content"
+                />
 
                 <Image style={styles.logo}
                        source={require('../../../images/dietcodelogo.png')}
@@ -43,7 +48,10 @@ class LoginView extends Component {
                     />
                 </TouchableHighlight>
 
-                <ActivityIndicator style={ showProgress?styles.progressBar:styles.hideProgressBar }/>
+                <ActivityIndicator style={ showProgress?styles.progressBar:styles.hideProgressBar }
+                    size="large"
+                    color="white"
+                />
 
                 <Text style={styles.desc}>
                     Login with Slack to manage your checkin & checkout ,
@@ -142,9 +150,10 @@ const styles = StyleSheet.create({
     },
     progressBar: {
         opacity: 1,
-        height: 20,
         alignSelf: "center",
-        margin: 20
+        padding:10,
+        marginTop: 30,
+        marginBottom:20
     },
     hideProgressBar: {
         opacity: 0,
@@ -152,7 +161,8 @@ const styles = StyleSheet.create({
         width: 0,
         position: "absolute",
         alignSelf: "center",
-        margin: 20
+        marginTop: 30,
+        marginBottom:20
     }
 
 
