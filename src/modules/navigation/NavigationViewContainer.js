@@ -13,6 +13,7 @@ export default connect(
             pushRoute: bindActionCreators(pushRoute, dispatch),
             onNavigateBack: bindActionCreators(popRoute, dispatch),
             onNavigateCompleted() {
+                console.log("navigation completed");
                 // FIXME: why is navigationCompleted non-existant in NavigationState?
                 // (causes bindActionCreators to fail)
                 dispatch(navigationCompleted());

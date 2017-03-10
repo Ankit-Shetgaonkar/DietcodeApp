@@ -4,7 +4,7 @@ export const RESET_STATE = 'SessionState/RESET';
 export const INITIALIZE_STATE = 'SessionState/INITIALIZE';
 export const CHECKED_LOGIN = 'SessionState/CHECKEDLOGIN';
 export const LOGOUT_SESSION = 'SessionState/LOGOUT';
-export const CALCULATE = 'SessionState/CALCULATE';
+export const WAIT_STATE = 'SessionState/WAITSTATE';
 
 // Initial state
 const initialState = Map({
@@ -22,6 +22,12 @@ export function resetSessionStateFromSnapshot(state) {
 export function initializeSessionState() {
     return {
         type: INITIALIZE_STATE
+    };
+}
+
+export function makeUserWait() {
+    return {
+        type: WAIT_STATE
     };
 }
 
@@ -47,6 +53,8 @@ export default function SessionStateReducer(state = initialState, action = {}) {
             return state.set("isLogin", true);
         case LOGOUT_SESSION:
             return state.set("isLogin", false);
+        case WAIT_STATE:
+            return state.set("isReady", false);
         default:
             return state;
     }

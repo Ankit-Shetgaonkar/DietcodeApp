@@ -2,7 +2,7 @@
 
 import React, {PropTypes, Component} from 'react';
 import {View, StyleSheet, ActivityIndicator, Text, Button} from 'react-native';
-import NavigationViewContainer from './navigation/NavigationViewContainer';
+import DashboardViewContainer from './dashboard/DashboardContainer';
 import LoginViewContainer from './login/LoginViewContainer';
 import * as snapshotUtil from '../utils/snapshot';
 import * as SessionStateActions from '../modules/session/SessionState';
@@ -35,7 +35,6 @@ class AppView extends Component {
     }
 
     render() {
-
         const {isReady, isLogin, dispatch} = this.props;
 
         if (!this.props.isReady) {
@@ -55,7 +54,7 @@ class AppView extends Component {
         });
         
 
-        if (!this.props.isLogin) {
+        if (false && !this.props.isLogin) {
             return (
                 <View style={styles.loadingLayout}>
                     <LoginViewContainer />
@@ -66,7 +65,7 @@ class AppView extends Component {
         //we can take to dashboard in case the user is already logined
         return (
             <View style={{flex: 1}}>
-                <NavigationViewContainer />
+                <DashboardViewContainer />
                 {/*{__DEV__ && <DeveloperMenu />}*/}
             </View>
         );

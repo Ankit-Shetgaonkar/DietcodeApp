@@ -58,12 +58,11 @@ class LoginView extends Component {
                     you can also manage your Redmine tickets directly from this app
                 </Text>
                 <Text style={styles.foot}>
-                    made with (love) & (code) at Dietcode
+                    Made with ❤️️ & 🤓 at Dietcode
                 </Text>
             </LinearGradient>
         );
     }
-
 
 }
 
@@ -137,10 +136,9 @@ const styles = StyleSheet.create({
         marginLeft: 15,
         color: '#ffffff',
         backgroundColor: 'transparent',
-        opacity: 0.8,
         position: "absolute",
         bottom: 0,
-        left: 65,
+        left: 80,
         alignSelf: "stretch"
     },
     bottomBar: {

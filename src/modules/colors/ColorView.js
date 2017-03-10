@@ -6,12 +6,12 @@ import {
 } from 'react-native';
 
 const color = () => Math.floor(255 * Math.random());
-
 /**
  * Sample view to demonstrate navigation patterns.
  * @TODO remove this module in a live application.
  */
 class ColorView extends Component {
+
   static displayName = 'ColorView';
 
   static propTypes = {

@@ -15,13 +15,32 @@ class TabBarButton extends Component {
     isSelected: PropTypes.bool.isRequired
   };
 
+  setIcon = (iconName) => {
+    switch (iconName){
+      case "Dashboard":
+            return "dashboard";
+      case "Profile":
+        return "user";
+      case "Leaves":
+        return "gamepad";
+      case "Wfh":
+        return "home";
+      default:
+        return "dashboard";
+    }
+  }
+
   render() {
     return (
       <TouchableOpacity
         onPress={this.props.action}
-        style={[styles.button, this.props.isSelected && styles.selected]}
+        style={[styles.button,this.props.isSelected && styles.selected]}
         >
-        <Icon name='caret-down' size={20} color='#900' /><Text>{this.props.text}</Text>
+        <Icon
+            size={20}
+            color='#888'
+            name={this.setIcon(this.props.text)}
+        /><Text>{this.props.text}</Text>
       </TouchableOpacity>
     );
   }
@@ -34,7 +53,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   selected: {
-    backgroundColor: 'yellow'
+    opacity:1,
+    backgroundColor: '#ddd'
   }
 });
 

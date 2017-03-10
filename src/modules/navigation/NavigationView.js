@@ -4,16 +4,18 @@ import {
   View,
   StyleSheet
 } from 'react-native';
+
 const {
   CardStack: NavigationCardStack,
   Header: NavigationHeader,
   PropTypes: NavigationPropTypes
 } = NavigationExperimental;
+
 import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
 
 // Customize bottom tab bar height here if desired
-const TAB_BAR_HEIGHT = 100;
+const TAB_BAR_HEIGHT = 50;
 
 class NavigationView extends Component {
   
