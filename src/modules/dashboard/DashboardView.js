@@ -4,9 +4,11 @@ import {
     View,
     Text,
     Button,
-    StyleSheet
+    StyleSheet,
+    StatusBar
 } from 'react-native';
 
+import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
 
 const {
@@ -44,17 +46,33 @@ class DashboardView extends Component {
     // NavigationHeader accepts a prop style
     // NavigationHeader.title accepts a prop textStyle
 
+    renderScene = (sceneProps) => {
+        // render scene and apply padding to cover
+        // for app bar and navigation bar
+        return (
+            <View style={styles.sceneContainer}>
+                {AppRouter(sceneProps)}
+            </View>
+        );
+    };
 
     render() {
         const {tabs} = this.props.dashboardState;
+        const tabKey = tabs.routes[tabs.index].key;
+        const scenes = this.props.dashboardState[tabKey];
         return (
             <View style={styles.container}>
-                <Text style={{alignSelf:"center",color:"#ff0000",marginTop:200}}
-                      onclick={function(){
-                    console.log("wowo");
-                }}
-                >WOWOWOWO</Text>
-
+                <StatusBar
+                    backgroundColor="#48E2FF"
+                    barStyle="light-content"
+                />
+                <NavigationCardStack
+                                     key={'stack_' + tabKey}
+                                     // onNavigateBack={this.props.onNavigateBack}
+                                     navigationState={scenes}
+                                     // renderHeader={this.renderHeader}
+                                      renderScene={this.renderScene}
+                />
                 <TabBar
                     height={TAB_BAR_HEIGHT}
                     tabs={tabs}

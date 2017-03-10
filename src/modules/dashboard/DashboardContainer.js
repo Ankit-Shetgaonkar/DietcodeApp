@@ -9,7 +9,8 @@ export default connect(
     }),
     dispatch => {
         return {
-            switchTab: bindActionCreators(switchTab, dispatch)
+            switchTab: bindActionCreators(switchTab, dispatch),
+            onNa: bindActionCreators(switchTab, dispatch)
         };
     }
 )(DashboardView);
