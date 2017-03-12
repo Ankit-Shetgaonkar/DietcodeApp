@@ -2,6 +2,7 @@ import React, {PropTypes, Component} from 'react';
 import {
     NavigationExperimental,
     View,
+    Navigator,
     Text,
     Button,
     StyleSheet,
@@ -46,6 +47,23 @@ class DashboardView extends Component {
     // NavigationHeader accepts a prop style
     // NavigationHeader.title accepts a prop textStyle
 
+    renderHeader = (sceneProps) => {
+        return (
+            <NavigationHeader
+                {...sceneProps}
+                //onNavigateBack={this.props.onNavigateBack}
+                renderTitleComponent={() => {
+          return (
+            <NavigationHeader.Title
+                navigationStyles={Navigator.NavigationBar.StylesIOS}>
+              {sceneProps.scene.route.title}
+            </NavigationHeader.Title>
+          );
+        }}
+            />
+        );
+    };
+
     renderScene = (sceneProps) => {
         // render scene and apply padding to cover
         // for app bar and navigation bar
@@ -70,7 +88,7 @@ class DashboardView extends Component {
                                      key={'stack_' + tabKey}
                                      // onNavigateBack={this.props.onNavigateBack}
                                      navigationState={scenes}
-                                     // renderHeader={this.renderHeader}
+                                      renderHeader={this.renderHeader}
                                       renderScene={this.renderScene}
                 />
                 <TabBar

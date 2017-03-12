@@ -3883,6 +3883,13 @@ react-native-mock@~0.2.5:
     react-timer-mixin "^0.13.3"
     warning "^2.1.0"
 
+react-native-oauth@^2.1.16:
+  version "2.1.16"
+  resolved "https://registry.yarnpkg.com/react-native-oauth/-/react-native-oauth-2.1.16.tgz#0f0bebf99d162d24d5e102fd7172b66c959b493c"
+  dependencies:
+    invariant "^2.2.1"
+    valib "^2.0.0"
+
 react-native-vector-icons@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-4.0.0.tgz#6a2f8f4c6ace613aed7748cd530809283e5b1538"
@@ -4780,6 +4787,10 @@ uuid@^2.0.3:
 uuid@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
+
+valib@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/valib/-/valib-2.0.0.tgz#e0d455b10e17ae605c0f33971adac73564ee18a7"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"

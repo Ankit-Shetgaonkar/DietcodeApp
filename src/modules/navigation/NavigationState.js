@@ -55,9 +55,9 @@ export default function NavigationReducer(state = initialState, action) {
   switch (action.type) {
     case PUSH_ROUTE: {
       // Push a route into the scenes stack.
-      const route = action.payload;
-      const tabs = state.get('tabs');
-      const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
+      const route = action.payload; //key color,title color screen
+      const tabs = state.get('tabs'); // all tabs
+      const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key'); //profiletab
       const scenes = state.get(tabKey).toJS();
       let nextScenes;
       // fixes issue #52

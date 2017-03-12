@@ -1,11 +1,12 @@
-import {Map} from 'immutable';
+import {fromJS} from 'immutable';
 
 export const SHOW_PROGRESS = 'LoginState/SHOW_PROGRESS';
 
-// Initial state
-const initialState = Map({
+const initialState = fromJS({
     showProgress: false
 });
+
+
 
 export function showProgress() {
     return {
@@ -18,6 +19,7 @@ export function showProgress() {
 export default function LoginStateReducer(state = initialState, action = {}) {
     switch (action.type) {
         case SHOW_PROGRESS:
+            //check if its progress on or of
             return state.set("showProgress",!state.get("showProgress"));
         default:
             return state;

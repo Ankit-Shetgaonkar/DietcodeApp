@@ -7,6 +7,7 @@ import {AppRegistry} from 'react-native';
 
 class DietcodeApp extends Component {
   render() {
+
     return (
       <Provider store={store}>
         <AppViewContainer />
