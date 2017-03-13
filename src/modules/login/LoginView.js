@@ -12,16 +12,21 @@ class LoginView extends Component {
 
     static propTypes = {
         showProgress: PropTypes.bool.isRequired,
+        errorMessage: PropTypes.string.isRequired,
+        successMessage: PropTypes.string.isRequired,
+        showLoginButton: PropTypes.bool.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     render() {
-
         return (
             <View style={styles.container}>
                 <SlackLoginView
+                    errorMessage = {this.props.errorMessage}
+                    successMessage = {this.props.successMessage}
+                    showLoginButton = {this.props.showLoginButton}
                     showProgress = {this.props.showProgress}
-                    action = {() => this.props.dispatch(LoginStates.showProgress())}/>
+                    dispatcher = {this.props.dispatch}/>
             </View>
         );
     }

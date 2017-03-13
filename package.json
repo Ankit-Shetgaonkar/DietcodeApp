@@ -49,6 +49,7 @@
     "react-native-oauth": "^2.1.16",
     "react-native-vector-icons": "^4.0.0",
     "react-redux": "^4.4.5",
+    "realm": "^1.1.1",
     "redux": "^3.4.0",
     "redux-logger": "^2.6.1",
     "redux-loop": "^2.1.0",

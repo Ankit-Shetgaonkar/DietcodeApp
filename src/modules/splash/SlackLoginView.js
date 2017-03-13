@@ -4,16 +4,27 @@ import React, {PropTypes, Component} from 'react';
 import {View, StyleSheet, ActivityIndicator, Text, Image, TouchableHighlight, StatusBar} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import OAuthManager from 'react-native-oauth';
+import * as auth from '../../utils/authentication';
+import * as LoginState from "../login/LoginState";
+import * as SessionState from "../session/SessionState";
+import * as api from "../../utils/api";
+const Realm = require('realm');
 
 class SlackLoginView extends Component {
 
     static displayName = 'SlackLoginView';
 
-    static propTypes = {
-        // errorMessage:PropTypes.string.isRequired,
-        // isSlackLoginError:PropTypes.bool.isRequired,
+
+     static propTypes = {
+        errorMessage: PropTypes.string.isRequired,
+        successMessage: PropTypes.string.isRequired,
+        showLoginButton: PropTypes.bool.isRequired,
         showProgress: PropTypes.bool.isRequired,
-        action: PropTypes.func.isRequired
+        dispatcher: PropTypes.func.isRequired
+    };
+
+    _welcomeMessage = () =>{
+        return this.props.successMessage
     };
 
     render() {
@@ -27,6 +38,9 @@ class SlackLoginView extends Component {
                 client_secret: '31ec0da3ab29c008efd21ec671cc0fbf'
             }
         });
+
+        this.props.dispatcher(LoginState.reset());
+        const {dispatcher, showLoginButton} = this.props;
 
         return (
             <LinearGradient
@@ -47,22 +61,31 @@ class SlackLoginView extends Component {
                     We are Dietcode
                 </Text>
 
-
                 <TouchableHighlight onPress={function()
                     {
-                            action();
-                            manager.authorize('slack', {scopes: 'read'})
-                              .then(resp => console.log(resp.response.credentials.accessToken))
-                              .catch(err => console.log(err));
+                            dispatcher(LoginState.toggleProgress(false));
+                            manager.authorize('slack', {scopes: 'identity.basic,identity.team,identity.avatar'})
+                              .then(resp => _slackAuthRespose(dispatcher,resp.response.credentials.accessToken))
+                              .catch(err => _slackAuthError(dispatcher,err));
 
                     }}
                                     underlayColor="transparent"
+                                    style={showLoginButton?styles.showButton:styles.hideButton}
                 >
 
                     <Image style={styles.slack_button}
                            source={require('../../../images/sign_in_with_slack.png')}
                     />
+
                 </TouchableHighlight>
+
+                <Text style={(this.props.successMessage === "")?styles.hideWelcome:styles.welcome}>
+                    { this._welcomeMessage()}
+                </Text>
+
+                <Text style={(this.props.errorMessage === "")?styles.hideWelcome:styles.welcome}>
+                    { this.errorMessage()}
+                </Text>
 
                 <ActivityIndicator style={showProgress?styles.progressBar:styles.hideProgressBar }
                                    size="large"
@@ -78,11 +101,84 @@ class SlackLoginView extends Component {
                 </Text>
             </LinearGradient>
         );
+    }
 
+    errorMessage() {
+        return this.props.errorMessage
     }
 }
 
+const _slackAuthRespose = (dispatcher, accessToken) => {
+
+    dispatcher(LoginState.toggleProgress(true));
+    dispatcher(LoginState.showLoginButton(false));
+    api.get("https://slack.com/api/users.identity?token=" + accessToken, false)
+        .then(resp => {
+            dispatcher(LoginState.loginSuccess("Welcome " + resp.user.name));
+            dispatcher(LoginState.toggleProgress(false));
+
+            let realm = new Realm({
+                schema: [{
+                    name: 'User',
+                    primaryKey: 'id',
+                    properties: {
+                        name: 'string',
+                        access_token: 'string',
+                        company: 'string',
+                        id: 'string',
+                        image_link: 'string'
+                    }}]
+            });
+
+            realm.write(() => {
+                realm.create('User', {
+                    name: resp.user.name,
+                    access_token: accessToken,
+                    company: resp.team.name,
+                    id: resp.user.id,
+                    image_link: resp.user.image_192
+                },true);
+            });
+            auth.setAuthenticationToken(accessToken);
+            dispatcher(SessionState.checkedLoginSessionState());
+
+        })
+        .catch(err => {
+            dispatcher(LoginState.loginError("There was some error, Try again"));
+            dispatcher(LoginState.toggleProgress(false));
+            dispatcher(LoginState.showLoginButton(true));
+            console.log(err + " ERROR!")
+        });
+
+    console.log(accessToken);
+
+};
+
+const _slackAuthError = (dispatcher, error) => {
+    console.log(error);
+};
+
 const styles = StyleSheet.create({
+    welcome: {
+        marginTop:20,
+        opacity: 1,
+        fontSize: 20,
+        alignSelf:"center",
+        color:"#fff"
+    },
+    hideWelcome: {
+        opacity: 0,
+        height: 0,
+        width: 0
+    },
+    hideTouchButton: {
+        opacity: 0,
+        height: 0,
+        width: 0
+    },
+    showTouchButton: {
+        opacity: 1
+    },
     toolbar: {
         flex: 1,
         backgroundColor: '#81c04d',
@@ -173,6 +269,14 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         marginTop: 30,
         marginBottom: 20
+    },
+    showButton: {
+        opacity: 1
+    },
+    hideButton: {
+        opacity: 0,
+        height: 0,
+        width: 0
     }
 
 

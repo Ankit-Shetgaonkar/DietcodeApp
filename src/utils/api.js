@@ -81,6 +81,7 @@ export async function request(method, path, body, suppressRedBox) {
  * Takes a relative path and makes it a full URL to API server
  */
 export function url(path) {
+  return path; //TODO make path relative
   const apiRoot = getConfiguration('API_ROOT');
   return path.indexOf('/') === 0
     ? apiRoot + path
