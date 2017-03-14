@@ -31,9 +31,9 @@ class TimelineView extends Component {
                         style={styles.header}>
                         <View style={{flex:0.6,flexDirection:"row",alignItems:"center"}}>
 
-                            <Text style={{backgroundColor:"transparent"}}>28</Text>
+                            <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:36,margin:10,fontWeight:"bold"}}>28</Text>
                             <View>
-                                <Text style={{backgroundColor:"transparent"}}>Monday</Text>
+                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:26}}>Monday</Text>
                                 <Text style={{backgroundColor:"transparent"}}>Febuary 2017</Text>
                             </View>
 
@@ -45,7 +45,7 @@ class TimelineView extends Component {
                                                 underlayColor="transparent"
                             >
                             <View
-                                style={{backgroundColor:"#2CCA29",padding:5,borderRadius:4,elevation:5,shadowColor: '#000000',shadowOffset: {width: 0,height: 3},shadowRadius: 5,shadowOpacity: 0.5}}
+                                style={{backgroundColor:"#2CCA29",paddingRight:20,paddingLeft:20,paddingTop:7,paddingBottom:7,borderRadius:4,elevation:5,shadowColor: '#000000',shadowOffset: {width: 0,height: 3},shadowRadius: 5,shadowOpacity: 0.5}}
                             ><Text style={{color:"#ffffff"}}>Checkin</Text></View>
                                 </TouchableHighlight>
                                 </View>
