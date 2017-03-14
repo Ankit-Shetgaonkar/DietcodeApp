@@ -83,10 +83,6 @@ class DashboardView extends Component {
         const scenes = this.props.dashboardState[tabKey];
         return (
             <View style={styles.container}>
-                <StatusBar
-                    backgroundColor="#5933EA"
-                    barStyle="light-content"
-                />
                 <NavigationCardStack
                                      key={'stack_' + tabKey}
                                      // onNavigateBack={this.props.onNavigateBack}

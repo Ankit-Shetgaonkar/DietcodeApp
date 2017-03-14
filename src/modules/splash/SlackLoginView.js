@@ -64,7 +64,7 @@ class SlackLoginView extends Component {
                 <TouchableHighlight onPress={function()
                     {
                             dispatcher(LoginState.toggleProgress(false));
-                            manager.authorize('slack', {scopes: 'identity.basic,identity.team,identity.avatar'})
+                            manager.authorize('slack', {scopes: 'identity.basic,identity.team,identity.avatar,chat:write:user'})
                               .then(resp => _slackAuthRespose(dispatcher,resp.response.credentials.accessToken))
                               .catch(err => _slackAuthError(dispatcher,err));
 
