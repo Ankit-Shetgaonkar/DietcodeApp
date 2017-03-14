@@ -8,7 +8,9 @@ import * as auth from '../../utils/authentication';
 import * as LoginState from "../login/LoginState";
 import * as SessionState from "../session/SessionState";
 import * as api from "../../utils/api";
-const Realm = require('realm');
+import RealmDatabase from '../../database/RealmDatabase';
+import UserModel from '../../database/UserModel';
+
 
 class SlackLoginView extends Component {
 
@@ -64,7 +66,7 @@ class SlackLoginView extends Component {
                 <TouchableHighlight onPress={function()
                     {
                             dispatcher(LoginState.toggleProgress(false));
-                            manager.authorize('slack', {scopes: 'identity.basic,identity.team,identity.avatar,chat:write:user'})
+                            manager.authorize('slack', {scopes: 'identity.basic,identity.team,identity.avatar'})
                               .then(resp => _slackAuthRespose(dispatcher,resp.response.credentials.accessToken))
                               .catch(err => _slackAuthError(dispatcher,err));
 
@@ -117,28 +119,33 @@ const _slackAuthRespose = (dispatcher, accessToken) => {
             dispatcher(LoginState.loginSuccess("Welcome " + resp.user.name));
             dispatcher(LoginState.toggleProgress(false));
 
-            let realm = new Realm({
-                schema: [{
-                    name: 'User',
-                    primaryKey: 'id',
-                    properties: {
-                        name: 'string',
-                        access_token: 'string',
-                        company: 'string',
-                        id: 'string',
-                        image_link: 'string'
-                    }}]
-            });
+            RealmDatabase.saveUser(new UserModel(resp.user.name, accessToken,resp.team.name,resp.user.id,resp.user.image_192,""));
+//            RealmDatabase.working();
+            const user = RealmDatabase.findUser()
+            console.log(user.name+" NAME");
+            // let realm = new Realm({
+            //     schema: [{
+            //         name: 'User',
+            //         primaryKey: 'id',
+            //         properties: {
+            //             name: 'string',
+            //             access_token: 'string',
+            //             company: 'string',
+            //             id: 'string',
+            //             image_link: 'string'
+            //         }}]
+            // });
+            //
+            // realm.write(() => {
+            //     realm.create('User', {
+            //         name: resp.user.name,
+            //         access_token: accessToken,
+            //         company: resp.team.name,
+            //         id: resp.user.id,
+            //         image_link: resp.user.image_192
+            //     },true);
+            // });
 
-            realm.write(() => {
-                realm.create('User', {
-                    name: resp.user.name,
-                    access_token: accessToken,
-                    company: resp.team.name,
-                    id: resp.user.id,
-                    image_link: resp.user.image_192
-                },true);
-            });
             auth.setAuthenticationToken(accessToken);
             dispatcher(SessionState.checkedLoginSessionState());
 

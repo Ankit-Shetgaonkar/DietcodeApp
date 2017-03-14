@@ -13,6 +13,56 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 
+function _getMonthInString(month) {
+    switch (month){
+        case 1:
+            return "January";
+        case 2:
+            return "February";
+        case 3:
+            return "March";
+        case 4:
+            return "April";
+        case 5:
+            return "May";
+        case 6:
+            return "June";
+        case 7:
+            return "July";
+        case 8:
+            return "August";
+        case 9:
+            return "September";
+        case 10:
+            return "October";
+        case 11:
+            return "November";
+        case 12:
+            return "December";
+    }
+}
+
+
+function _getDayOfWeek(day) {
+    switch (day){
+        case 1:
+            return "Monday";
+        case 2:
+            return "Tuesday";
+        case 3:
+            return "Wednesday";
+        case 4:
+            return "Thursday";
+        case 5:
+            return "Friday";
+        case 6:
+            return "Saturday";
+        case 7:
+            return "Sunday";
+    }
+}
+
+
 class TimelineView extends Component {
 
     static displayName = 'TimelineView';
@@ -21,14 +71,16 @@ class TimelineView extends Component {
         //TODO add props for this view
     };
 
-
     render() {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var day = today.getDay();
+        var mm = _getMonthInString(today.getMonth()+1); //January is 0!
+        var yyyy = today.getFullYear();
+
         return (
             <View style={styles.container}>
-                <StatusBar
-                    backgroundColor="#5933EA"
-                    barStyle="light-content"
-                />
                 <View style={{flex:0.4}}>
                     <Image
                         source={require('../../../images/mountain.jpg')}
@@ -37,11 +89,10 @@ class TimelineView extends Component {
                         <View style={{flex:0.6,flexDirection:"row",alignItems:"center"}}>
 
                             <Text
-                                style={{backgroundColor:"transparent",color:"#fff",fontSize:42,margin:10,paddingLeft:20,fontWeight:"bold"}}>28</Text>
+                                style={{backgroundColor:"transparent",color:"#fff",fontSize:42,margin:10,paddingLeft:20,fontWeight:"bold"}}>{dd}</Text>
                             <View>
-                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:24}}>Monday</Text>
-                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:12}}>Febuary
-                                    2017</Text>
+                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:24}}>{_getDayOfWeek(day)}</Text>
+                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:12}}> {mm} {yyyy}</Text>
                             </View>
 
                             <View style={{flex:1,alignItems:"center"}}>
