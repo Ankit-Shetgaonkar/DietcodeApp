@@ -6,11 +6,14 @@ import {
     Text,
     Button,
     StyleSheet,
-    StatusBar
+    StatusBar,
+    Image
 } from 'react-native';
 
 import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const {
     CardStack: NavigationCardStack,
@@ -49,18 +52,34 @@ class DashboardView extends Component {
 
     renderHeader = (sceneProps) => {
         return (
-            <NavigationHeader
-                {...sceneProps}
-                //onNavigateBack={this.props.onNavigateBack}
-                renderTitleComponent={() => {
-          return (
-            <NavigationHeader.Title
-                navigationStyles={Navigator.NavigationBar.StylesIOS}>
-              {sceneProps.scene.route.title}
-            </NavigationHeader.Title>
-          );
-        }}
-            />
+            <LinearGradient
+                start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
+                locations={[0.0,0.5,1.0]}
+                colors={['#48E2FF', '#508FF5', '#5933EA']} style={styles.linearGradient}>
+            <View style={styles.header}>
+                <Icon
+                    size={20}
+                    color='#fff'
+                    name="navicon"
+                    style={{alignSelf:"center",marginTop:12}}
+                />
+                <Text style={{flex:1,alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
+                <Image style={ styles.image } source={{ uri: 'http://www.free-avatars.com/data/media/37/cat_avatar_0597.jpg' }} />
+            </View>
+                </LinearGradient>
+
+        //     <NavigationHeader
+        //         {...sceneProps}
+        //         //onNavigateBack={this.props.onNavigateBack}
+        //         renderTitleComponent={() => {
+        //   return (
+        //     <NavigationHeader.Title
+        //         navigationStyles={Navigator.NavigationBar.StylesIOS}>
+        //       {sceneProps.scene.route.title}
+        //     </NavigationHeader.Title>
+        //   );
+        // }}
+        //     />
         );
     };
 
@@ -81,7 +100,7 @@ class DashboardView extends Component {
         return (
             <View style={styles.container}>
                 <StatusBar
-                    backgroundColor="#48E2FF"
+                    backgroundColor="#5933EA"
                     barStyle="light-content"
                 />
                 <NavigationCardStack
@@ -103,6 +122,22 @@ class DashboardView extends Component {
 }
 
 const styles = StyleSheet.create({
+    image: {
+        height:40,
+        marginTop:5,
+        width: 40,
+        borderRadius: 20
+    },
+    header:{
+      flexDirection: 'row'
+    },
+    linearGradient: {
+        height:50,
+        elevation:6,
+        backgroundColor:"#ffffff",
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
     container: {
         flex: 1,
         flexDirection: "column",
