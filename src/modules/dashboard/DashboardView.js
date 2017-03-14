@@ -21,9 +21,6 @@ const {
     PropTypes: NavigationPropTypes
 } = NavigationExperimental;
 
-//import AppRouter from '../AppRouter';
-//import TabBar from '../../components/TabBar';
-
 // Customize bottom tab bar height here if desired
 const TAB_BAR_HEIGHT = 50;
 
@@ -61,25 +58,12 @@ class DashboardView extends Component {
                     size={20}
                     color='#fff'
                     name="navicon"
-                    style={{alignSelf:"center",marginTop:12}}
+                    style={{alignSelf:"center",marginTop:12,backgroundColor:"transparent"}}
                 />
-                <Text style={{flex:1,alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
-                <Image style={ styles.image } source={{ uri: 'http://www.free-avatars.com/data/media/37/cat_avatar_0597.jpg' }} />
+                <Text style={{flex:1,backgroundColor:"transparent",alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
+                <Image style={ styles.image } source={{ uri: 'https://doctorwhowatch.com/files/2016/03/downey.jpg' }} />
             </View>
                 </LinearGradient>
-
-        //     <NavigationHeader
-        //         {...sceneProps}
-        //         //onNavigateBack={this.props.onNavigateBack}
-        //         renderTitleComponent={() => {
-        //   return (
-        //     <NavigationHeader.Title
-        //         navigationStyles={Navigator.NavigationBar.StylesIOS}>
-        //       {sceneProps.scene.route.title}
-        //     </NavigationHeader.Title>
-        //   );
-        // }}
-        //     />
         );
     };
 
@@ -132,9 +116,10 @@ const styles = StyleSheet.create({
       flexDirection: 'row'
     },
     linearGradient: {
-        height:50,
-        elevation:6,
-        backgroundColor:"#ffffff",
+        height:70,
+        paddingTop:20,
+        elevation:5,
+        backgroundColor:"transparent",
         paddingLeft: 10,
         paddingRight: 10,
     },

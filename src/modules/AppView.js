@@ -54,7 +54,7 @@ class AppView extends Component {
         });
         
 
-        if (!this.props.isLogin) {
+        if (false && !this.props.isLogin) {
             return (
                 <View style={styles.loadingLayout}>
                     <LoginViewContainer />
