@@ -4,7 +4,7 @@ import React from 'react';
 import CounterViewContainer from './counter/CounterViewContainer';
 import ColorViewContainer from './colors/ColorViewContainer';
 import {Text,View} from 'react-native';
-import * as wfh from './wfh/WfhView'
+import WfhContainer from './wfh/WfhContainer'
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
  */
@@ -18,7 +18,7 @@ export default function AppRouter(props) {
   }else if (key === 'Leaves') {
     return <Text >leaves</Text>;
   }else if (key === 'WorkFromHome') {
-    return <Text>Work from home</Text>;
+      return <WfhContainer/>;
   }
 
   if (key.indexOf('Profile') === 0) {
@@ -46,4 +46,5 @@ export default function AppRouter(props) {
     );
   }
   throw new Error('Unknown navigation key: ' + key);
+
 }

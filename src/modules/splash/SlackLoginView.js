@@ -15,7 +15,7 @@ class SlackLoginView extends Component {
     static displayName = 'SlackLoginView';
 
 
-     static propTypes = {
+    static propTypes = {
         errorMessage: PropTypes.string.isRequired,
         successMessage: PropTypes.string.isRequired,
         showLoginButton: PropTypes.bool.isRequired,
@@ -23,7 +23,7 @@ class SlackLoginView extends Component {
         dispatcher: PropTypes.func.isRequired
     };
 
-    _welcomeMessage = () =>{
+    _welcomeMessage = () => {
         return this.props.successMessage
     };
 
@@ -127,7 +127,8 @@ const _slackAuthRespose = (dispatcher, accessToken) => {
                         company: 'string',
                         id: 'string',
                         image_link: 'string'
-                    }}]
+                    }
+                }]
             });
 
             realm.write(() => {
@@ -137,7 +138,7 @@ const _slackAuthRespose = (dispatcher, accessToken) => {
                     company: resp.team.name,
                     id: resp.user.id,
                     image_link: resp.user.image_192
-                },true);
+                }, true);
             });
             auth.setAuthenticationToken(accessToken);
             dispatcher(SessionState.checkedLoginSessionState());
@@ -160,11 +161,11 @@ const _slackAuthError = (dispatcher, error) => {
 
 const styles = StyleSheet.create({
     welcome: {
-        marginTop:20,
+        marginTop: 20,
         opacity: 1,
         fontSize: 20,
-        alignSelf:"center",
-        color:"#fff"
+        alignSelf: "center",
+        color: "#fff"
     },
     hideWelcome: {
         opacity: 0,
