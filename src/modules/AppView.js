@@ -36,7 +36,6 @@ class AppView extends Component {
 
     render() {
         const {isReady, isLogin, dispatch} = this.props;
-
         if (!this.props.isReady) {
             return (
                 <View style={styles.loadingLayout}>
@@ -44,7 +43,6 @@ class AppView extends Component {
                 </View>
             );
         }
-
         auth.getAuthenticationToken().then(function (value) {
             if(value === null){
                 dispatch(SessionStateActions.logoutSessionState());

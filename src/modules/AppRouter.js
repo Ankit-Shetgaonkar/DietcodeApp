@@ -5,6 +5,8 @@ import CounterViewContainer from './counter/CounterViewContainer';
 import ColorViewContainer from './colors/ColorViewContainer';
 import {Text,View} from 'react-native';
 import WfhContainer from './wfh/WfhContainer'
+import TimeLineView from './timeline/TimelineView'
+import * as wfh from './wfh/WfhView'
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
  */
@@ -12,7 +14,7 @@ export default function AppRouter(props) {
   const key = props.scene.route.key;
 
   if (key === 'Dashboard') {
-    return <View style={{flex:1,backgroundColor:"#eeeeee"}}><Text>TIMELINE</Text></View>;
+    return <TimeLineView />;
   }else if (key === 'Profile') {
     return <Text >Profile</Text>;
   }else if (key === 'Leaves') {
