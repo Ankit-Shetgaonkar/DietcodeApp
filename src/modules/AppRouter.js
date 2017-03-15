@@ -4,7 +4,8 @@ import React from 'react';
 import CounterViewContainer from './counter/CounterViewContainer';
 import ColorViewContainer from './colors/ColorViewContainer';
 import {Text,View} from 'react-native';
-import * as wfh from './wfh/WfhView'
+import * as wfh from './wfh/WfhView';
+import LeavesView from './leaves/LeavesView';
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
  */
@@ -16,7 +17,7 @@ export default function AppRouter(props) {
   }else if (key === 'Profile') {
     return <Text >Profile</Text>;
   }else if (key === 'Leaves') {
-    return <Text >leaves</Text>;
+    return <LeavesView />;
   }else if (key === 'WorkFromHome') {
     return <Text>Work from home</Text>;
   }

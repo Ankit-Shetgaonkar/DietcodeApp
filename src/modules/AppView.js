@@ -47,14 +47,14 @@ class AppView extends Component {
 
         auth.getAuthenticationToken().then(function (value) {
             if(value === null){
-                dispatch(SessionStateActions.logoutSessionState());
+                //dispatch(SessionStateActions.logoutSessionState());
             }else{
                 dispatch(SessionStateActions.checkedLoginSessionState());
             }
         });
         
 
-        if (!this.props.isLogin) {
+        if (false && !this.props.isLogin) {
             return (
                 <View style={styles.loadingLayout}>
                     <LoginViewContainer />

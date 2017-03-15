@@ -61,9 +61,9 @@ class DashboardView extends Component {
                     size={20}
                     color='#fff'
                     name="navicon"
-                    style={{alignSelf:"center",marginTop:12}}
+                    style={{backgroundColor:"transparent",alignSelf:"center",marginTop:12}}
                 />
-                <Text style={{flex:1,alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
+                <Text style={{flex:1,alignSelf:"center",backgroundColor:"transparent", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
                 <Image style={ styles.image } source={{ uri: 'http://www.free-avatars.com/data/media/37/cat_avatar_0597.jpg' }} />
             </View>
                 </LinearGradient>
@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     },
     linearGradient: {
         height:50,
-        elevation:6,
-        backgroundColor:"#ffffff",
+        //elevation:6,
+        //backgroundColor:"#ffffff",
         paddingLeft: 10,
         paddingRight: 10,
     },
