@@ -8,7 +8,7 @@ import * as snapshotUtil from '../utils/snapshot';
 import * as SessionStateActions from '../modules/session/SessionState';
 import store from '../redux/store';
 import * as auth from '../utils/authentication';
-
+import RealmDatabse from "../database/RealmDatabase";
 class AppView extends Component {
 
     static displayName = 'AppView';
@@ -36,7 +36,6 @@ class AppView extends Component {
 
     render() {
         const {isReady, isLogin, dispatch} = this.props;
-
         if (!this.props.isReady) {
             return (
                 <View style={styles.loadingLayout}>
@@ -44,7 +43,6 @@ class AppView extends Component {
                 </View>
             );
         }
-
         auth.getAuthenticationToken().then(function (value) {
             if(value === null){
                 dispatch(SessionStateActions.logoutSessionState());
@@ -54,7 +52,7 @@ class AppView extends Component {
         });
         
 
-        if (false && !this.props.isLogin) {
+        if (!this.props.isLogin) {
             return (
                 <View style={styles.loadingLayout}>
                     <LoginViewContainer />
@@ -66,7 +64,6 @@ class AppView extends Component {
         return (
             <View style={{flex: 1}}>
                 <DashboardViewContainer />
-                {/*{__DEV__ && <DeveloperMenu />}*/}
             </View>
         );
     }

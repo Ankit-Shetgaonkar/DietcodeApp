@@ -1,6 +1,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {switchTab} from './DashboardState';
+import {logoutSessionState} from '../session/SessionState';
 import DashboardView from './DashboardView';
 
 export default connect(
@@ -10,7 +11,7 @@ export default connect(
     dispatch => {
         return {
             switchTab: bindActionCreators(switchTab, dispatch),
-            onNa: bindActionCreators(switchTab, dispatch)
+            logoutUser: bindActionCreators(logoutSessionState, dispatch)
         };
     }
 )(DashboardView);

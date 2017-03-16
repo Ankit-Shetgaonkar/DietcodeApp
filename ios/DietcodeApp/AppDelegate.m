@@ -8,7 +8,7 @@
  */
 
 #import "AppDelegate.h"
-
+#import "OAuthManager.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
@@ -17,8 +17,9 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
-
+  
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+  [OAuthManager setupOAuthHandler:application];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"DietcodeApp"
@@ -32,6 +33,16 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+  NSString *holder = url.absoluteString;
+  holder = [holder stringByReplacingOccurrencesOfString:@"dietcodeapp://http//" withString:@"http://"];
+  NSURL *modifiedURL = [[NSURL alloc] initWithString:holder];
+  return [OAuthManager handleOpenUrl:application
+                             openURL:modifiedURL
+                   sourceApplication:sourceApplication
+                          annotation:annotation];
 }
 
 @end

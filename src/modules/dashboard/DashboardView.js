@@ -7,6 +7,7 @@ import {
     Button,
     StyleSheet,
     StatusBar,
+    Platform,
     Image
 } from 'react-native';
 
@@ -14,6 +15,7 @@ import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import RealmDatabase from '../../database/RealmDatabase';
 
 const {
     CardStack: NavigationCardStack,
@@ -44,26 +46,29 @@ class DashboardView extends Component {
         switchTab: PropTypes.func.isRequired
     };
 
-    // NavigationHeader accepts a prop style
-    // NavigationHeader.title accepts a prop textStyle
-
     renderHeader = (sceneProps) => {
-        return (
-            <LinearGradient
-                start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
-                locations={[0.0,0.5,1.0]}
-                colors={['#48E2FF', '#508FF5', '#5933EA']} style={styles.linearGradient}>
-            <View style={styles.header}>
-                <Icon
-                    size={20}
-                    color='#fff'
-                    name="navicon"
-                    style={{alignSelf:"center",marginTop:12,backgroundColor:"transparent"}}
-                />
-                <Text style={{flex:1,backgroundColor:"transparent",alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
-                <Image style={ styles.image } source={{ uri: 'https://doctorwhowatch.com/files/2016/03/downey.jpg' }} />
-            </View>
+        let userData = RealmDatabase.findUser()[0];
+        return (<View>
+            <StatusBar
+                backgroundColor="#5933EA"
+                barStyle="light-content"
+            />
+                <LinearGradient
+                    start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
+                    locations={[0.0,0.5,1.0]}
+                    colors={['#48E2FF', '#508FF5', '#5933EA']} style={Platform.OS === 'ios' ?styles.linearGradientWithPadding:styles.linearGradientWithoutPadding}>
+                    <View style={styles.header}>
+                        <Icon
+                            size={20}
+                            color='#fff'
+                            name="navicon"
+                            style={{alignSelf:"center",marginTop:12,backgroundColor:"transparent"}}
+                        />
+                        <Text style={{flex:1,backgroundColor:"transparent",alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
+                        <Image style={ styles.image } source={{ uri: userData.image_link }} />
+                    </View>
                 </LinearGradient>
+        </View>
         );
     };
 
@@ -111,9 +116,16 @@ const styles = StyleSheet.create({
     header:{
       flexDirection: 'row'
     },
-    linearGradient: {
+    linearGradientWithPadding: {
         height:70,
         paddingTop:20,
+        elevation:5,
+        backgroundColor:"transparent",
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
+    linearGradientWithoutPadding: {
+        height:50,
         elevation:5,
         backgroundColor:"transparent",
         paddingLeft: 10,

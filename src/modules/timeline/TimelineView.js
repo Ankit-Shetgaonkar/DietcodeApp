@@ -12,23 +12,120 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
+import RealmDatabse from '../../database/RealmDatabase';
+import * as auth from '../../utils/authentication';
+
+import * as TimeLineStateActions from './TimelineState';
+
+import * as officeApi from '../../office-server/OfficeApi';
+
+
+function _getMonthInString(month) {
+    switch (month){
+        case 1:
+            return "January";
+        case 2:
+            return "February";
+        case 3:
+            return "March";
+        case 4:
+            return "April";
+        case 5:
+            return "May";
+        case 6:
+            return "June";
+        case 7:
+            return "July";
+        case 8:
+            return "August";
+        case 9:
+            return "September";
+        case 10:
+            return "October";
+        case 11:
+            return "November";
+        case 12:
+            return "December";
+    }
+}
+
+
+function _getDayOfWeek(day) {
+    switch (day){
+        case 1:
+            return "Monday";
+        case 2:
+            return "Tuesday";
+        case 3:
+            return "Wednesday";
+        case 4:
+            return "Thursday";
+        case 5:
+            return "Friday";
+        case 6:
+            return "Saturday";
+        case 7:
+            return "Sunday";
+    }
+}
+
+
+
+function createUser(token){
+
+    console.log("create new user in server");
+
+    if(!RealmDatabse.findUser().length >0){
+        return;
+    }
+
+    if(!RealmDatabse.findUser()[0].serverId){
+        let userObj = RealmDatabse.findUser()[0];
+
+        officeApi.createUser(userObj.id,userObj.name,token,userObj.image_link,userObj.email)
+            .then((resp)=>{
+                let newObject = {
+                    ...userObj,
+                    serverId:resp.results[0].id
+                };
+
+                RealmDatabse.saveUser(newObject);
+            })
+            .catch((err)=>{
+                console.log(JSON.stringify(err));
+            });
+    }else{
+            console.log(RealmDatabse.findUser()[0].serverId);
+    }
+}
 
 class TimelineView extends Component {
 
     static displayName = 'TimelineView';
 
     static propTypes = {
-        //TODO add props for this view
+        lastCheckin: PropTypes.string.isRequired,
+        errorMessage: PropTypes.string.isRequired,
+        lastCheckout: PropTypes.string.isRequired,
+        dispatch: PropTypes.func.isRequired
     };
 
-
     render() {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var day = today.getDay();
+        var mm = _getMonthInString(today.getMonth()+1); //January is 0!
+        var yyyy = today.getFullYear();
+
+        auth.getAuthenticationToken().then((resp)=>{
+            createUser(resp);
+        }).catch((err)=>{
+            console.log("Cannot find authentication token: "+err);
+        });
+
         return (
             <View style={styles.container}>
-                <StatusBar
-                    backgroundColor="#5933EA"
-                    barStyle="light-content"
-                />
                 <View style={{flex:0.4}}>
                     <Image
                         source={require('../../../images/mountain.jpg')}
@@ -37,17 +134,16 @@ class TimelineView extends Component {
                         <View style={{flex:0.6,flexDirection:"row",alignItems:"center"}}>
 
                             <Text
-                                style={{backgroundColor:"transparent",color:"#fff",fontSize:42,margin:10,paddingLeft:20,fontWeight:"bold"}}>28</Text>
+                                style={{backgroundColor:"transparent",color:"#fff",fontSize:42,margin:10,paddingLeft:20,fontWeight:"bold"}}>{dd}</Text>
                             <View>
-                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:24}}>Monday</Text>
-                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:12}}>Febuary
-                                    2017</Text>
+                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:24}}>{_getDayOfWeek(day)}</Text>
+                                <Text style={{backgroundColor:"transparent",color:"#fff",fontSize:12}}> {mm} {yyyy}</Text>
                             </View>
 
                             <View style={{flex:1,alignItems:"center"}}>
                                 <TouchableHighlight onPress={function()
                                                 {
-
+                                                    officeApi.checkinUser();
                                                 }}
                                                     underlayColor="transparent"
                                 >
@@ -63,14 +159,12 @@ class TimelineView extends Component {
                             <View style={{alignItems:"center",margin:20}}>
                                 <Text style={{backgroundColor:"transparent",fontSize:12,color:"#ffffff"}}>Last
                                     Checkin</Text>
-                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>no
-                                    data</Text>
+                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.lastCheckin}{this._getLastCheckinCheckout(this.props.dispatch)}</Text>
                             </View>
                             <View style={{alignItems:"center",margin:20}}>
                                 <Text style={{backgroundColor:"transparent",fontSize:12,color:"#ffffff"}}>Last
                                     Checkout</Text>
-                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>no
-                                    data</Text>
+                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.lastCheckout}</Text>
                             </View>
                         </View>
                     </Image>
@@ -96,6 +190,40 @@ class TimelineView extends Component {
 
 
         );
+    }
+
+    _getLastCheckinCheckout(dispatch) {
+
+        officeApi.getLastCheckinCheckout("checkin")
+            .then((resp)=>{
+                dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+            })
+            .catch((err)=>{
+                dispatch(TimeLineStateActions.setLastCheckin("some error"));
+            });
+
+        officeApi.getLastCheckinCheckout("checkout")
+            .then((resp)=>{
+                dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+            })
+            .catch((err)=>{
+                dispatch(TimeLineStateActions.setLastCheckout("some error"));
+            });
+    }
+
+    _getHumanReadableTime(timeValue){
+    var timeStart = new Date(timeValue).getTime();
+    var timeEnd = new Date().getTime();
+    var hourDiff = timeEnd - timeStart; //in ms
+    var secDiff = hourDiff / 1000; //in s
+    var minDiff = hourDiff / 60 / 1000; //in minutes
+    var hDiff = hourDiff / 3600 / 1000; //in hours
+    var humanReadable = {};
+    humanReadable.hours = Math.floor(hDiff);
+    humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+    return stringTime;
+    //console.log(humanReadable); //{hours: 0, minutes: 30}
     }
 }
 
