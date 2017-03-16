@@ -32,12 +32,13 @@ class SlackLoginView extends Component {
     render() {
         const {action, showProgress} = this.props;
 
-        const manager = new OAuthManager('slackLoginTests');
+        const manager = new OAuthManager('dietcodeapp');
 
         manager.configure({
             slack: {
                 client_id: '2535197606.78638568385',
-                client_secret: '31ec0da3ab29c008efd21ec671cc0fbf'
+                client_secret: '31ec0da3ab29c008efd21ec671cc0fbf',
+                callback_url: 'http://divyanshunegi.com/slack_login.html'
             }
         });
 
@@ -111,7 +112,7 @@ class SlackLoginView extends Component {
 }
 
 const _slackAuthRespose = (dispatcher, accessToken) => {
-
+    console.log(accessToken + "TOKEN SUCCESS 1");
     dispatcher(LoginState.toggleProgress(true));
     dispatcher(LoginState.showLoginButton(false));
     api.get("https://slack.com/api/users.identity?token=" + accessToken, false)
@@ -163,6 +164,7 @@ const _slackAuthRespose = (dispatcher, accessToken) => {
 
 const _slackAuthError = (dispatcher, error) => {
     console.log(error);
+    console.log(error + "TOKEN SUCCESS 2");
 };
 
 const styles = StyleSheet.create({
