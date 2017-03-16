@@ -1,6 +1,7 @@
 class UserModel {
-    constructor(name, accessToken,company,id,image_link,serverId) {
+    constructor(name,email, accessToken,company,id,image_link,serverId) {
         this.name = name;
+        this.email = email;
         this.access_token = accessToken;
         this.company = company;
         this.id = id;

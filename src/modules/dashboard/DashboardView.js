@@ -26,8 +26,6 @@ const {
 // Customize bottom tab bar height here if desired
 const TAB_BAR_HEIGHT = 50;
 
-let userData = RealmDatabase.findUser()[0];
-
 class DashboardView extends Component {
 
     static displayName = 'DashboardView';
@@ -48,10 +46,8 @@ class DashboardView extends Component {
         switchTab: PropTypes.func.isRequired
     };
 
-    // NavigationHeader accepts a prop style
-    // NavigationHeader.title accepts a prop textStyle
-
     renderHeader = (sceneProps) => {
+        let userData = RealmDatabase.findUser()[0];
         return (<View>
             <StatusBar
                 backgroundColor="#5933EA"
