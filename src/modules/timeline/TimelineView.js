@@ -105,13 +105,15 @@ class TimelineView extends Component {
 
     static propTypes = {
         lastCheckin: PropTypes.string.isRequired,
+        switchTab: PropTypes.func.isRequired,
         errorMessage: PropTypes.string.isRequired,
         lastCheckout: PropTypes.string.isRequired,
+        checkin:PropTypes.bool.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     render() {
-
+        const {checkin,dispatch} = this.props;
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
@@ -143,13 +145,32 @@ class TimelineView extends Component {
                             <View style={{flex:1,alignItems:"center"}}>
                                 <TouchableHighlight onPress={function()
                                                 {
-                                                    officeApi.checkinUser();
+
+                                                    if(checkin){
+                                                        officeApi.checkinUser()
+                                                        .then((resp)=>{
+                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                        })
+                                                        .catch((err)=>{
+                                                            console.log(err);
+                                                        });
+                                                       }
+                                                    else{
+                                                        officeApi.checkoutUser()
+                                                        .then((resp)=>{
+                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                        })
+                                                        .catch((err)=>{
+                                                            console.log(err);
+                                                        });
+                                                    }
+
                                                 }}
                                                     underlayColor="transparent"
                                 >
                                     <View
-                                        style={{backgroundColor:"#2CCA29",paddingRight:20,paddingLeft:20,paddingTop:7,paddingBottom:7,borderRadius:4,elevation:20,shadowColor: '#000000',shadowOffset: {width: 0,height: 3},shadowRadius: 2,shadowOpacity: 0.3}}
-                                    ><Text style={{color:"#ffffff"}}>Checkin</Text></View>
+                                        style={checkin?styles.checkinStyle:styles.checkoutStyle}
+                                    ><Text style={{color:"#ffffff"}}>{checkin?"Checkin":"Checkout"}</Text></View>
                                 </TouchableHighlight>
                             </View>
 
@@ -176,14 +197,14 @@ class TimelineView extends Component {
                 <ActionButton buttonColor="rgba(231,76,60,1)"
                               verticalOrientation={Platform.OS === 'ios' ? "down":"up"}
                               offsetX = {30}
-                              offsetY = {Platform.OS === 'ios' ? 190:20}
+                              offsetY = {Platform.OS === 'ios' ? 210:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                       onPress={() => console.log("notes tapped!")}>
-                        <Icon name="plus" style={styles.actionButtonIcon}/>
+                                       onPress={() => this.props.switchTab(2)}>
+                        <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {}}>
-                        <Icon name="plus" style={styles.actionButtonIcon}/>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
+                        <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                 </ActionButton>
             </View>
@@ -199,7 +220,8 @@ class TimelineView extends Component {
                 dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
             })
             .catch((err)=>{
-                dispatch(TimeLineStateActions.setLastCheckin("some error"));
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
             });
 
         officeApi.getLastCheckinCheckout("checkout")
@@ -207,7 +229,8 @@ class TimelineView extends Component {
                 dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
             })
             .catch((err)=>{
-                dispatch(TimeLineStateActions.setLastCheckout("some error"));
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
             });
     }
 
@@ -221,9 +244,8 @@ class TimelineView extends Component {
     var humanReadable = {};
     humanReadable.hours = Math.floor(hDiff);
     humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+    let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
     return stringTime;
-    //console.log(humanReadable); //{hours: 0, minutes: 30}
     }
 }
 
@@ -243,11 +265,37 @@ const styles = StyleSheet.create({
         right: 0,
         width: null,
         height: null,
-        backgroundColor: "#00ff00"
+        backgroundColor: "transparent"
     },
     timelineListContainer: {
         flex: 0.6,
         backgroundColor: "#fff"
+    },
+    checkinStyle: {
+        backgroundColor:"#2CCA29",
+        paddingRight:20,
+        paddingLeft:20,
+        paddingTop:7,
+        paddingBottom:7,
+        borderRadius:4,
+        elevation:20,
+        shadowColor: '#000000',
+        shadowOffset: {width: 0,height: 3},
+        shadowRadius: 2,
+        shadowOpacity: 0.3
+    },
+    checkoutStyle: {
+        backgroundColor:"#ff0000",
+        paddingRight:20,
+        paddingLeft:20,
+        paddingTop:7,
+        paddingBottom:7,
+        borderRadius:4,
+        elevation:20,
+        shadowColor: '#000000',
+        shadowOffset: {width: 0,height: 3},
+        shadowRadius: 2,
+        shadowOpacity: 0.3
     }
 });
 

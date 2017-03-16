@@ -8,6 +8,7 @@ import {
     StyleSheet,
     StatusBar,
     Platform,
+    TouchableHighlight,
     Image
 } from 'react-native';
 
@@ -24,7 +25,7 @@ const {
 } = NavigationExperimental;
 
 // Customize bottom tab bar height here if desired
-const TAB_BAR_HEIGHT = 50;
+const TAB_BAR_HEIGHT = 0;
 
 class DashboardView extends Component {
 
@@ -38,10 +39,10 @@ class DashboardView extends Component {
                     title: PropTypes.string.isRequired
                 })).isRequired
             }).isRequired,
-             DashboardTab:NavigationPropTypes.navigationState.isRequired,
-             ProfileTab:NavigationPropTypes.navigationState.isRequired,
-             LeavesTab:NavigationPropTypes.navigationState.isRequired,
-             WorkFromHomeTab:NavigationPropTypes.navigationState.isRequired
+            DashboardTab: NavigationPropTypes.navigationState.isRequired,
+            ProfileTab: NavigationPropTypes.navigationState.isRequired,
+            LeavesTab: NavigationPropTypes.navigationState.isRequired,
+            WorkFromHomeTab: NavigationPropTypes.navigationState.isRequired
         }),
         switchTab: PropTypes.func.isRequired
     };
@@ -49,35 +50,46 @@ class DashboardView extends Component {
     renderHeader = (sceneProps) => {
         let userData = RealmDatabase.findUser()[0];
         return (<View>
-            <StatusBar
-                backgroundColor="#5933EA"
-                barStyle="light-content"
-            />
+                <StatusBar
+                    backgroundColor="#5933EA"
+                    barStyle="light-content"
+                />
                 <LinearGradient
                     start={{x: 0.0, y: 0.25}} end={{x: 0.5, y: 1.0}}
                     locations={[0.0,0.5,1.0]}
-                    colors={['#48E2FF', '#508FF5', '#5933EA']} style={Platform.OS === 'ios' ?styles.linearGradientWithPadding:styles.linearGradientWithoutPadding}>
+                    colors={['#48E2FF', '#508FF5', '#5933EA']}
+                    style={Platform.OS === 'ios' ?styles.linearGradientWithPadding:styles.linearGradientWithoutPadding}>
                     <View style={styles.header}>
-                        <Icon
-                            size={20}
-                            color='#fff'
-                            name="navicon"
-                            style={{alignSelf:"center",marginTop:12,backgroundColor:"transparent"}}
-                        />
-                        <Text style={{flex:1,backgroundColor:"transparent",alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
-                        <Image style={ styles.image } source={{ uri: userData.image_link }} />
+                        <TouchableHighlight underlayColor="transparent" onPress={()=>{
+                                this.props.switchTab(0);
+                                //sceneProps.switchTab(1);
+                        }}>
+                            <Icon
+                                size={20}
+                                color='#fff'
+                                name= {sceneProps.scene.route.title==="Timeline"?"navicon":"angle-left"}//"angle-left" //navicon
+                                style={{alignSelf:"center",marginTop:12,backgroundColor:"transparent"}}
+                            />
+                        </TouchableHighlight>
+                        <Text
+                            style={{flex:1,backgroundColor:"transparent",alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
+                        <TouchableHighlight underlayColor="transparent" onPress={()=>{
+                                this.props.switchTab(1);
+                                //sceneProps.switchTab(1);
+                        }}>
+                            <Image style={ styles.image } source={{ uri: userData.image_link }}/>
+
+                        </TouchableHighlight>
                     </View>
                 </LinearGradient>
-        </View>
+            </View>
         );
     };
 
     renderScene = (sceneProps) => {
-        // render scene and apply padding to cover
-        // for app bar and navigation bar
         return (
             <View style={styles.sceneContainer}>
-                {AppRouter(sceneProps)}
+                {AppRouter(sceneProps,this.props.switchTab)}
             </View>
         );
     };
@@ -89,45 +101,49 @@ class DashboardView extends Component {
         return (
             <View style={styles.container}>
                 <NavigationCardStack
-                                     key={'stack_' + tabKey}
-                                     // onNavigateBack={this.props.onNavigateBack}
-                                     navigationState={scenes}
-                                      renderHeader={this.renderHeader}
-                                      renderScene={this.renderScene}
+                    key={'stack_' + tabKey}
+                    // onNavigateBack={this.props.onNavigateBack}
+                    navigationState={scenes}
+                    renderHeader={this.renderHeader}
+                    renderScene={this.renderScene}
                 />
-                <TabBar
-                    height={TAB_BAR_HEIGHT}
-                    tabs={tabs}
-                    currentTabIndex={tabs.index}
-                    switchTab={this.props.switchTab}
-                />
+
             </View>
         );
     }
 }
 
+
+// <TabBar
+//     style={{opacity:0,height:0,width:0}}
+//     height={TAB_BAR_HEIGHT}
+//     tabs={tabs}
+//     currentTabIndex={tabs.index}
+//     switchTab={this.props.switchTab}
+// />
+
 const styles = StyleSheet.create({
     image: {
-        height:40,
-        marginTop:5,
+        height: 40,
+        marginTop: 5,
         width: 40,
         borderRadius: 20
     },
-    header:{
-      flexDirection: 'row'
+    header: {
+        flexDirection: 'row'
     },
     linearGradientWithPadding: {
-        height:70,
-        paddingTop:20,
-        elevation:5,
-        backgroundColor:"transparent",
+        height: 70,
+        paddingTop: 20,
+        elevation: 5,
+        backgroundColor: "transparent",
         paddingLeft: 10,
         paddingRight: 10,
     },
     linearGradientWithoutPadding: {
-        height:50,
-        elevation:5,
-        backgroundColor:"transparent",
+        height: 50,
+        elevation: 5,
+        backgroundColor: "transparent",
         paddingLeft: 10,
         paddingRight: 10,
     },
