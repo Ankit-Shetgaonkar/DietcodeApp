@@ -6,8 +6,10 @@ let repository = new Realm({
         primaryKey: 'id',
         properties: {
             name: 'string',
+            email: 'string',
             access_token: 'string',
             company: 'string',
+            serverId: 'string',
             id: 'string',
             image_link: 'string'
         }}]
@@ -17,19 +19,26 @@ let RealmDatabse = {
     findUser: function() {
         return repository.objects('User');
     },
-    saveUser: function(userModel) {
+    saveUser:async function(userModel) {
+        try {
+            return await saveUserAsync(userModel);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+};
+
+export async function saveUserAsync(userModel){
+    try{
         repository.write(() => {
             repository.create('User', userModel,true);
-        })
+        });
+        return userModel;
     }
-    //
-    // update: function(todo, callback) {
-    //     if (!callback) return;
-    //     repository.write(() => {
-    //         callback();
-    //         todo.updatedAt = new Date();
-    //     });
-    // }
-};
+    catch (error){
+        throw error;
+    }
+}
 
 module.exports = RealmDatabse;

@@ -4013,6 +4013,12 @@ react-native-action-button@^2.6.4:
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/react-native-action-button/-/react-native-action-button-2.6.4.tgz#90b9bb7b88b57079f85e40e6060e0bbad45a74e4"
 
+react-native-datepicker@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/react-native-datepicker/-/react-native-datepicker-1.4.4.tgz#465e2b792ad6b5ba1a86349f87552ece6cfa03a8"
+  dependencies:
+    moment "2.x.x"
+
 react-native-linear-gradient@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.0.0.tgz#7442c00e1fcd9fca329119dcbaf744d12bcd1b5a"

@@ -12,6 +12,13 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
+import RealmDatabse from '../../database/RealmDatabase';
+import * as auth from '../../utils/authentication';
+
+import * as TimeLineStateActions from './TimelineState';
+
+import * as officeApi from '../../office-server/OfficeApi';
+
 
 function _getMonthInString(month) {
     switch (month){
@@ -63,21 +70,61 @@ function _getDayOfWeek(day) {
 }
 
 
+
+function createUser(token){
+
+    console.log("create new user in server");
+
+    if(!RealmDatabse.findUser().length >0){
+        return;
+    }
+
+    if(!RealmDatabse.findUser()[0].serverId){
+        let userObj = RealmDatabse.findUser()[0];
+
+        officeApi.createUser(userObj.id,userObj.name,token,userObj.image_link,userObj.email)
+            .then((resp)=>{
+                let newObject = {
+                    ...userObj,
+                    serverId:resp.results[0].id
+                };
+
+                RealmDatabse.saveUser(newObject);
+            })
+            .catch((err)=>{
+                console.log(JSON.stringify(err));
+            });
+    }else{
+            console.log(RealmDatabse.findUser()[0].serverId);
+    }
+}
+
 class TimelineView extends Component {
 
     static displayName = 'TimelineView';
 
     static propTypes = {
-        //TODO add props for this view
+        lastCheckin: PropTypes.string.isRequired,
+        switchTab: PropTypes.func.isRequired,
+        errorMessage: PropTypes.string.isRequired,
+        lastCheckout: PropTypes.string.isRequired,
+        checkin:PropTypes.bool.isRequired,
+        dispatch: PropTypes.func.isRequired
     };
 
     render() {
-
+        const {checkin,dispatch} = this.props;
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
         var mm = _getMonthInString(today.getMonth()+1); //January is 0!
         var yyyy = today.getFullYear();
+
+        auth.getAuthenticationToken().then((resp)=>{
+            createUser(resp);
+        }).catch((err)=>{
+            console.log("Cannot find authentication token: "+err);
+        });
 
         return (
             <View style={styles.container}>
@@ -99,12 +146,31 @@ class TimelineView extends Component {
                                 <TouchableHighlight onPress={function()
                                                 {
 
+                                                    if(checkin){
+                                                        officeApi.checkinUser()
+                                                        .then((resp)=>{
+                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                        })
+                                                        .catch((err)=>{
+                                                            console.log(err);
+                                                        });
+                                                       }
+                                                    else{
+                                                        officeApi.checkoutUser()
+                                                        .then((resp)=>{
+                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                        })
+                                                        .catch((err)=>{
+                                                            console.log(err);
+                                                        });
+                                                    }
+
                                                 }}
                                                     underlayColor="transparent"
                                 >
                                     <View
-                                        style={{backgroundColor:"#2CCA29",paddingRight:20,paddingLeft:20,paddingTop:7,paddingBottom:7,borderRadius:4,elevation:20,shadowColor: '#000000',shadowOffset: {width: 0,height: 3},shadowRadius: 2,shadowOpacity: 0.3}}
-                                    ><Text style={{color:"#ffffff"}}>Checkin</Text></View>
+                                        style={checkin?styles.checkinStyle:styles.checkoutStyle}
+                                    ><Text style={{color:"#ffffff"}}>{checkin?"Checkin":"Checkout"}</Text></View>
                                 </TouchableHighlight>
                             </View>
 
@@ -114,14 +180,12 @@ class TimelineView extends Component {
                             <View style={{alignItems:"center",margin:20}}>
                                 <Text style={{backgroundColor:"transparent",fontSize:12,color:"#ffffff"}}>Last
                                     Checkin</Text>
-                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>no
-                                    data</Text>
+                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.lastCheckin}{this._getLastCheckinCheckout(this.props.dispatch)}</Text>
                             </View>
                             <View style={{alignItems:"center",margin:20}}>
                                 <Text style={{backgroundColor:"transparent",fontSize:12,color:"#ffffff"}}>Last
                                     Checkout</Text>
-                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>no
-                                    data</Text>
+                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.lastCheckout}</Text>
                             </View>
                         </View>
                     </Image>
@@ -133,20 +197,55 @@ class TimelineView extends Component {
                 <ActionButton buttonColor="rgba(231,76,60,1)"
                               verticalOrientation={Platform.OS === 'ios' ? "down":"up"}
                               offsetX = {30}
-                              offsetY = {Platform.OS === 'ios' ? 190:20}
+                              offsetY = {Platform.OS === 'ios' ? 210:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                       onPress={() => console.log("notes tapped!")}>
-                        <Icon name="plus" style={styles.actionButtonIcon}/>
+                                       onPress={() => this.props.switchTab(2)}>
+                        <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {}}>
-                        <Icon name="plus" style={styles.actionButtonIcon}/>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
+                        <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                 </ActionButton>
             </View>
 
 
         );
+    }
+
+    _getLastCheckinCheckout(dispatch) {
+
+        officeApi.getLastCheckinCheckout("checkin")
+            .then((resp)=>{
+                dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+            })
+            .catch((err)=>{
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
+            });
+
+        officeApi.getLastCheckinCheckout("checkout")
+            .then((resp)=>{
+                dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+            })
+            .catch((err)=>{
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
+            });
+    }
+
+    _getHumanReadableTime(timeValue){
+    var timeStart = new Date(timeValue).getTime();
+    var timeEnd = new Date().getTime();
+    var hourDiff = timeEnd - timeStart; //in ms
+    var secDiff = hourDiff / 1000; //in s
+    var minDiff = hourDiff / 60 / 1000; //in minutes
+    var hDiff = hourDiff / 3600 / 1000; //in hours
+    var humanReadable = {};
+    humanReadable.hours = Math.floor(hDiff);
+    humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+    let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+    return stringTime;
     }
 }
 
@@ -166,11 +265,37 @@ const styles = StyleSheet.create({
         right: 0,
         width: null,
         height: null,
-        backgroundColor: "#00ff00"
+        backgroundColor: "transparent"
     },
     timelineListContainer: {
         flex: 0.6,
         backgroundColor: "#fff"
+    },
+    checkinStyle: {
+        backgroundColor:"#2CCA29",
+        paddingRight:20,
+        paddingLeft:20,
+        paddingTop:7,
+        paddingBottom:7,
+        borderRadius:4,
+        elevation:20,
+        shadowColor: '#000000',
+        shadowOffset: {width: 0,height: 3},
+        shadowRadius: 2,
+        shadowOpacity: 0.3
+    },
+    checkoutStyle: {
+        backgroundColor:"#ff0000",
+        paddingRight:20,
+        paddingLeft:20,
+        paddingTop:7,
+        paddingBottom:7,
+        borderRadius:4,
+        elevation:20,
+        shadowColor: '#000000',
+        shadowOffset: {width: 0,height: 3},
+        shadowRadius: 2,
+        shadowOpacity: 0.3
     }
 });
 

@@ -16,8 +16,7 @@ class SlackLoginView extends Component {
 
     static displayName = 'SlackLoginView';
 
-
-    static propTypes = {
+     static propTypes = {
         errorMessage: PropTypes.string.isRequired,
         successMessage: PropTypes.string.isRequired,
         showLoginButton: PropTypes.bool.isRequired,
@@ -32,12 +31,13 @@ class SlackLoginView extends Component {
     render() {
         const {action, showProgress} = this.props;
 
-        const manager = new OAuthManager('slackLoginTests');
+        const manager = new OAuthManager('dietcodeapp');
 
         manager.configure({
             slack: {
                 client_id: '2535197606.78638568385',
-                client_secret: '31ec0da3ab29c008efd21ec671cc0fbf'
+                client_secret: '31ec0da3ab29c008efd21ec671cc0fbf',
+                callback_url: 'http://divyanshunegi.com/slack_login.html'
             }
         });
 
@@ -66,7 +66,7 @@ class SlackLoginView extends Component {
                 <TouchableHighlight onPress={function()
                     {
                             dispatcher(LoginState.toggleProgress(false));
-                            manager.authorize('slack', {scopes: 'identity.basic,identity.team,identity.avatar'})
+                            manager.authorize('slack', {scopes: 'identity.basic,identity.email,identity.team,identity.avatar'})
                               .then(resp => _slackAuthRespose(dispatcher,resp.response.credentials.accessToken))
                               .catch(err => _slackAuthError(dispatcher,err));
 
@@ -111,59 +111,37 @@ class SlackLoginView extends Component {
 }
 
 const _slackAuthRespose = (dispatcher, accessToken) => {
-
+    console.log(accessToken + "TOKEN SUCCESS 1");
     dispatcher(LoginState.toggleProgress(true));
     dispatcher(LoginState.showLoginButton(false));
     api.get("https://slack.com/api/users.identity?token=" + accessToken, false)
-        .then(resp => {
-            dispatcher(LoginState.loginSuccess("Welcome " + resp.user.name));
-            dispatcher(LoginState.toggleProgress(false));
-
-
-            RealmDatabase.saveUser(new UserModel(resp.user.name, accessToken,resp.team.name,resp.user.id,resp.user.image_192,""));
-//            RealmDatabase.working();
-            const user = RealmDatabase.findUser()
-            console.log(user.name+" NAME");
-            // let realm = new Realm({
-            //     schema: [{
-            //         name: 'User',
-            //         primaryKey: 'id',
-            //         properties: {
-            //             name: 'string',
-            //             access_token: 'string',
-            //             company: 'string',
-            //             id: 'string',
-            //             image_link: 'string'
-            //         }}]
-            // });
-            //
-            // realm.write(() => {
-            //     realm.create('User', {
-            //         name: resp.user.name,
-            //         access_token: accessToken,
-            //         company: resp.team.name,
-            //         id: resp.user.id,
-            //         image_link: resp.user.image_192
-            //     },true);
-            // });
-
-            auth.setAuthenticationToken(accessToken);
-            dispatcher(SessionState.checkedLoginSessionState());
+        .then((resp) => {
+            console.log("slack data");
+            console.log(resp);
+            RealmDatabase.saveUser(new UserModel(resp.user.name,resp.user.email,accessToken,resp.team.name,resp.user.id,resp.user.image_192,""))
+                .then((response) => {
+                    dispatcher(LoginState.loginSuccess("Welcome to Dietcode"));
+                    dispatcher(LoginState.toggleProgress(false));
+                    dispatcher(SessionState.checkedLoginSessionState());
+                    auth.setAuthenticationToken(accessToken);
+            })
+                .catch((error)=>{
+                    dispatcher(LoginState.loginError("There was some error, Try again"));
+                    dispatcher(LoginState.toggleProgress(false));
+                    dispatcher(LoginState.showLoginButton(true));
+            });
 
         })
-        .catch(err => {
+        .catch((err) => {
             dispatcher(LoginState.loginError("There was some error, Try again"));
             dispatcher(LoginState.toggleProgress(false));
             dispatcher(LoginState.showLoginButton(true));
-            console.log(err + " ERROR!")
         });
-
-    console.log(accessToken);
-
 };
 
 const _slackAuthError = (dispatcher, error) => {
     console.log(error);
+    console.log(error + "TOKEN SUCCESS 2");
 };
 
 const styles = StyleSheet.create({

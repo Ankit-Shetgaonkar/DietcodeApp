@@ -7,6 +7,9 @@ import LoginStateReducer from '../modules/login/LoginState';
 import DashboardStateReducer from '../modules/dashboard/DashboardState';
 import WfhStateReducer from '../modules/wfh/WfhState'
 
+import TimelineStateReducer from '../modules/timeline/TimelineState';
+import LeavesStateReducer from '../modules/leaves/LeavesState';
+
 const reducers = {
     // Counter sample app state. This can be removed in a live application
     counter: CounterStateReducer,
@@ -22,6 +25,10 @@ const reducers = {
     dashboardState: DashboardStateReducer,
 
     wfhState: WfhStateReducer
+    leavesState: LeavesStateReducer,
+
+    timelineState: TimelineStateReducer
+
 
 };
 
