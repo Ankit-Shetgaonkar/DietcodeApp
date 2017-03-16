@@ -86,9 +86,9 @@ function createUser(token){
             .then((resp)=>{
                 let newObject = {
                     ...userObj,
-                    serverId:resp.results.id
+                    serverId:resp.results[0].id
                 };
-                console.log(newObject);
+
                 RealmDatabse.saveUser(newObject);
             })
             .catch((err)=>{
@@ -221,7 +221,7 @@ class TimelineView extends Component {
     var humanReadable = {};
     humanReadable.hours = Math.floor(hDiff);
     humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m";
+        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
     return stringTime;
     //console.log(humanReadable); //{hours: 0, minutes: 30}
     }
