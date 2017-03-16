@@ -18,6 +18,9 @@ import DatePicker from 'react-native-datepicker';
 import LinearGradient from 'react-native-linear-gradient';
 import * as LeavesStateAction from './LeavesState';
 
+import * as officeApi from '../../office-server/OfficeApi';
+import RealmDatabse from '../../database/RealmDatabase';
+
 class LeavesView extends Component {
 
     static displayName = 'LeavesView';
@@ -30,7 +33,20 @@ class LeavesView extends Component {
     };
 
     render() {
+
         const {dispatch} = this.props;
+        let leavesView = {
+
+        };
+
+        officeApi.getLeavesDetails()
+            .then((resp)=>{
+                console.log(resp);
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
+
         return (
             <LinearGradient
                 start={{ x: 0.0, y: 0.25 }} end={{ x: 0.5, y: 1.0 }}
@@ -141,13 +157,13 @@ class LeavesView extends Component {
                         }}
                         onDateChange={(date) => {
 
-
+                            
 
                         }}
                     />
                     <DatePicker
                         style={styles.dateStylePicker2}
-                        date={"13-17-2017"}
+                        date={"09-16-2017"}
                         mode="date"
                         placeholder="choose date"
                         format="YYYY-MM-DD"
@@ -175,24 +191,45 @@ class LeavesView extends Component {
                 <View style={styles.showButton}>
                     <Button
                         onPress={() => {
+                            this._sendLeaveRequest();
                         }}
                         title="Apply Leave"
                         color = '#fff'
+                        style={{borderRadius:5}}
                     />
                 </View>
+
                 <Picker
                     mode="dropdown"
-                    style={this.props.showDaysPicker?styles.showPicker:styles.hidePicker}>
+                    style={this.props.showDaysPicker?styles.showPicker:styles.hidePicker}
+                    onValueChange={(lang) => dispatch(LeavesStateAction.toggleDaysPicker()) }>
                     <Picker.Item label="One Day" value="key0" />
                     <Picker.Item label="Mulitple Days" value="key1" />
                 </Picker>
                 <Picker
-                    style={this.props.showFullPicker?styles.showPicker:styles.hidePicker}>
+                    style={this.props.showFullPicker?styles.showPicker:styles.hidePicker}
+                    onValueChange={(lang) => dispatch(LeavesStateAction.togglefullDayPicker()) }>
                     <Picker.Item label="Half Day" value="key0" />
                     <Picker.Item label="Full Day" value="key1" />
                 </Picker>
+                <Picker
+                    style={this.props.showPaidPicker?styles.showPicker:styles.hidePicker}
+                    onValueChange={(lang) => dispatch(LeavesStateAction.togglePaidPicker()) }>
+                    <Picker.Item label="Paid Leave" value="key0" />
+                    <Picker.Item label="Unpaid Leave" value="key1" />
+                </Picker>
             </LinearGradient>
         );
+    }
+
+    _sendLeaveRequest() {
+        officeApi.applyforLeave(26268,"2023-7-04","2023-7-04",1,"Need food so need leave")
+            .then((resp)=>{
+                console.log(resp);
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
     }
 }
 
