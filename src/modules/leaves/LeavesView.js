@@ -38,7 +38,7 @@ class LeavesView extends Component {
                 colors={['#60639f', '#5e73a1', '#5b87a3']} style={styles.linearGradient}>
                 <Text style={styles.textDisplay}>How many Days?</Text>
                 <TouchableHighlight underlayColor="transparent" onPress={function(){
-                       dispatch(LeavesStateAction.togglePicker());
+                       dispatch(LeavesStateAction.toggleDaysPicker());
                 }}>
                     <View
                         style={{
@@ -65,7 +65,7 @@ class LeavesView extends Component {
 
                 <Text style={styles.textDisplay}>Half or Full day leave ?</Text>
                 <TouchableHighlight underlayColor="transparent" onPress={function(){
-                       dispatch(LeavesStateAction.togglePicker());
+                       dispatch(LeavesStateAction.togglefullDayPicker());
                 }}>
                     <View
                         style={{
@@ -88,6 +88,11 @@ class LeavesView extends Component {
                         />
                     </View>
                 </TouchableHighlight>
+
+                <TouchableHighlight underlayColor="transparent" onPress={function(){
+                       dispatch(LeavesStateAction.togglePaidPicker());
+                }}>
+                    <View>
                 <Text style={styles.textDisplay}>Paid or Unpaid ?</Text>
                 <View
                     style={{
@@ -108,11 +113,13 @@ class LeavesView extends Component {
                         style={{ alignSelf: "center", backgroundColor: "transparent" }}
                     />
                 </View>
+                        </View>
+                </TouchableHighlight>
 
                 <View style={styles.calenderContainer}>
                     <DatePicker
                         style={styles.dateStylePicker1}
-                        date={this.state.date}
+                        date={"07-03-2017"}
                         mode="date"
                         placeholder="choose date"
                         iconSource={require('./google_calendar.png')}
@@ -134,13 +141,13 @@ class LeavesView extends Component {
                         }}
                         onDateChange={(date) => {
 
-                            this.setState({ date: date });
+
 
                         }}
                     />
                     <DatePicker
                         style={styles.dateStylePicker2}
-                        date={this.state.date1}
+                        date={"13-17-2017"}
                         mode="date"
                         placeholder="choose date"
                         format="YYYY-MM-DD"
@@ -160,7 +167,9 @@ class LeavesView extends Component {
                                 marginLeft: 0
                             }
                         }}
-                        onDateChange={(date) => { this.setState({ date1: date }); }}
+                        onDateChange={(date) => {
+
+                         }}
                     />
                 </View>
                 <View style={styles.showButton}>
