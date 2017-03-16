@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Image,
     StatusBar,
+    ListView,
     Platform,
     TouchableHighlight
 } from 'react-native';
@@ -104,16 +105,49 @@ class TimelineView extends Component {
     static displayName = 'TimelineView';
 
     static propTypes = {
-        lastCheckin: PropTypes.string.isRequired,
-        switchTab: PropTypes.func.isRequired,
-        errorMessage: PropTypes.string.isRequired,
-        lastCheckout: PropTypes.string.isRequired,
-        checkin:PropTypes.bool.isRequired,
+        timeLineState: PropTypes.shape({
+            lastCheckin: PropTypes.string.isRequired,
+            errorMessage: PropTypes.string.isRequired,
+            checkin: PropTypes.bool.isRequired,
+            lastCheckout: PropTypes.string.isRequired,
+            timelineData: PropTypes.shape({
+                data: PropTypes.array.isRequired
+            }).isRequired
+        }).isRequired,
+        // timelineData: PropTypes.shape({
+        //     data: PropTypes.array.isRequired
+        // }).isRequired,
+        // lastCheckin: PropTypes.string.isRequired,
+        // switchTab: PropTypes.func.isRequired,
+        // errorMessage: PropTypes.string.isRequired,
+        // lastCheckout: PropTypes.string.isRequired,
+        // checkin:PropTypes.bool.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
+    constructor() {
+        super();
+
+        officeApi.getUserTimeline(1)
+            .then((resp)=>{
+                console.log(resp);
+                this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
+    }
+
     render() {
-        const {checkin,dispatch} = this.props;
+
+        const checkin = this.props.timeLineState.checkin;
+        const {dispatch} = this.props;
+        console.log("CHECKINVALUE "+checkin);
+
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+        const dtaSource = {dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[])};
+
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
@@ -146,7 +180,7 @@ class TimelineView extends Component {
                                 <TouchableHighlight onPress={function()
                                                 {
 
-                                                    if(checkin){
+                                                    if(!checkin){
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
                                                             dispatch(TimeLineStateActions.checkUserToggle());
@@ -158,7 +192,7 @@ class TimelineView extends Component {
                                                     else{
                                                         officeApi.checkoutUser()
                                                         .then((resp)=>{
-                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                           dispatch(TimeLineStateActions.checkUserToggle());
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -169,8 +203,8 @@ class TimelineView extends Component {
                                                     underlayColor="transparent"
                                 >
                                     <View
-                                        style={checkin?styles.checkinStyle:styles.checkoutStyle}
-                                    ><Text style={{color:"#ffffff"}}>{checkin?"Checkin":"Checkout"}</Text></View>
+                                        style={checkin?styles.checkoutStyle:styles.checkinStyle}
+                                    ><Text style={{color:"#ffffff"}}>{checkin?"Checkout":"Checkin"}</Text></View>
                                 </TouchableHighlight>
                             </View>
 
@@ -180,19 +214,38 @@ class TimelineView extends Component {
                             <View style={{alignItems:"center",margin:20}}>
                                 <Text style={{backgroundColor:"transparent",fontSize:12,color:"#ffffff"}}>Last
                                     Checkin</Text>
-                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.lastCheckin}{this._getLastCheckinCheckout(this.props.dispatch)}</Text>
+                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.timeLineState.lastCheckin}{this._getLastCheckinCheckout(this.props.dispatch)}</Text>
                             </View>
                             <View style={{alignItems:"center",margin:20}}>
                                 <Text style={{backgroundColor:"transparent",fontSize:12,color:"#ffffff"}}>Last
                                     Checkout</Text>
-                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.lastCheckout}</Text>
+                                <Text style={{backgroundColor:"transparent",marginTop:5,fontSize:10,color:"#ffffff"}}>{this.props.timeLineState.lastCheckout}</Text>
                             </View>
                         </View>
                     </Image>
 
                 </View>
 
-                <View style={styles.timelineListContainer}></View>
+                <View style={styles.timelineListContainer}>
+                    <ListView
+                        {...dtaSource}
+                        renderRow={(rowData) => <View style={{flex: 1, flexDirection: 'row'}}>
+                                                <View style={{flex: .2, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
+                                                    <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
+                                                    <View style={rowData.type==="checkin"?styles.circle:styles.circlered} />
+                                                    <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
+                                                </View>
+                                                <View style={{flex: .3, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}> {this._getHumanReadableTime(rowData.createdAt)} </Text>
+                                                </View>
+                                                <View style={{flex: .6, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>{rowData.type} </Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>{rowData.description} </Text>
+                                                </View>
+                                            </View>
+                            }
+                    />
+                </View>
 
                 <ActionButton buttonColor="rgba(231,76,60,1)"
                               verticalOrientation={Platform.OS === 'ios' ? "down":"up"}
@@ -296,7 +349,21 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0,height: 3},
         shadowRadius: 2,
         shadowOpacity: 0.3
-    }
+    },
+    circle: {
+        width: 20,
+        height: 20,
+        borderRadius: 20/2,
+        borderWidth: 2,
+        borderColor: 'green'
+    },
+    circlered: {
+        width: 20,
+        height: 20,
+        borderRadius: 20/2,
+        borderWidth: 2,
+        borderColor: 'red'
+}
 });
 
 export default TimelineView;

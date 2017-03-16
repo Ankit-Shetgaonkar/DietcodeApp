@@ -1,15 +1,19 @@
-import {Map} from 'immutable';
+import {fromJS} from 'immutable';
 
 export const LAST_CHECKIN = 'TimelineState/LAST_CHECKIN';
 export const LAST_CHECKOUT = 'TimelineState/LAST_CHECKOUT';
 export const ERROR_MESSAGE = 'TimelineState/ERROR_MESSAGE';
 export const CHECKIN = 'TimelineState/CHECKIN';
+export const TIMELINE_DATA = 'TimelineState/TIMELINE_DATA';
 
-const initialState = Map({
+const initialState = fromJS({
     lastCheckin: "no-data",
     errorMessage: "",
     checkin: false,
-    lastCheckout: "no-data"
+    lastCheckout: "no-data",
+    timelineData: {
+        data : []
+    }
 });
 
 
@@ -18,6 +22,13 @@ export function setLastCheckin(time) {
     return {
         type: LAST_CHECKIN,
         payload: time
+    };
+}
+
+export function setTimelineData(data) {
+    return {
+        type: TIMELINE_DATA,
+        payload: data
     };
 }
 
@@ -43,6 +54,8 @@ export default function TimelineStateReducer(state = initialState, action = {}) 
             return state.set("lastCheckout",action.payload);
         case CHECKIN:
             return state.set("checkin",!state.get('checkin'));
+        case TIMELINE_DATA:
+            return state.set("timelineData",action.payload);
         default:
             return state;
     }

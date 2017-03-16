@@ -4013,6 +4013,12 @@ react-native-action-button@^2.6.4:
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/react-native-action-button/-/react-native-action-button-2.6.4.tgz#90b9bb7b88b57079f85e40e6060e0bbad45a74e4"
 
+react-native-circular-progress@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-circular-progress/-/react-native-circular-progress-0.0.8.tgz#53ccdbe57357ce2459f8ab1b67119a3e2a5014b4"
+  dependencies:
+    art "^0.10.0"
+
 react-native-datepicker@^1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/react-native-datepicker/-/react-native-datepicker-1.4.4.tgz#465e2b792ad6b5ba1a86349f87552ece6cfa03a8"

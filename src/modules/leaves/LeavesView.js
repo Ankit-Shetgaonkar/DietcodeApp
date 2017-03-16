@@ -26,6 +26,10 @@ class LeavesView extends Component {
     static displayName = 'LeavesView';
 
     static propTypes = {
+        howManyDays : PropTypes.string.isRequired,
+        halfDayFullDay : PropTypes.string.isRequired,
+        paidUnpaid : PropTypes.string.isRequired,
+
         showDaysPicker : PropTypes.bool.isRequired,
         showFullPicker : PropTypes.bool.isRequired,
         showPaidPicker : PropTypes.bool.isRequired,
@@ -36,7 +40,7 @@ class LeavesView extends Component {
 
         const {dispatch} = this.props;
         let leavesView = {
-
+            
         };
 
         officeApi.getLeavesDetails()
@@ -157,7 +161,7 @@ class LeavesView extends Component {
                         }}
                         onDateChange={(date) => {
 
-                            
+
 
                         }}
                     />
