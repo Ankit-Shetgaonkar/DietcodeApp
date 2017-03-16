@@ -11,6 +11,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import RealmDatabse from '../../database/RealmDatabase';
 
 const { devReady, inProgress, completed } = {devReady:'DEV READY', inProgress:'IN PROGRESS', completed:'COMPLETED'};
 const monthlyHours = 160;
@@ -31,7 +32,7 @@ class ProfileView extends Components {
     };
 
     render() {
-        // const {username, description, hours, projects} = this.props;
+        const userObj = RealmDatabse.findUser()[0];
         // const percentageHours = ((hours/monthlyHours)*100) > 0 ? ((hours/monthlyHours)*100) : 0;
         return (
             <View style={styles.baseContainer}>
@@ -43,14 +44,14 @@ class ProfileView extends Components {
                 locations={[0.0, 0.5, 1.0]}>
                     <View style={styles.topContainer}>
                         <Image style={styles.image} source={{ uri: 'http://www.free-avatars.com/data/media/37/cat_avatar_0597.jpg' }} />
-                        <Text style={styles.headingText}>username</Text>
-                        <Text style={styles.descriptionText}>description</Text>
+                        <Text style={styles.headingText}>userObj.name</Text>
+                        <Text style={styles.descriptionText}>userObj.email</Text>
                     </View>
                     <View style={styles.bottomContainer}>
                         <View style={styles.holderContainer}>
-                            <Projects details={{type=devReady, count=1}} />
-                            <Projects details={{type=inProgress, count=1}} />
-                            <Projects details={{type=completed, count=1}} />
+                            <Projects details={{type=devReady, count=0}} />
+                            <Projects details={{type=inProgress, count=0}} />
+                            <Projects details={{type=completed, count=0}} />
                         </View>
                         <AnimatedCircularProgress
                             size={( Dimensions.get('window') - (Dimensions.get('window')/4) )}
