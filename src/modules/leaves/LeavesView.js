@@ -21,6 +21,9 @@ import * as LeavesStateAction from './LeavesState';
 import * as officeApi from '../../office-server/OfficeApi';
 import RealmDatabse from '../../database/RealmDatabase';
 
+
+var cakeHrId = 0;
+
 class LeavesView extends Component {
 
     static displayName = 'LeavesView';
@@ -42,6 +45,7 @@ class LeavesView extends Component {
         officeApi.getLeavesDetails()
             .then((resp)=>{
                 console.log(resp);
+                cakeHrId = resp.result.cakeHR.id;
             })
             .catch((err)=>{
                 console.log(err);

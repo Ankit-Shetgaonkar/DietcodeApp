@@ -12,17 +12,23 @@ import {
     Picker,
     DatePickerAndroid,
     TouchableNativeFeedback,
+    ToastAndroid
 
 } from 'react-native';
 
 import * as WfhState from "./WfhState";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as Api from '../../office-server/OfficeApi';
 
 
 
 const Item = Picker.Item;
 // Customize bottom tab bar height here if desired
 const TAB_BAR_HEIGHT = 50;
+
+var cakeHrId = 0;
+var wfhUsed = 0;
+var wfhAssigned = 0;
 
 class WfhView extends Component {
 
@@ -42,8 +48,20 @@ class WfhView extends Component {
         dispatch: PropTypes.func.isRequired
     };
 
+    componentWillMount() {
+        Api.getLeavesDetails().then((resp) => {
+            console.log(resp);
+            cakeHrId = resp.result.cakeHR.id;
+            wfhUsed = resp.result.cakeHR.custom_types_data['10019'].used;
+            wfhAssigned = resp.result.cakeHR.custom_types_data['10019'].assigned;
+            console.log("Cake hr " + cakeHrId);
+        }).catch((e) => {
+            console.log(e);
+        });
+    }
 
     render() {
+
         return (
             <LinearGradient
                 start={{ x: 0.0, y: 0.25 }} end={{ x: 0.5, y: 1.0 }}
@@ -65,7 +83,7 @@ class WfhView extends Component {
                         marginBottom: 10
                     }}>
                         <Picker
-                            selectedValue={this.props.isSingleDay?"One Day":"Mulitple Days"}
+                            selectedValue={this.props.isSingleDay ? "One Day" : "Mulitple Days"}
                             onValueChange={(days) => this.props.dispatch(WfhState.updateNumberOfDays(days))}
                             mode="dropdown">
                             <Item label="One Day" value="One Day" />
@@ -93,7 +111,7 @@ class WfhView extends Component {
                         marginBottom: 10
                     }}>
                         <Picker
-                         selectedValue={this.props.partOfDay}
+                            selectedValue={this.props.partOfDay}
                             onValueChange={(day) => this.props.dispatch(WfhState.updatePartOfDay(day))}
                             mode="dropdown">
                             <Item label="Full Day" value="Full Day" />
@@ -189,7 +207,7 @@ class WfhView extends Component {
 
                         <Button
                             onPress={() => {
-                                applyForWfh(this.props.dispatch)
+                                this.applyForWorkFromHome();
                             }}
                             title="Apply work from home" />
 
@@ -200,19 +218,22 @@ class WfhView extends Component {
                         size="large"
                         color="white"
                     />
-
                 </View>
 
 
-                <View style={{ marginTop: 100 }}>
-                    <Button
-                        onPress={() => {
-                            this.props.dispatch(WfhState.showApplyButton(true));
-                            this.props.dispatch(WfhState.toggleProgress(false))
-                        }}
-                        title="Mark Done" />
+                <Text style={{
+                    backgroundColor: "transparent", alignSelf: "center",
+                    paddingLeft: 5,
+                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 100,
+                }}>{wfhUsed}</Text>
 
-                </View>
+                <Text style={{
+                    backgroundColor: "transparent", alignSelf: "center",
+                    paddingLeft: 5,
+                    textAlign: 'left', color: "#fff", fontSize: 30,marginTop: 10
+                }}>{wfhAssigned}</Text>
+
+
 
             </LinearGradient>
         );
@@ -249,6 +270,32 @@ class WfhView extends Component {
         }
     };
 
+    applyForWorkFromHome = () => {
+        this.props.dispatch(WfhState.showApplyButton(false));
+        this.props.dispatch(WfhState.toggleProgress(true));
+        //dispatch(WfhState.reset())
+        Api.applyforWfh(cakeHrId, this.props.fromDateText, this.props.toDateText, this.props.partOfDay, "Test Work From Home").then(
+            (resp) => {
+                console.log(resp);
+                if (resp.result.error) {
+                    ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                    //this.props.dispatch(WfhState.showError(resp.result.error));         
+                } else {
+                    ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                    //this.props.dispatch(WfhState.showSuccess(resp.result.success));
+                }
+                this.props.dispatch(WfhState.showApplyButton(true));
+                this.props.dispatch(WfhState.toggleProgress(false))
+
+            }
+        ).catch((e) => {
+            ToastAndroid.showWithGravity("There was some error", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            //this.props.dispatch(WfhState.showError(e));         
+            this.props.dispatch(WfhState.showApplyButton(true));
+            this.props.dispatch(WfhState.toggleProgress(false))
+        });
+    };
+
 }
 
 
@@ -257,14 +304,6 @@ const onSelectDayClicked = (dispatch) => {
     //dispatch(WfhState.showNumberOfDaysPicker(true));
 };
 
-const applyForWfh = (dispatch) => {
-    dispatch(WfhState.showApplyButton(false));
-    dispatch(WfhState.toggleProgress(true));
-    //dispatch(WfhState.reset());
-
-    
-
-};
 
 
 

@@ -87,14 +87,14 @@ export function reset() {
     };
 }
 
-export function loginError(errorMessage) {
+export function showError(errorMessage) {
     return {
         type: APPLY_ERROR,
         payload: errorMessage
     };
 }
 
-export function loginSuccess(successMessage) {
+export function showSuccess(successMessage) {
     return {
         type: APPLY_SUCCESS,
         payload: successMessage

@@ -3,7 +3,7 @@ import RealmDatabse from '../database/RealmDatabase';
 
 let userName = RealmDatabse.findUser()[0];
 
-export async function createUser(slackId, firstName, deviceToken, profileImage,email) {
+export async function createUser(slackId, firstName, deviceToken, profileImage, email) {
     let userobj = {
         "slackId": slackId,
         "email": email,
@@ -12,8 +12,8 @@ export async function createUser(slackId, firstName, deviceToken, profileImage,e
         "profileImage": profileImage
     };
     try {
-      const resp = await api.post("https://dc-office.herokuapp.com/api/v1/users", userobj, true);
-      return resp;
+        const resp = await api.post("https://dc-office.herokuapp.com/api/v1/users", userobj, true);
+        return resp;
     }
     catch (error) {
         throw error;
@@ -24,7 +24,7 @@ export async function checkinUser() {
 
     let timelineObj = {
         user: userName.serverId,
-        description: userName.name+" checked in successfully",
+        description: userName.name + " checked in successfully",
         type: "checkin"
     };
     try {
@@ -40,7 +40,7 @@ export async function checkoutUser() {
 
     let timelineObj = {
         user: userName.serverId,
-        description: userName.name+" checked out successfully",
+        description: userName.name + " checked out successfully",
         type: "checkout"
     };
     try {
@@ -55,7 +55,7 @@ export async function checkoutUser() {
 export async function getLastCheckinCheckout(type) {
 
     try {
-        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?type="+type+"&user="+userName.serverId+"&limit=1&sort=createdAt DESC", true);
+        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?type=" + type + "&user=" + userName.serverId + "&limit=1&sort=createdAt DESC", true);
         return resp;
     }
     catch (error) {
@@ -65,7 +65,7 @@ export async function getLastCheckinCheckout(type) {
 
 export async function getUserTimeline(page) {
     try {
-        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&limit=10&skip="+page, true);
+        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user=" + userName.serverId + "&limit=10&skip=" + page, true);
         return resp;
     }
     catch (error) {
@@ -75,7 +75,7 @@ export async function getUserTimeline(page) {
 
 export async function getLeavesDetails() {
     try {
-        const resp = await api.get("https://dc-office.herokuapp.com/api/cakehr/getUserDetails?user="+userName.serverId, true);
+        const resp = await api.get("https://dc-office.herokuapp.com/api/cakehr/getUserDetails?user=" + userName.serverId, true);
         return resp;
     }
     catch (error) {
@@ -83,17 +83,47 @@ export async function getLeavesDetails() {
     }
 }
 
-export async function applyforLeave(cakeHrId,from,to,day_part,message) {
+export async function applyforLeave(cakeHrId, from, to, day_part, message) {
     let leaveBody = {
-        "cakehr_id" : cakeHrId,
-        "timeoff_id" : "9931",
-        "from" : from,//"2023-7-04",
-        "to" :   to,//"2023-7-04",
-        "day_part" : day_part,
-        "message" : message
+        "cakehr_id": cakeHrId,
+        "timeoff_id": "9931",
+        "from": from,//"2023-7-04",
+        "to": to,//"2023-7-04",
+        "day_part": day_part,
+        "message": message
     };
     try {
-        const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff",leaveBody, true);
+        const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff", leaveBody, true);
+        return resp;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+export async function applyforWfh(cakeHrId, from, to, day_part, message) {
+    
+    if(day_part === "First Half"){
+        day_part = 1;
+    }else{
+        day_part = 2;
+    }
+
+    var fromSplit = from.split('/');
+    fromSplit = fromSplit[2]+"-"+fromSplit[0]+"-"+fromSplit[1];
+    var toSplit = to.split('/');
+    toSplit = toSplit[2]+"-"+toSplit[0]+"-"+toSplit[1];
+
+    let leaveBody = {
+        "cakehr_id": cakeHrId,
+        "timeoff_id": "10019",
+        "from": fromSplit,//"2023-7-04",
+        "to": toSplit,//"2023-7-04",
+        "day_part": day_part,
+        "message": message
+    };
+    try {
+        const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff", leaveBody, true);
         return resp;
     }
     catch (error) {
