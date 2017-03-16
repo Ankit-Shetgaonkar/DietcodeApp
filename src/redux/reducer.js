@@ -24,7 +24,8 @@ const reducers = {
 
     dashboardState: DashboardStateReducer,
 
-    wfhState: WfhStateReducer
+    wfhState: WfhStateReducer,
+    
     leavesState: LeavesStateReducer,
 
     timelineState: TimelineStateReducer

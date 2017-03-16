@@ -47,11 +47,6 @@ export function setPaidUnpaid(paid) {
     };
 }
 
-export function setHowManyDays(days) {
-    return {
-        type: HOW_MANY_DAYS
-    };
-}
 
 export function togglefullDayPicker() {
     return {
