@@ -229,6 +229,7 @@ class TimelineView extends Component {
                 <View style={styles.timelineListContainer}>
                     <ListView
                         {...dtaSource}
+                        enableEmptySections={true}
                         renderRow={(rowData) => <View style={{flex: 1, flexDirection: 'row'}}>
                                                 <View style={{flex: .2, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
                                                     <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
