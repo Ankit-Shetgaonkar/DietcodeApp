@@ -13,6 +13,8 @@ export default connect(
         toDateText: state.getIn(["wfhState","toDateText"]),
         isSingleDay: state.getIn(["wfhState","isSingleDay"]),
         partOfDay: state.getIn(["wfhState","partOfDay"]),
+        usedLeaves: state.getIn(["wfhState","usedLeaves"]),
+        remainingLeaves: state.getIn(["wfhState","remainingLeaves"]),
         showNumberOfDaysPicker: state.getIn(["wfhState","showNumberOfDaysPicker"])
     })
 )(WfhView);

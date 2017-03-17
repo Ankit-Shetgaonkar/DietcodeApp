@@ -10,6 +10,8 @@ export const UPDATE_FROM_DATE = "wfnState/UPDATE_FROM_DATE";
 export const UPDATE_TO_DATE = "wfnState/UPDATE_TO_DATE";
 export const NUMBER_OF_DAYS = "wfnState/NUMBER_OF_DAYS";
 export const PART_OF_DAY = "wfnState/PART_OF_DAY";
+export const USED_LEAVES = "wfnState/USED_LEAVES";
+export const REMAINING_LEAVES = "wfnState/REMAINING_LEAVES";
 
 export const [FULL_DAY, FIRST_HALF, SECOND_HALF] = ['Full Day', 'First Half', 'Second Half'];
 
@@ -25,7 +27,9 @@ const initialState = fromJS({
     toDate: new Date(),
     toDateText: 'To Date',
     isSingleDay: true,
-    partOfDay: FULL_DAY
+    partOfDay: FULL_DAY,
+    usedLeaves: "0",
+    remainingLeaves: "24"
 });
 
 
@@ -48,11 +52,11 @@ export function updateToDate(date) {
 
 export function updateNumberOfDays(day) {
     var isSingle = true;
-    if(day != "One Day"){
-        isSingle = false; 
+    if (day != "One Day") {
+        isSingle = false;
     }
 
-    console.log("Is Single "+isSingle);
+    console.log("Is Single " + isSingle);
     return {
         type: NUMBER_OF_DAYS,
         payload: isSingle
@@ -108,13 +112,27 @@ export function showApplyButton(isButtonVisible) {
     };
 }
 
+export function updateUsedLeaves(usedLeaves) {
+    return {
+        type: USED_LEAVES,
+        payload: usedLeaves
+    };
+}
+
+export function updateRemainingLeaves(reaminingLeaves) {
+    return {
+        type: REMAINING_LEAVES,
+        payload: reaminingLeaves
+    };
+}
+
 
 // Reducer
 export default function WfhStateReducer(state = initialState, action = {}) {
     switch (action.type) {
         case RESET:
             return state.set(initialState);
-            
+
         case SHOW_PROGRESS:
             return state.set("showProgress", action.payload);
 
@@ -143,6 +161,12 @@ export default function WfhStateReducer(state = initialState, action = {}) {
 
         case PART_OF_DAY:
             return state.set("partOfDay", action.payload);
+
+        case USED_LEAVES:
+            return state.set("usedLeaves", action.payload);
+
+        case REMAINING_LEAVES:
+            return state.set("remainingLeaves", action.payload);
 
         default:
             return state;

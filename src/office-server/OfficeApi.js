@@ -110,9 +110,12 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     }
 
     var fromSplit = from.split('/');
-    fromSplit = fromSplit[2]+"-"+fromSplit[0]+"-"+fromSplit[1];
+
+
+    fromSplit = "2017"+"-"+fromSplit[0]+"-"+fromSplit[1];
     var toSplit = to.split('/');
-    toSplit = toSplit[2]+"-"+toSplit[0]+"-"+toSplit[1];
+    toSplit = "2017"+"-"+toSplit[0]+"-"+toSplit[1];
+    alert(fromSplit + "  "+ toSplit);
 
     let leaveBody = {
         "cakehr_id": cakeHrId,

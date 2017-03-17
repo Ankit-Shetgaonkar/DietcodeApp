@@ -45,6 +45,8 @@ class WfhView extends Component {
         toDateText: PropTypes.string.isRequired,
         isSingleDay: PropTypes.bool.isRequired,
         partOfDay: PropTypes.string.isRequired,
+        usedLeaves: PropTypes.string.isRequired,
+        remainingLeaves: PropTypes.string.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
@@ -55,12 +57,24 @@ class WfhView extends Component {
             wfhUsed = resp.result.cakeHR.custom_types_data['10019'].used;
             wfhAssigned = resp.result.cakeHR.custom_types_data['10019'].assigned;
             console.log("Cake hr " + cakeHrId);
+             this.props.dispatch(WfhState.updateUsedLeaves(wfhUsed));
+            this.props.dispatch(WfhState.updateRemainingLeaves(wfhAssigned));
         }).catch((e) => {
             console.log(e);
         });
     }
 
     render() {
+
+        Api.getLeavesDetails().then((resp) => {
+            console.log(resp);
+            cakeHrId = resp.result.cakeHR.id;
+            wfhUsed = resp.result.cakeHR.custom_types_data['10019'].used;
+            wfhAssigned = resp.result.cakeHR.custom_types_data['10019'].assigned;
+            console.log("Cake hr " + cakeHrId);
+        }).catch((e) => {
+            console.log(e);
+        });
 
         return (
             <LinearGradient
@@ -225,13 +239,13 @@ class WfhView extends Component {
                     backgroundColor: "transparent", alignSelf: "center",
                     paddingLeft: 5,
                     textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 100,
-                }}>{wfhUsed}</Text>
+                }}>{this.props.usedLeaves} Used</Text>
 
                 <Text style={{
                     backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5,
-                    textAlign: 'left', color: "#fff", fontSize: 30,marginTop: 10
-                }}>{wfhAssigned}</Text>
+                    paddingLeft: 5, 
+                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 10
+                }}>{this.props.remainingLeaves}  Total</Text>
 
 
 
@@ -271,29 +285,46 @@ class WfhView extends Component {
     };
 
     applyForWorkFromHome = () => {
+
+
         this.props.dispatch(WfhState.showApplyButton(false));
         this.props.dispatch(WfhState.toggleProgress(true));
-        //dispatch(WfhState.reset())
-        Api.applyforWfh(cakeHrId, this.props.fromDateText, this.props.toDateText, this.props.partOfDay, "Test Work From Home").then(
-            (resp) => {
-                console.log(resp);
-                if (resp.result.error) {
-                    ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-                    //this.props.dispatch(WfhState.showError(resp.result.error));         
-                } else {
-                    ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-                    //this.props.dispatch(WfhState.showSuccess(resp.result.success));
+
+
+        Api.getLeavesDetails().then((resp) => {
+            console.log(resp);
+            cakeHrId = resp.result.cakeHR.id;
+            wfhUsed = resp.result.cakeHR.custom_types_data['10019'].used;
+            wfhAssigned = resp.result.cakeHR.custom_types_data['10019'].assigned;
+            console.log("Cake hr " + cakeHrId);
+
+            this.props.dispatch(WfhState.updateUsedLeaves(wfhUsed));
+            this.props.dispatch(WfhState.updateRemainingLeaves(wfhAssigned));
+
+            Api.applyforWfh(cakeHrId, this.props.fromDateText, this.props.toDateText, this.props.partOfDay, "Test Work From Home").then(
+                (resp) => {
+                    console.log(resp);
+                    if (resp.result.error) {
+                        ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        //this.props.dispatch(WfhState.showError(resp.result.error));         
+                    } else {
+                        ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        //this.props.dispatch(WfhState.showSuccess(resp.result.success));
+                    }
+                    this.props.dispatch(WfhState.showApplyButton(true));
+                    this.props.dispatch(WfhState.toggleProgress(false))
+
                 }
+            ).catch((e) => {
+                ToastAndroid.showWithGravity("There was some error", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                //this.props.dispatch(WfhState.showError(e));         
                 this.props.dispatch(WfhState.showApplyButton(true));
                 this.props.dispatch(WfhState.toggleProgress(false))
-
-            }
-        ).catch((e) => {
-            ToastAndroid.showWithGravity("There was some error", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-            //this.props.dispatch(WfhState.showError(e));         
-            this.props.dispatch(WfhState.showApplyButton(true));
-            this.props.dispatch(WfhState.toggleProgress(false))
+            });
+        }).catch((e) => {
+            console.log(e);
         });
+        //dispatch(WfhState.reset())
     };
 
 }
