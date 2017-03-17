@@ -4,9 +4,11 @@ import TimelineView from './TimelineView';
 export default connect(
     function(state){
        return {
-           lastCheckin: state.getIn(["timelineState","lastCheckin"]),
-           errorMessage: state.getIn(["timelineState","errorMessage"]),
-           lastCheckout: state.getIn(["timelineState","lastCheckout"]),
-           checkin: state.getIn(["timelineState","checkin"])
+           timeLineState: state.get('timelineState').toJS()
+           // lastCheckin: state.getIn(["timelineState","lastCheckin"]),
+           // errorMessage: state.getIn(["timelineState","errorMessage"]),
+           // lastCheckout: state.getIn(["timelineState","lastCheckout"]),
+           // timelineData: state.getIn(["timelineState","timelineData"]),
+           // checkin: state.getIn(["timelineState","checkin"])
        };
     })(TimelineView);

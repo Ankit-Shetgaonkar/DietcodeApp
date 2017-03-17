@@ -72,6 +72,15 @@ export default function LeavesStateReducer(state = initialState, action) {
         case SHOW_PAID_PICKER: {
             return state.set('showPaidPicker',!state.get('showPaidPicker'));
         }
+        case HOW_MANY_DAYS: {
+            return state.set('howManyDays',action.payload);
+        }
+        case HALF_DAY_FULL_DAY: {
+            return state.set('halfDayFullDay',action.payload);
+        }
+        case PAID_UNPAID: {
+            return state.set('paidUnpaid',action.payload);
+        }
 
         default:
             return state;
