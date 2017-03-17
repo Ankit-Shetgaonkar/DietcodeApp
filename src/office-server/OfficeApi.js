@@ -65,7 +65,7 @@ export async function getLastCheckinCheckout(type) {
 
 export async function getUserTimeline(page) {
     try {
-        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&limit=10&skip="+page, true);
+        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&&sort=createdAt DESC&limit=20&skip="+page, true);
         return resp;
     }
     catch (error) {
