@@ -63,11 +63,17 @@ export async function getLastCheckinCheckout(type) {
     }
 }
 
-export async function getUserTimeline(page) {
+export async function getUserTimeline(page, userObject) {
     try {
-        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&&sort=createdAt DESC&limit=20&skip="+page, true);
+        if (typeof userObject != 'undefined') {
+            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userObject.serverId+"&&sort=createdAt DESC&limit=20&skip="+page, true);
+            return resp;
 
-        return resp;
+        } else {
+            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+RealmDatabse.findUser()[0].serverId+"&&sort=createdAt DESC&limit=20&skip="+page, true);
+            return resp;
+        }
+
     }
     catch (error) {
         throw error;
