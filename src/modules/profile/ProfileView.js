@@ -1,25 +1,31 @@
 'use strict';
 
-import React, { PropTypes, Components } from 'react';
+import React, { PropTypes, Component } from 'react';
 import {
     Image,
     Text,
     View,
     ActivityIndicator,
-    StyleSheet
+    StyleSheet, 
+    Platform,
+    Dimensions
 } from 'react-native';
+
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import RealmDatabse from '../../database/RealmDatabase';
 
-const { devReady, inProgress, completed } = {devReady:'DEV READY', inProgress:'IN PROGRESS', completed:'COMPLETED'};
+const devReady = 'DEV READY';
+const inProgress = 'IN PROGRESS';
+const completed = 'COMPLETED';
 const monthlyHours = 160;
 
-class ProfileView extends Components {
+class ProfileView extends Component {
 
     static displayName = 'ProfileView'
 
+    // specified prop(s) are not in use as of now!!
     static propTypes = {
         // username: PropTypes.string.isRequired,
         // description: PropTypes.string.isRequired,
@@ -33,71 +39,77 @@ class ProfileView extends Components {
 
     render() {
         const userObj = RealmDatabse.findUser()[0];
-        // const percentageHours = ((hours/monthlyHours)*100) > 0 ? ((hours/monthlyHours)*100) : 0;
+        console.log('HEIGHT: ' + Dimensions.get('window').height + ' WIDTH: ' + Dimensions.get('window').width);
         return (
             <View style={styles.baseContainer}>
-                <linearGradient 
-                start={[0.0, 0.0]}
-                end={[1.0, 1.0]}
-                style={styles.linearGradient} 
-                colors={['#48E2FF', '#508FF5', '#5933EA']} 
-                locations={[0.0, 0.5, 1.0]}>
-                    <View style={styles.topContainer}>
-                        <Image style={styles.image} source={{ uri: 'http://www.free-avatars.com/data/media/37/cat_avatar_0597.jpg' }} />
-                        <Text style={styles.headingText}>userObj.name</Text>
-                        <Text style={styles.descriptionText}>userObj.email</Text>
-                    </View>
-                    <View style={styles.bottomContainer}>
-                        <View style={styles.holderContainer}>
-                            <Projects details={{type=devReady, count=0}} />
-                            <Projects details={{type=inProgress, count=0}} />
-                            <Projects details={{type=completed, count=0}} />
-                        </View>
-                        <AnimatedCircularProgress
-                            size={( Dimensions.get('window') - (Dimensions.get('window')/4) )}
-                            width={4}
-                            fill={percentageHours}
-                            tintColor="#ff1493"
-                            backgroundColor="#00bfff">
-                            {
-                               (percentageHours) => (
-                                 <Text style={styles.textPoints}>
-                                    { percentageHours }
-                                  </Text>
-                                )
-                              }
-                        </AnimatedCircularProgress>
-                    </View>
-                </linearGradient>
+                <LinearGradient
+                    start={{x: 0.0, y: 0.0}}
+                    end={{x: 1.0, y: 1.0}}
+                    style={styles.linearGradientShadow} 
+                    colors={['#48E2FF', '#508FF5', '#5933EA']} 
+                    locations={[0.0, 0.5, 1.0]}>
+                        <View style={styles.topContainer}>
+                            <Image style={ styles.image } source={{ uri: userObj.image_link }}/>
+                            <Text style={styles.headingText}>{userObj.name}</ Text>
+                            <Text style={styles.descriptionText}>{userObj.email}</ Text>
+                        </ View>
+                    </LinearGradient>
+
+                    <LinearGradient
+                    start={{x: 0.0, y: 0.0}}
+                    end={{x: 1.0, y: 1.0}}
+                    style={styles.linearGradient} 
+                    colors={['#48E2FF', '#508FF5', '#5933EA']} 
+                    locations={[0.0, 0.5, 1.0]}>
+                        <View style={styles.bottomContainer}>
+                            <View style={styles.rowContainer}>
+                                    <View style={styles.holderContainer}>
+                                        <Icon size={15} color='#ff1493' name={"circle-o"} style={styles.iconStyle} />
+                                        <Text style={styles.baseText}>{0}</Text>
+                                        <Text style={styles.baseText}>{devReady}</Text>
+                                    </View>
+                                    <View style={styles.holderContainer}>
+                                        <Icon size={15} color='#ff8c00' name={"circle-o"} style={styles.iconStyle} />
+                                        <Text style={styles.baseText}>{0}</Text>
+                                        <Text style={styles.baseText}>{inProgress}</Text>
+                                    </View>
+                                    <View style={styles.holderContainer}>
+                                        <Icon size={15} color='#008000' name={"circle-o"} style={styles.iconStyle} />
+                                        <Text style={styles.baseText}>{0}</Text>
+                                        <Text style={styles.baseText}>{completed}</Text>
+                                    </View>
+                            </View>
+                            <View style={styles.baseContainer}> 
+                                <AnimatedCircularProgress
+                                    style={{marginTop:20, alignItems:'center'}}
+                                    size={200}
+                                    width={4}
+                                    fill={100}
+                                    tintColor="#00e0ff"
+                                    backgroundColor="#3d5875">
+                                    {
+                                        () => (
+                                        <Text style={styles.headingText}>
+                                            100%
+                                        </Text>
+                                        )
+                                    }
+                                </ AnimatedCircularProgress>
+                            </View>
+                        </ View>
+                    </LinearGradient>
             </View>
         );
     }
 }
 
-function Projects(details) {
-    var colors = '#ffffff'
-    if (details.type === devReady) {
-        colors = '#ff1493'
-    } else if (details.type === inProgress) {
-        colors = '#ff8c00'
-    } else if (details.type === completed) {
-        colors = '#008000'
-    }
-        return (
-                <View style={styles.standardContainer}>
-                    <Icon size={10} color={colors} name="circle-o" style={styles.iconStyle} />
-                    <Text style={styles.headingText}>details.type</Text>
-                    <Text style={styles.headingText}>details.count</Text>
-                </View>
-            );
-    }
-
 const styles = StyleSheet.create({
         image: {
-            height: 60,
-            width: height,
-            borderRadius: height/2,
-            marginTop: 10
+            height: 100,
+            width: 100,
+            borderRadius: 100/2,
+            marginTop: 20,
+            backgroundColor: 'transparent'
         },
         standardContainer: {
             flex: 1,
@@ -106,30 +118,25 @@ const styles = StyleSheet.create({
         },
         baseContainer: {
             flex: 1,
-            backgroundColor: '#000000',
-            marginTop: 50
+            backgroundColor: 'transparent'
         },
         topContainer: {
             flex: 1,
             alignItems: 'center',
-            shadowColor: '#000000',
-            shadowOffset: {
-                width: 5,
-                height: 0
-            },
-            shadowOpacity: 0.7
+            backgroundColor: 'transparent'
         },
         bottomContainer: {
             flex: 2,
-            alignItems: 'center'
+            backgroundColor: 'transparent',
+            flexDirection: 'column'
         },
-        holderContainer: {
-            marginTop: 15,
-            marginLeft: 8,
-            marginRight: 8,
-            flexDiection: 'row',
-            alignItems: 'center',
-            backgroundColor: '#000000'
+        rowContainer: {
+            flexDirection: 'row',
+            marginTop: 15, 
+            justifyContent: 'space-between',
+            marginLeft: 16,
+            marginRight: 16,
+            marginBottom: 16
         },
         gradient: {
             paddingLeft: 10,
@@ -139,29 +146,56 @@ const styles = StyleSheet.create({
             marginTop: 15,
             textAlign: 'center',
             color: '#ffffff',
-            fontSize: 20
+            fontSize: 24,
+            backgroundColor:"transparent",
+            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
         },
         descriptionText: {
-            marginTop: 15,
+            marginBottom: 15,
             textAlign: 'center',
             color: '#ffffff',
-            fontSize: 14,
-            ellipsizeMode: 'middle',
-            numberOfLines: 2
+            fontSize: 16,
+            backgroundColor:"transparent",
+            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
         },
         linearGradient: {
-            backgroundColor:"#000000",
-            paddingLeft: 10,
-            paddingRight: 10
+            flex: 1,
+            elevation: 5,
+            backgroundColor: "transparent"
+        },
+        linearGradientShadow: {
+            height: 200,
+            elevation: 5,
+            shadowColor: '#000000',
+            shadowOffset: {
+                width: 10,
+                height: 0
+            },
+            shadowOpacity: 0.7,
+            backgroundColor: 'transparent'
         },
         iconStyle: {
             alignSelf:"center",
-            marginTop:5
+            marginTop:5,
+            marginBottom: 10,
+            backgroundColor: 'transparent'
         },
         textPoints: {
             color: '#ffffff',
             textAlign: 'center',
             fontSize: 26
+        },
+        baseText: {
+            textAlign: 'center',
+            color: '#ffffff',
+            fontSize: 14,
+            backgroundColor:"transparent",
+            marginBottom: 4,
+            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+        },
+        holderContainer: {
+            backgroundColor: 'transparent',
+            alignItems: 'center'
         }
     });
 

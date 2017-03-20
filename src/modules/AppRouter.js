@@ -4,9 +4,10 @@ import React from 'react';
 import CounterViewContainer from './counter/CounterViewContainer';
 import ColorViewContainer from './colors/ColorViewContainer';
 import {Text,View} from 'react-native';
-import TimeLineContainer from './timeline/TimelineViewContainer'
-import LeavesContainer from './leaves/LeavesContainer'
-import * as wfh from './wfh/WfhView'
+import TimeLineContainer from './timeline/TimelineViewContainer';
+import LeavesContainer from './leaves/LeavesContainer';
+import * as wfh from './wfh/WfhView';
+import ProfileView from './profile/ProfileView';
 
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
@@ -18,7 +19,7 @@ export default function AppRouter(props,switchTabs) {
   if (key === 'Dashboard') {
     return <TimeLineContainer switchTab = {switchTabs} />;
   }else if (key === 'Profile') {
-    return <Text >Profile</Text>;
+    return <ProfileView />;
   }else if (key === 'Leaves') {
     return <LeavesContainer switchTab = {switchTabs} />;
   }else if (key === 'WorkFromHome') {
