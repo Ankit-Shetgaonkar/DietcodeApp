@@ -84,13 +84,13 @@ class ProfileView extends Component {
                                     style={{marginTop:20, alignItems:'center'}}
                                     size={200}
                                     width={4}
-                                    fill={100}
+                                    fill={80}
                                     tintColor="#00e0ff"
                                     backgroundColor="#3d5875">
                                     {
                                         () => (
                                         <Text style={styles.headingText}>
-                                            100%
+                                            80%
                                         </Text>
                                         )
                                     }
