@@ -9,7 +9,7 @@ import TimeLineView from './timeline/TimelineView'
 import TimeLineContainer from './timeline/TimelineViewContainer'
 import LeavesContainer from './leaves/LeavesContainer'
 import * as wfh from './wfh/WfhView'
-import ProfileView from './ProfileView';
+import ProfileView from './profile/ProfileView';
 
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
