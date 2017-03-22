@@ -3,6 +3,11 @@ import RealmDatabse from '../database/RealmDatabase';
 
 let userName = RealmDatabse.findUser()[0];
 
+export function setUserName(userName1) {
+    console.log("set user name ", userName);
+    userName = userName1;
+}
+
 export async function createUser(slackId, firstName, deviceToken, profileImage, email) {
     let userobj = {
         "slackId": slackId,
@@ -53,28 +58,22 @@ export async function checkoutUser() {
 }
 
 export async function getLastCheckinCheckout(type) {
-
-    try {
-        const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?type=" + type + "&user=" + userName.serverId + "&limit=1&sort=createdAt DESC", true);
-        return resp;
-    }
-    catch (error) {
-        throw error;
+    if (typeof userName != 'undefined' && typeof userName.serverId != "undefined") {
+        try {
+            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?type=" + type + "&user=" + userName.serverId + "&limit=1&sort=createdAt DESC", true);
+            return resp;
+        }
+        catch (error) {
+            throw error;
+        }
     }
 }
 
-export async function getUserTimeline(page, userObject) {
+export async function getUserTimeline() {
     try {
-        if (typeof userObject != 'undefined') {
-            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userObject.serverId+"&&sort=createdAt DESC&limit=20&skip="+0, true);
+            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&&sort=createdAt DESC&limit=20&skip="+0, true);
             return resp;
-
-        } else {
-            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+RealmDatabse.findUser()[0].serverId+"&&sort=createdAt DESC&limit=20&skip="+0, true);
-            return resp;
-        }
-
-    }
+        } 
     catch (error) {
         throw error;
     }

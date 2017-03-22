@@ -86,6 +86,7 @@ async function createUser(token){
                 };
 
                 RealmDatabse.saveUser(newObject);
+                officeApi.setUserName(newObject);
                 return newObject
             })
             .catch((err)=>{
@@ -128,7 +129,8 @@ class TimelineView extends Component {
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                 //console.log("going to call timeline ",resp)
-                officeApi.getUserTimeline(1, RealmDatabse.findUser()[0])
+                officeApi.setUserName(RealmDatabse.findUser()[0])
+                officeApi.getUserTimeline()
                 .then((resp)=>{
                     //console.log(resp);
                     console.log("constuctor get timeline data")
@@ -187,7 +189,7 @@ class TimelineView extends Component {
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
                                                             dispatch(TimeLineStateActions.checkUserToggle());
-                                                            officeApi.getUserTimeline(1, RealmDatabse.findUser()[0])
+                                                            officeApi.getUserTimeline()
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                                                             })
@@ -203,7 +205,7 @@ class TimelineView extends Component {
                                                         officeApi.checkoutUser()
                                                         .then((resp)=>{
                                                            dispatch(TimeLineStateActions.checkUserToggle());
-                                                           officeApi.getUserTimeline(1, RealmDatabse.findUser()[0])
+                                                           officeApi.getUserTimeline()
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                                                             })
@@ -288,7 +290,9 @@ class TimelineView extends Component {
 
         officeApi.getLastCheckinCheckout("checkin")
             .then((resp)=>{
-                dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                }
             })
             .catch((err)=>{
                 console.log(err);
@@ -297,7 +301,9 @@ class TimelineView extends Component {
 
         officeApi.getLastCheckinCheckout("checkout")
             .then((resp)=>{
-                dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                }
             })
             .catch((err)=>{
                 console.log(err);
