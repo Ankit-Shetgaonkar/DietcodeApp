@@ -66,11 +66,11 @@ export async function getLastCheckinCheckout(type) {
 export async function getUserTimeline(page, userObject) {
     try {
         if (typeof userObject != 'undefined') {
-            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userObject.serverId+"&&sort=createdAt DESC&limit=20&skip="+page, true);
+            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+userObject.serverId+"&&sort=createdAt DESC&limit=20&skip="+0, true);
             return resp;
 
         } else {
-            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+RealmDatabse.findUser()[0].serverId+"&&sort=createdAt DESC&limit=20&skip="+page, true);
+            const resp = await api.get("https://dc-office.herokuapp.com/api/v1/timelines?user="+RealmDatabse.findUser()[0].serverId+"&&sort=createdAt DESC&limit=20&skip="+0, true);
             return resp;
         }
 
