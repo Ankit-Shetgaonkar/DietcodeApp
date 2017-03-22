@@ -116,7 +116,7 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     fromSplit = "2017"+"-"+fromSplit[0]+"-"+fromSplit[1];
     var toSplit = to.split('/');
     toSplit = "2017"+"-"+toSplit[0]+"-"+toSplit[1];
-    alert(fromSplit + "  "+ toSplit);
+
 
     let leaveBody = {
         "cakehr_id": cakeHrId,
