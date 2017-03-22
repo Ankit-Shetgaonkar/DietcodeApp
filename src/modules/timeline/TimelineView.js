@@ -71,19 +71,14 @@ function _getDayOfWeek(day) {
 }
 
 
-
-function createUser(token){
-
-    console.log("create new user in server");
-
+async function createUser(token){
     if(!RealmDatabse.findUser().length >0){
         return;
     }
-
     if(!RealmDatabse.findUser()[0].serverId){
         let userObj = RealmDatabse.findUser()[0];
 
-        officeApi.createUser(userObj.id,userObj.name,token,userObj.image_link,userObj.email)
+        await officeApi.createUser(userObj.id,userObj.name,token,userObj.image_link,userObj.email)
             .then((resp)=>{
                 let newObject = {
                     ...userObj,
@@ -91,12 +86,16 @@ function createUser(token){
                 };
 
                 RealmDatabse.saveUser(newObject);
+                officeApi.setUserName(newObject);
+                return newObject
             })
             .catch((err)=>{
                 console.log(JSON.stringify(err));
+                throw err;
             });
-    }else{
+    }else{ 
             console.log(RealmDatabse.findUser()[0].serverId);
+            return RealmDatabse.findUser()[0]
     }
 }
 
@@ -127,15 +126,27 @@ class TimelineView extends Component {
 
     constructor() {
         super();
-
-        officeApi.getUserTimeline(1)
-            .then((resp)=>{
-                console.log(resp);
-                this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+        auth.getAuthenticationToken().then((resp)=>{
+            createUser(resp).then((resp) => {
+                //console.log("going to call timeline ",resp)
+                officeApi.setUserName(RealmDatabse.findUser()[0])
+                officeApi.getUserTimeline()
+                .then((resp)=>{
+                    //console.log(resp);
+                    console.log("constuctor get timeline data")
+                    this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                })
+                .catch((err)=>{
+                    console.log(err);
+                });
             })
             .catch((err)=>{
                 console.log(err);
             });
+        }).catch((err)=>{
+            console.log("Cannot find authentication token: "+err);
+        });
+        
     }
 
     render() {
@@ -153,12 +164,6 @@ class TimelineView extends Component {
         var day = today.getDay();
         var mm = _getMonthInString(today.getMonth()+1); //January is 0!
         var yyyy = today.getFullYear();
-
-        auth.getAuthenticationToken().then((resp)=>{
-            createUser(resp);
-        }).catch((err)=>{
-            console.log("Cannot find authentication token: "+err);
-        });
 
         return (
             <View style={styles.container}>
@@ -184,6 +189,13 @@ class TimelineView extends Component {
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
                                                             dispatch(TimeLineStateActions.checkUserToggle());
+                                                            officeApi.getUserTimeline()
+                                                            .then((resp)=>{
+                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                                                            })
+                                                            .catch((err)=>{
+                                                                console.log(err);
+                                                            });
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -193,6 +205,13 @@ class TimelineView extends Component {
                                                         officeApi.checkoutUser()
                                                         .then((resp)=>{
                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                           officeApi.getUserTimeline()
+                                                            .then((resp)=>{
+                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                                                            })
+                                                            .catch((err)=>{
+                                                                console.log(err);
+                                                            });
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -271,7 +290,9 @@ class TimelineView extends Component {
 
         officeApi.getLastCheckinCheckout("checkin")
             .then((resp)=>{
-                dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                }
             })
             .catch((err)=>{
                 console.log(err);
@@ -280,7 +301,9 @@ class TimelineView extends Component {
 
         officeApi.getLastCheckinCheckout("checkout")
             .then((resp)=>{
-                dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length>0?this._getHumanReadableTime(resp.results[0].createdAt):"not found"));
+                }
             })
             .catch((err)=>{
                 console.log(err);
