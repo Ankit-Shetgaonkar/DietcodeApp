@@ -90,14 +90,46 @@ export async function getLeavesDetails() {
 }
 
 export async function applyforLeave(cakeHrId, from, to, day_part, message) {
-    let leaveBody = {
+   
+    if(day_part === "First Half"){
+        day_part = 1;
+    }else if (day_part === "Second Half"){
+        day_part = 2;
+    }else{
+           day_part = 0;
+    }
+
+    var fromSplit = from.split('/');
+
+
+    fromSplit = "2017"+"-"+fromSplit[0]+"-"+fromSplit[1];
+    var toSplit = to.split('/');
+    toSplit = "2017"+"-"+toSplit[0]+"-"+toSplit[1];
+    //alert(fromSplit + "  "+ toSplit);
+let leaveBody ;
+if((fromSplit == toSplit) && ((day_part == 1)||(day_part == 2))){
+         console.log("inside");
+ leaveBody = {
+
         "cakehr_id": cakeHrId,
         "timeoff_id": "9931",
         "from": from,//"2023-7-04",
         "to": to,//"2023-7-04",
         "day_part": day_part,
+        "hours" : 4,
         "message": message
     };
+}else{
+         console.log("outside");
+ leaveBody = {
+        "cakehr_id": cakeHrId,
+        "timeoff_id": "9931",
+        "from": from,//"2023-7-04",
+        "to": to,//"2023-7-04",
+        "message": message
+         };
+}
+  
     try {
         const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff", leaveBody, true);
         return resp;
