@@ -4046,6 +4046,10 @@ react-native-mock@~0.2.5:
     react-timer-mixin "^0.13.3"
     warning "^2.1.0"
 
+react-native-modal-dropdown@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/react-native-modal-dropdown/-/react-native-modal-dropdown-0.4.2.tgz#a4223823d0aa04eb45c451ded429845c25d62fd3"
+
 react-native-oauth@^2.1.16:
   version "2.1.16"
   resolved "https://registry.yarnpkg.com/react-native-oauth/-/react-native-oauth-2.1.16.tgz#0f0bebf99d162d24d5e102fd7172b66c959b493c"

@@ -121,6 +121,7 @@ class TimelineView extends Component {
         // errorMessage: PropTypes.string.isRequired,
         // lastCheckout: PropTypes.string.isRequired,
         // checkin:PropTypes.bool.isRequired,
+        switchTab: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
@@ -270,6 +271,9 @@ class TimelineView extends Component {
                 <ActionButton buttonColor="rgba(231,76,60,1)"
                               verticalOrientation={Platform.OS === 'ios' ? "down":"up"}
                               offsetX = {30}
+                              onPress={()=>{
+                                    console.log("OH FUCK!!!");
+                              }}
                               offsetY = {Platform.OS === 'ios' ? 210:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"

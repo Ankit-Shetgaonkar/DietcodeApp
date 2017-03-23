@@ -248,7 +248,7 @@ class LeavesView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateFromDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
@@ -263,7 +263,7 @@ class LeavesView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateToDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     }, baseContainer: {
         flex: 1,
         backgroundColor: 'transparent'
-    },
+    }
 });
 
 export default LeavesView;
