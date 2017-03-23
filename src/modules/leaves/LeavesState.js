@@ -1,86 +1,189 @@
-import {Map} from 'immutable';
-import {isNumber} from 'lodash';
+import { fromJS } from 'immutable';
 
-// Actions
-const SHOW_DAYS_PICKER = 'LeavesState/SHOW_PICKER';
-const SHOW_FULL_PICKER = 'LeavesState/SHOW_FULL_PICKER';
-const SHOW_PAID_PICKER = 'LeavesState/SHOW_PAID_PICKER';
+export const RESET = 'LeavesState/RESET';
+export const APPLY_ERROR = 'LeavesState/APPLY_ERROR';
+export const APPLY_SUCCESS = 'LeavesState/APPLY_SUCCESS';
+export const SHOW_PROGRESS = 'LeavesState/SHOW_PROGRESS';
+export const APPLY_BUTTON_TOGGLE = 'LeavesState/APPLY_BUTTON_TOGGLE';
+export const SHOW_NUMBER_OF_DAYS_PICKER = 'LeavesState/SHOW_NUMBER_OF_DAYS_PICKER';
+export const UPDATE_FROM_DATE = "LeavesState/UPDATE_FROM_DATE";
+export const UPDATE_TO_DATE = "LeavesState/UPDATE_TO_DATE";
+export const NUMBER_OF_DAYS = "LeavesState/NUMBER_OF_DAYS";
+export const PAID_DAY = "LeavesState/Paid_Day";
+export const PART_OF_DAY = "LeavesState/PART_OF_DAY";
+export const USED_LEAVES = "LeavesState/USED_LEAVES";
+export const REMAINING_LEAVES = "LeavesState/REMAINING_LEAVES";
 
-const HOW_MANY_DAYS = 'LeavesState/HOW_MANY_DAYS';
-const HALF_DAY_FULL_DAY = 'LeavesState/HALF_DAY_FULL_DAY';
-const PAID_UNPAID = 'LeavesState/PAID_UNPAID';
+export const [FULL_DAY, FIRST_HALF, SECOND_HALF] = ['Full Day', 'First Half', 'Second Half'];
 
-// reducers for tabs and scenes are separate
-const initialState = Map({
-    howManyDays :"One Day",
-    halfDayFullDay :"Full Day",
-    paidUnpaid :"Paid",
-    showDaysPicker :false,
-    showFullPicker :false,
-    showPaidPicker :false
+
+const initialState = fromJS({
+    showProgress: false,
+    errorMessage: "",
+    successMessage: "",
+    showApplyButton: true,
+    showNumberOfDaysPicker: false,
+    fromDate: new Date(),
+    fromDateText: 'From Date',
+    toDate: new Date(),
+    toDateText: 'To Date',
+    isSingleDay: true,
+    partOfDay: FULL_DAY,
+    isPaidDay: true,
+    usedLeaves: "0",
+    remainingLeaves: "24"
 });
 
-export function toggleDaysPicker() {
+
+
+export function updateFromDate(date) {
+    //const dateText = date.toLocaleDateString();
     return {
-        type: SHOW_DAYS_PICKER
+        type: UPDATE_FROM_DATE,
+        payload: [date, date]
+    }
+}
+
+export function updateToDate(date) {
+    //const dateText = date.toLocaleDateString();
+    return {
+        type: UPDATE_TO_DATE,
+        payload: [date, date]
+    }
+}
+
+export function updateNumberOfDays(day) {
+    var isSingle = true;
+    if (day != "One Day") {
+        isSingle = false;
+    }
+
+    console.log("Is Single " + isSingle);
+    return {
+        type: NUMBER_OF_DAYS,
+        payload: isSingle
+    }
+}
+
+export function updatePartOfDay(partOfDay) {
+   
+    return {
+        type: PART_OF_DAY,
+        payload: partOfDay
+    }
+}
+export function updatePaidLeave(paidDay) {
+    console.log("Chut "+paidDay)
+      var isPaid = true;
+    if (paidDay != "Paid Leave") {
+        isPaid = false;
+    }
+    return {
+        type: PAID_DAY,
+        payload: isPaid
+    }
+}
+
+
+export function toggleProgress(isProgress) {
+    return {
+        type: SHOW_PROGRESS,
+        payload: isProgress
     };
 }
 
-export function setHowManyDays(days) {
+export function showNumberOfDaysPicker(isVisible) {
     return {
-        type: HOW_MANY_DAYS,
-        payload: days
+        type: SHOW_NUMBER_OF_DAYS_PICKER,
+        payload: isVisible
+    }
+}
+
+export function reset() {
+    return {
+        type: RESET
     };
 }
 
-export function setHalfDayFullDay(day) {
+export function showError(errorMessage) {
     return {
-        type: HALF_DAY_FULL_DAY,
-        payload: day
+        type: APPLY_ERROR,
+        payload: errorMessage
     };
 }
 
-export function setPaidUnpaid(paid) {
+export function showSuccess(successMessage) {
     return {
-        type: PAID_UNPAID,
-        payload: paid
+        type: APPLY_SUCCESS,
+        payload: successMessage
+    };
+}
+
+export function showApplyButton(isButtonVisible) {
+    return {
+        type: APPLY_BUTTON_TOGGLE,
+        payload: isButtonVisible
+    };
+}
+
+export function updateUsedLeaves(usedLeaves) {
+    return {
+        type: USED_LEAVES,
+        payload: usedLeaves
+    };
+}
+
+export function updateRemainingLeaves(reaminingLeaves) {
+    return {
+        type: REMAINING_LEAVES,
+        payload: reaminingLeaves
     };
 }
 
 
-export function togglefullDayPicker() {
-    return {
-        type: SHOW_FULL_PICKER
-    };
-}
-
-
-export function togglePaidPicker() {
-    return {
-        type: SHOW_PAID_PICKER
-    };
-}
-
-export default function LeavesStateReducer(state = initialState, action) {
+// Reducer
+export default function LeavesStateReducer(state = initialState, action = {}) {
     switch (action.type) {
-        case SHOW_DAYS_PICKER: {
-            return state.set('showDaysPicker',!state.get('showDaysPicker'));
-        }
-        case SHOW_FULL_PICKER: {
-            return state.set('showFullPicker',!state.get('showFullPicker'));
-        }
-        case SHOW_PAID_PICKER: {
-            return state.set('showPaidPicker',!state.get('showPaidPicker'));
-        }
-        case HOW_MANY_DAYS: {
-            return state.set('howManyDays',action.payload);
-        }
-        case HALF_DAY_FULL_DAY: {
-            return state.set('halfDayFullDay',action.payload);
-        }
-        case PAID_UNPAID: {
-            return state.set('paidUnpaid',action.payload);
-        }
+        case RESET:
+            return state.set(initialState);
+
+        case SHOW_PROGRESS:
+            return state.set("showProgress", action.payload);
+
+        case APPLY_BUTTON_TOGGLE:
+            return state.set("showApplyButton", action.payload);
+
+        case APPLY_SUCCESS:
+            return state.set("successMessage", action.payload);
+
+        case APPLY_ERROR:
+            return state.set("errorMessage", action.payload);
+
+        case SHOW_NUMBER_OF_DAYS_PICKER:
+            return state.set("showNumberOfDaysPicker", action.payload);
+
+        case UPDATE_FROM_DATE:
+            state.set("fromDate", action.payload[0]);
+            return state.set("fromDateText", action.payload[1]);
+
+        case UPDATE_TO_DATE:
+            state.set("toDate", action.payload[0]);
+            return state.set("toDateText", action.payload[1]);
+
+        case NUMBER_OF_DAYS:
+            return state.set("isSingleDay", action.payload);
+
+        case PART_OF_DAY:
+            return state.set("partOfDay", action.payload);
+
+         case PAID_DAY:
+            return state.set("isPaidDay", action.payload);
+
+        case USED_LEAVES:
+            return state.set("usedLeaves", action.payload);
+
+        case REMAINING_LEAVES:
+            return state.set("remainingLeaves", action.payload);
 
         default:
             return state;
