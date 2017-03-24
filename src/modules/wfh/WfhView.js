@@ -22,6 +22,7 @@ import {
 
 } from 'react-native';
 
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import * as WfhState from "./WfhState";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Api from '../../office-server/OfficeApi';
@@ -56,6 +57,7 @@ class WfhView extends Component {
             partOfDay: PropTypes.string.isRequired,
             usedLeaves: PropTypes.string.isRequired,
             remainingLeaves: PropTypes.string.isRequired,
+            briefMessage: PropTypes.string.isRequired,
             showFromDatePicker: PropTypes.bool.isRequired,
             showToDatePicker: PropTypes.bool.isRequired
         }).isRequired,
@@ -299,7 +301,7 @@ class WfhView extends Component {
 
                                     <DatePickerIOS
                                         style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                        date={this.props.wfhState.fromDate}
+                                        date={this.props.wfhState.fromDateText}
                                         mode="date"
                                         onDateChange={(date) => {
                                             this.props.dispatch(WfhState.updateFromDate(date))
@@ -388,6 +390,28 @@ class WfhView extends Component {
         );
     }
 
+
+    rendorMessageBox = (flexWeight) => {
+        return (
+            <View style={{ flex: flexWeight }}>
+                <Text style={styles.plainText}>
+                    Brief reason
+                </Text>
+                <Kohana
+                    style={{ backgroundColor: '#d7d7d7', maxHeight: 50 }}
+                    label={'Comment'}
+                    iconClass={Icon}
+                    iconName={'commenting'}
+                    iconColor={'black'}
+                    labelStyle={{ color: '#000000', fontSize: 16, fontWeight: 'normal' }}
+                    inputStyle={{ color: '#000000' }}
+                    onChangeText={(message) => this.props.dispatch(WfhState.updateBriefMessage(message))}
+                />
+            </View>
+
+        );
+    }
+
     rendorApplyButton = (flexWeight) => {
 
         return (
@@ -402,54 +426,51 @@ class WfhView extends Component {
                             title="Apply work from home" />
                     }
 
-
-                    <ActivityIndicator
-                        style={this.props.wfhState.showProgress ? styles.progressBar : styles.hideProgressBar}
-                        size="large"
-                        color="white"
-                    />
+                    {this.props.wfhState.showProgress &&
+                        <ActivityIndicator
+                            size="large"
+                            color="white"
+                        />
+                    }
                 </View>
             </View>
         );
     }
 
     rendorProgressStatus = (flexWeight) => {
-        return (
-            <View style={{ flex: flexWeight }}>
-                <Text style={{
-                    backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5,
-                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 100,
-                }}>{this.props.wfhState.usedLeaves} Used</Text>
 
-                <Text style={{
-                    backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5,
-                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 10
-                }}>{this.props.wfhState.remainingLeaves}  Total</Text>
+        return (
+            <View style={{
+                marginTop: 50,
+                marginBottom: 50,
+                flex: flexWeight, alignSelf: 'center'
+            }}>
+
+                <AnimatedCircularProgress
+                    size={200}
+                    width={3}
+                    fill={this.props.wfhState.usedLeaves / this.props.wfhState.remainingLeaves * 100}
+                    tintColor="#af00d8"
+                    backgroundColor="#00D5D5">
+                    {
+                        (fill) => (
+                            <View style={{ flexDirection: 'column' }}>
+                                <Text style={{ flex: 1, fontSize: 28, color: 'white', textAlign: 'center', marginTop: -140 }}>
+                                    {this.props.wfhState.usedLeaves}
+                                </Text>
+
+                                <Text style={{ flex: 0.2, fontSize: 12, textAlign: 'center', color: 'white', opacity: 0.5, marginTop: -300 }}>
+                                    {this.props.wfhState.remainingLeaves - this.props.wfhState.usedLeaves} Work From Home {'\n'} Remaining
+                                </Text>
+
+                            </View>
+                        )
+                    }
+                </AnimatedCircularProgress>
             </View>
         );
     }
 
-    rendorMessageBox = (flexWeight) => {
-        return (
-            <View style={{ flex: flexWeight }}>
-                <Text style={styles.plainText}>
-                    Brief reason
-                </Text>
-                <Kohana
-                    style={{ backgroundColor: '#d7d7d7', maxHeight: 50 }}
-                    label={'Comment'}
-                    iconClass={Icon}
-                    iconName={'commenting'}
-                    iconColor={'white'}
-                    labelStyle={{ color: '#000000', fontSize: 16, fontWeight: 'normal' }}
-                    inputStyle={{ color: '#000000' }}
-                />
-            </View>
-
-        );
-    }
 
 
     render() {
@@ -477,33 +498,14 @@ class WfhView extends Component {
                     {this.rendorApplyButton(1)}
 
                     {this.rendorProgressStatus(2)}
+
                 </ScrollView>
-
-
-                {/*Apply Button*/}
-
-
-
-                {/*<View>
-
-                        <Button
-                            onPress={() => {
-                                this.props.dispatch(WfhState.showApplyButton(true));
-                                this.props.dispatch(WfhState.toggleProgress(false))
-                            }}
-                            title="RESET" />
-
-                    </View>*/}
-
-
-
-
-
 
             </LinearGradient>
         );
     }
 
+    /**Show Android From Date Picker */
     showFromPicker = async (options) => {
         console.log(options);
         try {
@@ -520,6 +522,7 @@ class WfhView extends Component {
         }
     };
 
+    /**Show Android To Date Picker */
     showToPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open(null);
@@ -535,6 +538,9 @@ class WfhView extends Component {
         }
     };
 
+    /**
+     * Api call for applying work for home
+     */
     applyForWorkFromHome = () => {
 
 
@@ -558,7 +564,7 @@ class WfhView extends Component {
                 toDate = this.props.fromDateText;
             }
 
-            Api.applyforWfh(cakeHrId, this.props.wfhState.fromDateText, toDate, this.props.wfhState.partOfDay, "Test Work From Home").then(
+            Api.applyforWfh(cakeHrId, this.props.wfhState.fromDateText, toDate, this.props.wfhState.partOfDay, this.props.wfhState.briefMessage).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
@@ -592,13 +598,6 @@ class WfhView extends Component {
     };
 
 }
-
-
-const onSelectDayClicked = (dispatch) => {
-    console.log(this);
-    //dispatch(WfhState.showNumberOfDaysPicker(true));
-};
-
 
 
 
@@ -652,82 +651,6 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         paddingLeft: 15,
         paddingRight: 15
-    },
-    image: {
-        height: 40,
-        marginTop: 5,
-        width: 40,
-        borderRadius: 20
-    },
-    header: {
-        flexDirection: 'row'
-    },
-    canvas: {
-        width: 500,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-    },
-
-    container: {
-        marginBottom: 20,
-        marginTop: 20,
-        paddingLeft: 15,
-        paddingRight: 15,
-        flex: 1,
-        flexDirection: "column",
-        backgroundColor: "#fa21ff"
-    },
-
-    slack_button: {
-        marginTop: 50,
-        height: 35, //28
-        width: 150, //120
-        alignSelf: "center"
-    },
-    showButton: {
-        opacity: 1
-    },
-    hideButton: {
-        opacity: 0,
-        height: 0,
-        width: 0
-    },
-    applyButton: {
-        marginTop: 50,
-        height: 35, //28
-        width: 150, //120
-        alignSelf: "center"
-    },
-    simplePicker: {
-        flexDirection: 'row'
-    },
-    progressBar: {
-        opacity: 1,
-        alignSelf: "center",
-        padding: 10,
-        marginTop: 30,
-        marginBottom: 20
-    },
-    hideProgressBar: {
-        opacity: 0,
-        height: 0,
-        width: 0,
-        position: "absolute",
-        alignSelf: "center",
-        marginTop: 30,
-        marginBottom: 20
-    },
-    btnStyle: {
-        paddingLeft: 20,
-        paddingRight: 20
-    }, picker: {
-
-    }, standardPicker: {
-        flexDirection: 'row',
-        backgroundColor: '#d7d7d7'
     }
 });
 

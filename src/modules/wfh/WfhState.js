@@ -1,11 +1,11 @@
 import { fromJS } from 'immutable';
 
-export const RESET = 'WfhState/RESET';
-export const APPLY_ERROR = 'WfhState/APPLY_ERROR';
-export const APPLY_SUCCESS = 'WfhState/APPLY_SUCCESS';
-export const SHOW_PROGRESS = 'WfhState/SHOW_PROGRESS';
-export const APPLY_BUTTON_TOGGLE = 'WfhState/APPLY_BUTTON_TOGGLE';
-export const SHOW_NUMBER_OF_DAYS_PICKER = 'WfhState/SHOW_NUMBER_OF_DAYS_PICKER';
+export const RESET = 'wfnState/RESET';
+export const APPLY_ERROR = 'wfnState/APPLY_ERROR';
+export const APPLY_SUCCESS = 'wfnState/APPLY_SUCCESS';
+export const SHOW_PROGRESS = 'wfnState/SHOW_PROGRESS';
+export const APPLY_BUTTON_TOGGLE = 'wfnState/APPLY_BUTTON_TOGGLE';
+export const SHOW_NUMBER_OF_DAYS_PICKER = 'wfnState/SHOW_NUMBER_OF_DAYS_PICKER';
 export const UPDATE_FROM_DATE = "wfnState/UPDATE_FROM_DATE";
 export const UPDATE_TO_DATE = "wfnState/UPDATE_TO_DATE";
 export const NUMBER_OF_DAYS = "wfnState/NUMBER_OF_DAYS";
@@ -16,6 +16,7 @@ export const UPDATE_NUMBER_DAYS_PICKER = "wfnState/UPDATE_NUMBER_DAYS_PICKER";
 export const UPDATE_PART_DAY_PICKER = "wfnState/UPDATE_PART_DAY_PICKER";
 export const UPDATE_FROM_DATE_PICKER = "wfnState/UPDATE_FROM_DATE_PICKER";
 export const UPDATE_TO_DATE_PICKER = "wfnState/UPDATE_TO_DATE_PICKER";
+export const BRIEF_MESSAGE = "wfnState/BRIEF_MESSAGE";
 
 export const [FULL_DAY, FIRST_HALF, SECOND_HALF] = ['Full Day', 'First Half', 'Second Half'];
 
@@ -36,7 +37,8 @@ const initialState = fromJS({
     showNumberOfDaysPicker: false,
     showPartOfDayPicker: false,
     showFromDatePicker: false,
-    showToDatePicker: false
+    showToDatePicker: false,
+    briefMessage: ""
 });
 
 
@@ -85,13 +87,11 @@ export function updateToDate(date) {
 }
 
 export function updateNumberOfDays(day) {
-    console.log("Check My Day " + day);
     var isSingle = true;
     if (day != "One Day") {
         isSingle = false;
     }
 
-    console.log("Is Single " + isSingle);
     return {
         type: NUMBER_OF_DAYS,
         payload: isSingle
@@ -142,6 +142,9 @@ export function showApplyButton(isButtonVisible) {
 }
 
 export function updateUsedLeaves(usedLeaves) {
+    if (usedLeaves === '0.0') {
+        usedLeaves = "0";
+    }
     return {
         type: USED_LEAVES,
         payload: usedLeaves
@@ -149,9 +152,19 @@ export function updateUsedLeaves(usedLeaves) {
 }
 
 export function updateRemainingLeaves(reaminingLeaves) {
+    if (reaminingLeaves === '0.0') {
+        reaminingLeaves = "0";
+    }
     return {
         type: REMAINING_LEAVES,
         payload: reaminingLeaves
+    };
+}
+
+export function updateBriefMessage(message) {
+    return {
+        type: BRIEF_MESSAGE,
+        payload: message
     };
 }
 
@@ -215,6 +228,9 @@ export default function WfhStateReducer(state = initialState, action = {}) {
 
         case UPDATE_TO_DATE_PICKER:
             return state.set("showToDatePicker", action.payload);
+
+        case BRIEF_MESSAGE:
+            return state.set("briefMessage", action.payload);
 
         default:
             return state;
