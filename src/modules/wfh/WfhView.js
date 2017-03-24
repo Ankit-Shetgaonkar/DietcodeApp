@@ -121,9 +121,9 @@ class WfhView extends Component {
                 {(Platform.OS === 'ios') &&
                     <TouchableHighlight
                         underlayColor="transparent"
-                        onPress={()=> this.props.dispatch(WfhState.updateNumberDaysPicker(true))}
+                        onPress={() => this.props.dispatch(WfhState.updateNumberDaysPicker(true))}
                     >
-                        <View style={[styles.basicPickerButton,styles.customPickerPadding]}>
+                        <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
 
                             <Text style={styles.basicText}>
                                 {this.props.wfhState.isSingleDay ? "One Day" : "Multiple Days"}
@@ -137,7 +137,7 @@ class WfhView extends Component {
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
                                 <Picker
-                                    style={{backgroundColor: '#d7d7d7',paddingBottom:10,paddingLeft:10}}
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     selectedValue={this.props.wfhState.isSingleDay ? "One Day" : "Multiple Days"}
                                     onValueChange={(days) => {
                                         this.props.dispatch(WfhState.updateNumberOfDays(days));
@@ -200,8 +200,8 @@ class WfhView extends Component {
                 {(Platform.OS === 'ios') &&
                     <TouchableHighlight
                         underlayColor="transparent"
-                        onPress={()=> this.props.dispatch(WfhState.updatePartOfDayPicker(true))}>
-                        <View style={styles.basicPickerButton}>
+                        onPress={() => this.props.dispatch(WfhState.updatePartOfDayPicker(true))}>
+                        <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
 
                             <Text style={styles.basicText}>
                                 {this.props.wfhState.partOfDay}
@@ -215,7 +215,7 @@ class WfhView extends Component {
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
                                 <Picker
-                                    style={{backgroundColor: '#d7d7d7',paddingBottom:10,paddingLeft:10}}
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     selectedValue={this.props.wfhState.partOfDay}
                                     onValueChange={(day) => {
                                         this.props.dispatch(WfhState.updatePartOfDay(day))
@@ -273,11 +273,21 @@ class WfhView extends Component {
 
                     {(Platform.OS === 'ios') &&
                         <TouchableHighlight
-                            onPress={()=>this.props.dispatch(WfhState.updateFromDatePicker(true))}
+                            onPress={() => this.props.dispatch(WfhState.updateFromDatePicker(true))}
                             underlayColor="transparent">
-                            <View style={styles.basicCalenderView}>
 
-                                <Text style={styles.basicText}>{this.props.wfhState.fromDateText}</Text>
+                            <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
+
+                                <View
+                                    style={styles.basicCalenderView}>
+                                    <Text style={styles.basicText}>{this.props.wfhState.fromDateText}</Text>
+                                    <Icon
+                                        size={20}
+                                        color='#000'
+                                        name="calendar"
+                                        style={{ backgroundColor: "transparent" }}
+                                    />
+                                </View>
 
                                 <Modal
                                     animationType={"fade"}
@@ -288,6 +298,7 @@ class WfhView extends Component {
                                     <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
                                     <DatePickerIOS
+                                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                         date={this.props.wfhState.fromDate}
                                         mode="date"
                                         onDateChange={(date) => {
@@ -331,11 +342,22 @@ class WfhView extends Component {
 
                     {!this.props.wfhState.isSingleDay && (Platform.OS === 'ios') &&
                         <TouchableHighlight
-                            onPress={()=>this.props.dispatch(WfhState.updateToDatePicker(true))}
+                            onPress={() => this.props.dispatch(WfhState.updateToDatePicker(true))}
                             underlayColor="transparent">
-                            <View style={styles.basicCalenderView}>
+                            <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
 
-                                <Text style={styles.basicText}>{this.props.wfhState.toDateText}</Text>
+                                <View
+                                    style={styles.basicCalenderView}>
+
+                                    <Text style={styles.basicText}> {this.props.wfhState.toDateText} </Text>
+
+                                    <Icon
+                                        size={20}
+                                        color='#000'
+                                        name="calendar"
+                                        style={{ alignSelf: "center", backgroundColor: "transparent" }}
+                                    />
+                                </View>
 
                                 <Modal
                                     animationType={"fade"}
@@ -346,6 +368,7 @@ class WfhView extends Component {
                                     <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
                                     <DatePickerIOS
+                                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                         date={this.props.wfhState.fromDate}
                                         mode="date"
                                         onDateChange={(date) => {
@@ -601,8 +624,8 @@ const styles = StyleSheet.create({
     },
 
     customPickerPadding: {
-        paddingTop:12,
-        paddingBottom:12
+        paddingTop: 12,
+        paddingBottom: 12
     },
 
     basicText: {
