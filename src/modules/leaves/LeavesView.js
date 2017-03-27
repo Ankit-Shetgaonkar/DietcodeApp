@@ -493,6 +493,7 @@ class LeavesView extends Component {
                             onPress={() => {
                                 this.applyForWorkFromHome();
                             }}
+                            color='#464763'
                             title="Apply For Leave" />
                     }
 

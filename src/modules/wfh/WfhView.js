@@ -423,6 +423,7 @@ class WfhView extends Component {
                             onPress={() => {
                                 this.applyForWorkFromHome();
                             }}
+                            color='#464763'
                             title="Apply work from home" />
                     }
 
