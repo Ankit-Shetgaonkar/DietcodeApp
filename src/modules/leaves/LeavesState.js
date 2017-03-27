@@ -40,7 +40,7 @@ const initialState = fromJS({
     showFromDatePicker: false,
     showToDatePicker: false,
     briefMessage: "",
-    isPaidLeave:false
+    isPaidLeave:true
 });
 
 
