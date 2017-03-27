@@ -562,17 +562,19 @@ class WfhView extends Component {
             let toDate = this.props.wfhState.toDateText;
 
             if (this.props.wfhState.isSingleDay == true) {
-                toDate = this.props.fromDateText;
+                toDate = this.props.wfhState.fromDateText;
             }
 
             Api.applyforWfh(cakeHrId, this.props.wfhState.fromDateText, toDate, this.props.wfhState.partOfDay, this.props.wfhState.briefMessage).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
-                        ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        alert(resp.result.error);
+                        //ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                         //this.props.dispatch(WfhState.showError(resp.result.error));         
                     } else {
-                        ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        alert(resp.result.success);
+                        //ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                         //this.props.dispatch(WfhState.showSuccess(resp.result.success));
                     }
                     this.props.dispatch(WfhState.showApplyButton(true));
@@ -583,13 +585,15 @@ class WfhView extends Component {
 
                 }
             ).catch((e) => {
-                ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                alert("There was some error, check your internet connection");
+                //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                 //this.props.dispatch(WfhState.showError(e));         
                 this.props.dispatch(WfhState.showApplyButton(true));
                 this.props.dispatch(WfhState.toggleProgress(false));
             });
         }).catch((e) => {
-            ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            alert("There was some error, check your internet connection");
+            //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
             //this.props.dispatch(WfhState.showError(e));         
             this.props.dispatch(WfhState.showApplyButton(true));
             this.props.dispatch(WfhState.toggleProgress(false));

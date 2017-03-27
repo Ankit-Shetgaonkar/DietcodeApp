@@ -28,7 +28,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Api from '../../office-server/OfficeApi';
 
 
-var mCakeHrId = 0;
+var mCakeHrIdPaid = 0;
+var mCakeHrIdUnPaid = 0;
 var mLeavesUsed = 0;
 var mLeavesAssigned = 0;
 
@@ -71,7 +72,7 @@ class LeavesView extends Component {
         this.props.dispatch(LeavesState.reset());
 
         Api.getLeavesDetails().then((resp) => {
-            mCakeHrId = resp.result.cakeHR.id;
+            mCakeHrIdPaid = resp.result.cakeHR.id;
             mLeavesUsed = resp.result.cakeHR.custom_types_data['9931'].used;
             mLeavesAssigned = resp.result.cakeHR.custom_types_data['9931'].assigned;
 
@@ -491,7 +492,7 @@ class LeavesView extends Component {
                     {this.props.LeavesState.showApplyButton &&
                         <Button
                             onPress={() => {
-                                this.applyForWorkFromHome();
+                                this.applyForLeave();
                             }}
                             color='#464763'
                             title="Apply For Leave" />
@@ -612,9 +613,9 @@ class LeavesView extends Component {
     };
 
     /**
-     * Api call for applying work for home
+     * Api call for applying leave
      */
-    applyForWorkFromHome = () => {
+    applyForLeave = () => {
 
 
         this.props.dispatch(LeavesState.showApplyButton(false));
@@ -623,29 +624,32 @@ class LeavesView extends Component {
 
         Api.getLeavesDetails().then((resp) => {
             console.log(resp);
-            cakeHrId = resp.result.cakeHR.id;
-            wfhUsed = resp.result.cakeHR.custom_types_data['9931'].used;
-            wfhAssigned = resp.result.cakeHR.custom_types_data['9931'].assigned;
-            console.log("Cake hr " + cakeHrId);
+            mCakeHrIdPaid = resp.result.cakeHR.id;
+            mWfhUsed = resp.result.cakeHR.custom_types_data['9931'].used;
+            mWfhAssigned = resp.result.cakeHR.custom_types_data['9931'].assigned;
 
-            this.props.dispatch(LeavesState.updateUsedLeaves(wfhUsed));
-            this.props.dispatch(LeavesState.updateRemainingLeaves(wfhAssigned));
+            this.props.dispatch(LeavesState.updateUsedLeaves(mWfhUsed));
+            this.props.dispatch(LeavesState.updateRemainingLeaves(mWfhAssigned));
 
+            debugger
             let toDate = this.props.LeavesState.toDateText;
 
             if (this.props.LeavesState.isSingleDay == true) {
-                toDate = this.props.fromDateText;
+                toDate = this.props.LeavesState.fromDateText;
             }
 
-            Api.applyforLeave(cakeHrId, this.props.LeavesState.fromDateText, toDate,
-             this.props.LeavesState.partOfDay, this.props.LeavesState.briefMessage).then(
+            Api.applyforLeave(mCakeHrIdPaid, this.props.LeavesState.fromDateText, toDate,
+             this.props.LeavesState.partOfDay,
+              this.props.LeavesState.briefMessage).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
-                        ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        alert(resp.result.error);
+                        //ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                         //this.props.dispatch(LeavesState.showError(resp.result.error));         
                     } else {
-                        ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                        alert(resp.result.success);
+                        //ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                         //this.props.dispatch(LeavesState.showSuccess(resp.result.success));
                     }
                     this.props.dispatch(LeavesState.showApplyButton(true));
@@ -656,13 +660,16 @@ class LeavesView extends Component {
 
                 }
             ).catch((e) => {
-                ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                //alert(e)
+                //alert("There was some error, check your internet connection");
+                //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                 //this.props.dispatch(LeavesState.showError(e));         
                 this.props.dispatch(LeavesState.showApplyButton(true));
                 this.props.dispatch(LeavesState.toggleProgress(false));
             });
         }).catch((e) => {
-            ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            alert("There was some error, check your internet connection");
+            //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
             //this.props.dispatch(LeavesState.showError(e));         
             this.props.dispatch(LeavesState.showApplyButton(true));
             this.props.dispatch(LeavesState.toggleProgress(false));
