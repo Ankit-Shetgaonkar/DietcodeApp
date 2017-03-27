@@ -7,11 +7,6 @@ const officeLocation = {
     long: 73.8222992
 };
 
-const officeLocation2 = {
-    lat: 15.4561124,
-    long: 73.8222900
-};
-
 const expectedRange = 200;
 
 var locationServiceOptions = {
