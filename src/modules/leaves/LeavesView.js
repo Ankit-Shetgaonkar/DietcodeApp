@@ -59,7 +59,8 @@ class LeavesView extends Component {
             briefMessage: PropTypes.string.isRequired,
             showFromDatePicker: PropTypes.bool.isRequired,
             showToDatePicker: PropTypes.bool.isRequired,
-            isPaidLeave: PropTypes.bool.isRequired
+            isPaidLeave: PropTypes.bool.isRequired,
+            showPaidUnpaidPicker: PropTypes.bool.isRequired
         }).isRequired,
         dispatch: PropTypes.func.isRequired
 
@@ -137,13 +138,21 @@ class LeavesView extends Component {
                                 onRequestClose={() => { this.props.dispatch(LeavesState.updateNumberDaysPicker(false)) }}>
 
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updateNumberDaysPicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
 
                                 <Picker
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     selectedValue={this.props.LeavesState.isSingleDay ? "One Day" : "Multiple Days"}
                                     onValueChange={(days) => {
                                         this.props.dispatch(LeavesState.updateNumberOfDays(days));
-                                        this.props.dispatch(LeavesState.updateNumberDaysPicker(false))
                                     }}>
 
                                     <Picker.Item label={ONE_DAY} value={"One Day"} />
@@ -216,13 +225,21 @@ class LeavesView extends Component {
                                 onRequestClose={() => { this.props.dispatch(LeavesState.updatePartOfDayPicker(false)) }}>
 
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updatePartOfDayPicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
 
                                 <Picker
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     selectedValue={this.props.LeavesState.partOfDay}
                                     onValueChange={(day) => {
                                         this.props.dispatch(LeavesState.updatePartOfDay(day))
-                                        this.props.dispatch(LeavesState.updatePartOfDayPicker(false))
                                     }}>
                                     <Picker.Item label={FULL_DAY} value={FULL_DAY} />
                                     <Picker.Item label={FIRST_HALF} value={FIRST_HALF} />
@@ -274,29 +291,37 @@ class LeavesView extends Component {
                 {(Platform.OS === 'ios') &&
                     <TouchableHighlight
                         underlayColor="transparent"
-                        onPress={() => this.props.dispatch(LeavesState.updatePaidOrUnpaidPicker(true))}>
+                        onPress={() => this.props.dispatch(LeavesState.updatePaidUnpaidPicker(true))}>
                         <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
 
                             <Text style={styles.basicText}>
-                                {this.props.LeavesState.partOfDay}
+                                {this.props.LeavesState.isPaidLeave ? "Paid Leave" : "Unpaid Leave"}
                             </Text>
                             <Modal
                                 animationType={"fade"}
                                 transparent={true}
-                                visible={this.props.LeavesState.showPaidOrUnpaidPicker}
-                                onRequestClose={() => { this.props.dispatch(LeavesState.updatePaidOrUnpaidPicker(false)) }}>
+                                visible={this.props.LeavesState.showPaidUnpaidPicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updatePaidUnpaidPicker(false)) }}>
 
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updatePaidUnpaidPicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
 
                                 <Picker
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                    selectedValue={this.props.LeavesState.partOfDay}
+                                    selectedValue={this.props.LeavesState.isPaidLeave ? "Paid Leave" : "Unpaid Leave"}
                                     onValueChange={(day) => {
-                                        this.props.dispatch(LeavesState.updatePaidOrUnpaid(day))
-                                        this.props.dispatch(LeavesState.updatePaidOrUnpaidPicker(false))
+                                        this.props.dispatch(LeavesState.updatePaidUnpaid(day))
                                     }}>
-                                    <Picker.Item label={FULL_DAY} value={"Paid Leave"} />
-                                    <Picker.Item label={FIRST_HALF} value={"Unpaid Leave"} />
+                                    <Picker.Item label={PAID_LEAVE} value={"Paid Leave"} />
+                                    <Picker.Item label={UNPAID_LEAVE} value={"Unpaid Leave"} />
                                 </Picker>
 
                             </Modal>
@@ -345,11 +370,12 @@ class LeavesView extends Component {
                     {/*IOS Picker From Date*/}
 
                     {(Platform.OS === 'ios') &&
-                        <TouchableHighlight
-                            onPress={() => this.props.dispatch(LeavesState.updateFromDatePicker(true))}
-                            underlayColor="transparent">
+                        <View style={{ flex: 1 }}>
+                            <TouchableHighlight
+                                onPress={() => this.props.dispatch(LeavesState.updateFromDatePicker(true))}
+                                underlayColor="transparent">
 
-                            <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
+
 
                                 <View
                                     style={styles.basicCalenderView}>
@@ -362,27 +388,36 @@ class LeavesView extends Component {
                                     />
                                 </View>
 
-                                <Modal
-                                    animationType={"fade"}
-                                    transparent={true}
-                                    visible={this.props.LeavesState.showFromDatePicker}
-                                    onRequestClose={() => { this.props.dispatch(LeavesState.updateFromDatePicker(false)) }}>
+                            </TouchableHighlight>
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showFromDatePicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updateFromDatePicker(false)) }}>
 
-                                    <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updateFromDatePicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
 
-                                    <DatePickerIOS
-                                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                        date={this.props.LeavesState.fromDateText}
-                                        mode="date"
-                                        onDateChange={(date) => {
-                                            this.props.dispatch(LeavesState.updateFromDate(date))
-                                            this.props.dispatch(LeavesState.updateFromDatePicker(false))
-                                        }}
-                                    />
+                                <DatePickerIOS
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    date={new Date()}
+                                    mode="date"
+                                    onDateChange={(date) => {
+                                        this.props.dispatch(LeavesState.updateFromDate(date))
+                                    }}
+                                />
 
-                                </Modal>
-                            </View>
-                        </TouchableHighlight>
+                            </Modal>
+
+                        </View>
                     }
 
 
@@ -414,10 +449,11 @@ class LeavesView extends Component {
                     {/*IOS Picker To Date*/}
 
                     {!this.props.LeavesState.isSingleDay && (Platform.OS === 'ios') &&
-                        <TouchableHighlight
-                            onPress={() => this.props.dispatch(LeavesState.updateToDatePicker(true))}
-                            underlayColor="transparent">
-                            <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
+                        <View style={{ flex: 1 }}>
+                            <TouchableHighlight
+                                onPress={() => this.props.dispatch(LeavesState.updateToDatePicker(true))}
+                                underlayColor="transparent">
+
 
                                 <View
                                     style={styles.basicCalenderView}>
@@ -432,27 +468,37 @@ class LeavesView extends Component {
                                     />
                                 </View>
 
-                                <Modal
-                                    animationType={"fade"}
-                                    transparent={true}
-                                    visible={this.props.LeavesState.showToDatePicker}
-                                    onRequestClose={() => { this.props.dispatch(LeavesState.updateToDatePicker(false)) }}>
 
-                                    <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                            </TouchableHighlight>
 
-                                    <DatePickerIOS
-                                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                        date={this.props.LeavesState.fromDate}
-                                        mode="date"
-                                        onDateChange={(date) => {
-                                            this.props.dispatch(LeavesState.updateToDate(date))
-                                            this.props.dispatch(LeavesState.updateToDatePicker(false))
-                                        }}
-                                    />
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showToDatePicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updateToDatePicker(false)) }}>
 
-                                </Modal>
-                            </View>
-                        </TouchableHighlight>
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updateToDatePicker(false));
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <DatePickerIOS
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    date={new Date()}
+                                    mode="date"
+                                    onDateChange={(date) => {
+                                        this.props.dispatch(LeavesState.updateToDate(date))
+                                    }}
+                                />
+
+                            </Modal>
+                        </View>
                     }
 
 
@@ -639,8 +685,8 @@ class LeavesView extends Component {
             }
 
             Api.applyforLeave(mCakeHrIdPaid, this.props.LeavesState.fromDateText, toDate,
-             this.props.LeavesState.partOfDay,
-              this.props.LeavesState.briefMessage).then(
+                this.props.LeavesState.partOfDay,
+                this.props.LeavesState.briefMessage).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
@@ -659,14 +705,14 @@ class LeavesView extends Component {
                     this.props.dispatch(LeavesState.reset());
 
                 }
-            ).catch((e) => {
-                //alert(e)
-                //alert("There was some error, check your internet connection");
-                //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-                //this.props.dispatch(LeavesState.showError(e));         
-                this.props.dispatch(LeavesState.showApplyButton(true));
-                this.props.dispatch(LeavesState.toggleProgress(false));
-            });
+                ).catch((e) => {
+                    //alert(e)
+                    //alert("There was some error, check your internet connection");
+                    //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                    //this.props.dispatch(LeavesState.showError(e));         
+                    this.props.dispatch(LeavesState.showApplyButton(true));
+                    this.props.dispatch(LeavesState.toggleProgress(false));
+                });
         }).catch((e) => {
             alert("There was some error, check your internet connection");
             //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);

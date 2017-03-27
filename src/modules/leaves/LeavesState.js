@@ -18,6 +18,7 @@ export const UPDATE_FROM_DATE_PICKER = "LeavesState/UPDATE_FROM_DATE_PICKER";
 export const UPDATE_TO_DATE_PICKER = "LeavesState/UPDATE_TO_DATE_PICKER";
 export const BRIEF_MESSAGE = "LeavesState/BRIEF_MESSAGE";
 export const PAID_UNPAID_LEAVE = "LeavesState/PAID_UNPAID_LEAVE";
+export const PAID_UNPAID_PICKER = "LeavesState/PAID_UNPAID_PICKER";
 
 export const [FULL_DAY, FIRST_HALF, SECOND_HALF] = ['Full Day', 'First Half', 'Second Half'];
 
@@ -40,7 +41,8 @@ const initialState = fromJS({
     showFromDatePicker: false,
     showToDatePicker: false,
     briefMessage: "",
-    isPaidLeave:true
+    isPaidLeave:true,
+    showPaidUnpaidPicker:false
 });
 
 
@@ -73,7 +75,7 @@ export function updateToDatePicker(showPicker) {
 }
 
 export function updateFromDate(date) {
-    const dateText = date.toLocaleDateString();
+    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
     return {
         type: UPDATE_FROM_DATE,
         payload: [date, dateText]
@@ -81,7 +83,7 @@ export function updateFromDate(date) {
 }
 
 export function updateToDate(date) {
-    const dateText = date.toLocaleDateString();
+    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
     return {
         type: UPDATE_TO_DATE,
         payload: [date, dateText]
@@ -182,6 +184,13 @@ export function updatePaidUnpaid(leaveType) {
     };
 }
 
+export function updatePaidUnpaidPicker(showPicker){
+    return {
+        type: PAID_UNPAID_PICKER,
+        payload: showPicker
+    };
+}
+
 
 // Reducer
 export default function LeavesStateReducer(state = initialState, action = {}) {
@@ -247,7 +256,11 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
             return state.set("briefMessage", action.payload);
 
         case PAID_UNPAID_LEAVE:
-            return state.set("isPaidLeave", action.payload);                           
+            return state.set("isPaidLeave", action.payload);
+
+        case PAID_UNPAID_PICKER:
+            return state.set("showPaidUnpaidPicker",action.payload);
+
         default:
             return state;
     }
