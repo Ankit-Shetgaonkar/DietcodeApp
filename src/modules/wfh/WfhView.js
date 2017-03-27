@@ -131,19 +131,27 @@ class WfhView extends Component {
                                 {this.props.wfhState.isSingleDay ? "One Day" : "Multiple Days"}
                             </Text>
                             <Modal
-                                animationType={"fade"}
+                                animationType={"none"}
                                 transparent={true}
                                 visible={this.props.wfhState.showNumberOfDaysPicker}
                                 onRequestClose={() => { this.props.dispatch(WfhState.updateNumberDaysPicker(false)) }}>
 
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(WfhState.updateNumberDaysPicker(false));
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
 
                                 <Picker
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     selectedValue={this.props.wfhState.isSingleDay ? "One Day" : "Multiple Days"}
                                     onValueChange={(days) => {
                                         this.props.dispatch(WfhState.updateNumberOfDays(days));
-                                        this.props.dispatch(WfhState.updateNumberDaysPicker(false))
                                     }}>
 
                                     <Picker.Item label={ONE_DAY} value={"One Day"} />
@@ -209,19 +217,28 @@ class WfhView extends Component {
                                 {this.props.wfhState.partOfDay}
                             </Text>
                             <Modal
-                                animationType={"fade"}
+                                animationType={"none"}
                                 transparent={true}
                                 visible={this.props.wfhState.showPartOfDayPicker}
                                 onRequestClose={() => { this.props.dispatch(WfhState.updatePartOfDayPicker(false)) }}>
 
                                 <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(WfhState.updatePartOfDayPicker(false));
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
                                 <Picker
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     selectedValue={this.props.wfhState.partOfDay}
                                     onValueChange={(day) => {
                                         this.props.dispatch(WfhState.updatePartOfDay(day))
-                                        this.props.dispatch(WfhState.updatePartOfDayPicker(false))
                                     }}>
                                     <Picker.Item label={FULL_DAY} value={FULL_DAY} />
                                     <Picker.Item label={FIRST_HALF} value={FIRST_HALF} />
@@ -274,15 +291,15 @@ class WfhView extends Component {
                     {/*IOS Picker From Date*/}
 
                     {(Platform.OS === 'ios') &&
-                        <TouchableHighlight
-                            onPress={() => this.props.dispatch(WfhState.updateFromDatePicker(true))}
-                            underlayColor="transparent">
+                        <View style={{ flex: 1 }}>
+                            <TouchableHighlight
+                                onPress={() => this.props.dispatch(WfhState.updateFromDatePicker(true))}
+                                underlayColor="transparent">
 
-                            <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
 
                                 <View
-                                    style={styles.basicCalenderView}>
-                                    <Text style={styles.basicText}>{this.props.wfhState.fromDateText}</Text>
+                                    style={[styles.basicCalenderView]}>
+                                    <Text style={[styles.basicText]}>{this.props.wfhState.fromDateText}</Text>
                                     <Icon
                                         size={20}
                                         color='#000'
@@ -290,29 +307,40 @@ class WfhView extends Component {
                                         style={{ backgroundColor: "transparent" }}
                                     />
                                 </View>
+                            </TouchableHighlight>
 
-                                <Modal
-                                    animationType={"fade"}
-                                    transparent={true}
-                                    visible={this.props.wfhState.showFromDatePicker}
-                                    onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
 
-                                    <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                            <Modal
+                                animationType={"none"}
+                                transparent={true}
+                                visible={this.props.wfhState.showFromDatePicker}
+                                onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
 
-                                    <DatePickerIOS
-                                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                        date={this.props.wfhState.fromDateText}
-                                        mode="date"
-                                        onDateChange={(date) => {
-                                            this.props.dispatch(WfhState.updateFromDate(date))
-                                            this.props.dispatch(WfhState.updateFromDatePicker(false))
-                                        }}
-                                    />
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
-                                </Modal>
-                            </View>
-                        </TouchableHighlight>
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(WfhState.updateFromDatePicker(false));
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <DatePickerIOS
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    date={typeof (this.props.wfhState.fromDate) === 'string' ? new Date() : this.props.wfhState.fromDate}
+                                    mode="date"
+                                    onDateChange={(date) => {
+                                        this.props.dispatch(WfhState.updateFromDate(date))
+                                    }}
+                                />
+
+                            </Modal>
+                        </View>
                     }
+
 
 
                     {/*Android Picker To Date*/}
@@ -327,7 +355,7 @@ class WfhView extends Component {
                             <View
                                 style={styles.basicCalenderView}>
 
-                                <Text style={styles.basicText}> {this.props.wfhState.toDateText} </Text>
+                                <Text style={styles.basicText}> anydldasda {this.props.wfhState.toDateText} </Text>
 
                                 <Icon
                                     size={20}
@@ -343,14 +371,12 @@ class WfhView extends Component {
                     {/*IOS Picker To Date*/}
 
                     {!this.props.wfhState.isSingleDay && (Platform.OS === 'ios') &&
-                        <TouchableHighlight
-                            onPress={() => this.props.dispatch(WfhState.updateToDatePicker(true))}
-                            underlayColor="transparent">
-                            <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
-
+                        <View style={{ flex: 1 }}>
+                            <TouchableHighlight
+                                onPress={() => this.props.dispatch(WfhState.updateToDatePicker(true))}
+                                underlayColor="transparent">
                                 <View
                                     style={styles.basicCalenderView}>
-
                                     <Text style={styles.basicText}> {this.props.wfhState.toDateText} </Text>
 
                                     <Icon
@@ -360,28 +386,36 @@ class WfhView extends Component {
                                         style={{ alignSelf: "center", backgroundColor: "transparent" }}
                                     />
                                 </View>
+                            </TouchableHighlight>
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.wfhState.showToDatePicker}
+                                onRequestClose={() => { this.props.dispatch(WfhState.updateToDatePicker(false)) }}>
 
-                                <Modal
-                                    animationType={"fade"}
-                                    transparent={true}
-                                    visible={this.props.wfhState.showToDatePicker}
-                                    onRequestClose={() => { this.props.dispatch(WfhState.updateToDatePicker(false)) }}>
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
-                                    <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(WfhState.updateToDatePicker(false));
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
 
-                                    <DatePickerIOS
-                                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                        date={this.props.wfhState.fromDate}
-                                        mode="date"
-                                        onDateChange={(date) => {
-                                            this.props.dispatch(WfhState.updateToDate(date))
-                                            this.props.dispatch(WfhState.updateToDatePicker(false))
-                                        }}
-                                    />
+                                <DatePickerIOS
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    date={typeof (this.props.wfhState.toDate) === 'string' ? new Date() : this.props.wfhState.toDate}
+                                    mode="date"
+                                    onDateChange={(date) => {
+                                        this.props.dispatch(WfhState.updateToDate(date))
+                                    }}
+                                />
 
-                                </Modal>
-                            </View>
-                        </TouchableHighlight>
+                            </Modal>
+                        </View>
                     }
 
 
@@ -648,7 +682,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
         justifyContent: 'flex-end'
     },
-
     scrollView: {
         backgroundColor: 'transparent',
         height: 800,

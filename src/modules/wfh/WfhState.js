@@ -71,7 +71,7 @@ export function updateToDatePicker(showPicker) {
 }
 
 export function updateFromDate(date) {
-    const dateText = date.toLocaleDateString();
+    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
     return {
         type: UPDATE_FROM_DATE,
         payload: [date, dateText]
@@ -79,7 +79,7 @@ export function updateFromDate(date) {
 }
 
 export function updateToDate(date) {
-    const dateText = date.toLocaleDateString();
+    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
     return {
         type: UPDATE_TO_DATE,
         payload: [date, dateText]
