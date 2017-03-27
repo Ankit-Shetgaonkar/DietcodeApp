@@ -99,23 +99,17 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message) {
         day_part = 0;
     }
 
-    var fromSplit = from.split('/');
-
-    alert(to);
-
-    fromSplit = "2017" + "-" + fromSplit[0] + "-" + fromSplit[1];
-    var toSplit = to.split('/');
-    toSplit = "2017" + "-" + toSplit[0] + "-" + toSplit[1];
-    //alert(fromSplit + "  "+ toSplit);
+    let fromString = from.getFullYear()+"-"+from.getMonth()+"-"+from.getDate();
+    let toString = to.getFullYear()+"-"+to.getMonth()+"-"+to.getDate();
     let leaveBody;
-    if ((fromSplit == toSplit) && ((day_part == 1) || (day_part == 2))) {
+    if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
         leaveBody = {
 
             "cakehr_id": cakeHrId,
             "timeoff_id": "9931",
-            "from": from,//"2023-7-04",
-            "to": to,//"2023-7-04",
+            "from": fromString,//"2023-7-04",
+            "to": toString,//"2023-7-04",
             "day_part": day_part,
             "hours": 4,
             "message": message
@@ -125,8 +119,8 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message) {
         leaveBody = {
             "cakehr_id": cakeHrId,
             "timeoff_id": "9931",
-            "from": from,//"2023-7-04",
-            "to": to,//"2023-7-04",
+            "from": fromString,//"2023-7-04",
+            "to": toString,//"2023-7-04",
             "message": message
         };
     }
@@ -142,28 +136,39 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message) {
 
 export async function applyforWfh(cakeHrId, from, to, day_part, message) {
 
-    if (day_part === "First Half") {
+   if (day_part === "First Half") {
         day_part = 1;
-    } else {
+    } else if (day_part === "Second Half") {
         day_part = 2;
+    } else {
+        day_part = 0;
     }
+    let fromString = from.getFullYear()+"-"+from.getMonth()+"-"+from.getDate();
+    let toString = to.getFullYear()+"-"+to.getMonth()+"-"+to.getDate();
 
-    var fromSplit = from.split('/');
+ let leaveBody;
+     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
+        console.log("inside");
+        leaveBody = {
 
-
-    fromSplit = "2017" + "-" + fromSplit[0] + "-" + fromSplit[1];
-    var toSplit = to.split('/');
-    toSplit = "2017" + "-" + toSplit[0] + "-" + toSplit[1];
-
-
-    let leaveBody = {
-        "cakehr_id": cakeHrId,
-        "timeoff_id": "10019",
-        "from": fromSplit,//"2023-7-04",
-        "to": toSplit,//"2023-7-04",
-        "day_part": day_part,
-        "message": message
-    };
+            "cakehr_id": cakeHrId,
+            "timeoff_id": "9931",
+            "from": fromString,//"2023-7-04",
+            "to": toString,//"2023-7-04",
+            "day_part": day_part,
+            "hours": 4,
+            "message": message
+        };
+    } else {
+        console.log("outside");
+        leaveBody = {
+            "cakehr_id": cakeHrId,
+            "timeoff_id": "9931",
+            "from": fromString,//"2023-7-04",
+            "to": toString,//"2023-7-04",
+            "message": message
+        };
+    }
     try {
         const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff", leaveBody, true);
         return resp;

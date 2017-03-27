@@ -375,8 +375,6 @@ class LeavesView extends Component {
                                 onPress={() => this.props.dispatch(LeavesState.updateFromDatePicker(true))}
                                 underlayColor="transparent">
 
-
-
                                 <View
                                     style={styles.basicCalenderView}>
                                     <Text style={styles.basicText}>{this.props.LeavesState.fromDateText}</Text>
@@ -408,7 +406,7 @@ class LeavesView extends Component {
 
                                 <DatePickerIOS
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                    date={new Date()}
+                                    date={typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate}
                                     mode="date"
                                     onDateChange={(date) => {
                                         this.props.dispatch(LeavesState.updateFromDate(date))
@@ -490,7 +488,7 @@ class LeavesView extends Component {
 
                                 <DatePickerIOS
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                    date={new Date()}
+                                    date={typeof (this.props.LeavesState.toDate) === 'string' ? new Date() : this.props.LeavesState.toDate}
                                     mode="date"
                                     onDateChange={(date) => {
                                         this.props.dispatch(LeavesState.updateToDate(date))
@@ -532,16 +530,28 @@ class LeavesView extends Component {
     rendorApplyButton = (flexWeight) => {
 
         return (
+
             <View style={{ flex: flexWeight }}>
                 <View style={{ marginTop: 30 }}>
 
-                    {this.props.LeavesState.showApplyButton &&
+                    {Platform.OS === 'android' && this.props.LeavesState.showApplyButton &&
                         <Button
                             onPress={() => {
                                 this.applyForLeave();
                             }}
                             color='#464763'
                             title="Apply For Leave" />
+                    }
+
+                    {Platform.OS === 'ios' && this.props.LeavesState.showApplyButton &&
+                        <View style={{backgroundColor:'#464763'}}>
+                            <Button
+                                onPress={() => {
+                                    this.applyForLeave();
+                                }}
+                                color='#ffffff'
+                                title="Apply For Leave" />
+                        </View>
                     }
 
                     {this.props.LeavesState.showProgress &&
@@ -553,6 +563,8 @@ class LeavesView extends Component {
                 </View>
             </View>
         );
+
+
     }
 
     rendorProgressStatus = (flexWeight) => {
@@ -677,14 +689,15 @@ class LeavesView extends Component {
             this.props.dispatch(LeavesState.updateUsedLeaves(mWfhUsed));
             this.props.dispatch(LeavesState.updateRemainingLeaves(mWfhAssigned));
 
-            debugger
-            let toDate = this.props.LeavesState.toDateText;
+            
+            let toDate = this.props.LeavesState.toDate;
 
             if (this.props.LeavesState.isSingleDay == true) {
-                toDate = this.props.LeavesState.fromDateText;
+                toDate = this.props.LeavesState.fromDate;
             }
 
-            Api.applyforLeave(mCakeHrIdPaid, this.props.LeavesState.fromDateText, toDate,
+           
+            Api.applyforLeave(mCakeHrIdPaid, this.props.LeavesState.fromDate, toDate,
                 this.props.LeavesState.partOfDay,
                 this.props.LeavesState.briefMessage).then(
                 (resp) => {

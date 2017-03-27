@@ -452,16 +452,27 @@ class WfhView extends Component {
             <View style={{ flex: flexWeight }}>
                 <View style={{ marginTop: 30 }}>
 
-                    {this.props.wfhState.showApplyButton &&
+                    {Platform.OS === 'android' && this.props.wfhState.showApplyButton &&
                         <Button
                             onPress={() => {
-                                this.applyForWorkFromHome();
+                              this.applyForWorkFromHome();
                             }}
                             color='#464763'
                             title="Apply work from home" />
                     }
 
-                    {this.props.wfhState.showProgress &&
+                    {Platform.OS === 'ios' && this.props.wfhState.showApplyButton &&
+                        <View style={{backgroundColor:'#464763'}}>
+                            <Button
+                                onPress={() => {
+                                   this.applyForWorkFromHome();
+                                }}
+                                color='#ffffff'
+                                title="Apply work from home" />
+                        </View>
+                    }
+
+                        {this.props.wfhState.showProgress &&
                         <ActivityIndicator
                             size="large"
                             color="white"
@@ -593,13 +604,13 @@ class WfhView extends Component {
             this.props.dispatch(WfhState.updateUsedLeaves(wfhUsed));
             this.props.dispatch(WfhState.updateRemainingLeaves(wfhAssigned));
 
-            let toDate = this.props.wfhState.toDateText;
+            let toDate = this.props.wfhState.toDate;
 
             if (this.props.wfhState.isSingleDay == true) {
-                toDate = this.props.wfhState.fromDateText;
+                toDate = this.props.wfhState.fromDate;
             }
 
-            Api.applyforWfh(cakeHrId, this.props.wfhState.fromDateText, toDate, this.props.wfhState.partOfDay, this.props.wfhState.briefMessage).then(
+            Api.applyforWfh(cakeHrId, this.props.wfhState.fromDate, toDate, this.props.wfhState.partOfDay, this.props.wfhState.briefMessage).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
