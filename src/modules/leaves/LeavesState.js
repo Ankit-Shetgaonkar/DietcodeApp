@@ -171,13 +171,14 @@ export function updateBriefMessage(message) {
 }
 
 export function updatePaidUnpaid(leaveType) {
-
-    if (leaveType != "Paid") {
+    //alert(leaveType)
+    let isPaid = true;
+    if (leaveType != "Paid Leave") {
         isPaid = false;
     }
     return {
         type: PAID_UNPAID_LEAVE,
-        payload: message
+        payload: isPaid
     };
 }
 

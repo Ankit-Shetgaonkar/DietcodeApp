@@ -258,7 +258,7 @@ class LeavesView extends Component {
                         <View style={styles.basicPickerButton}>
                             <Picker
                                 selectedValue={this.props.LeavesState.isPaidLeave ? "Paid Leave" : "Unpaid Leave"}
-                                onValueChange={(day) => this.props.dispatch(LeavesState.updatePaidOrUnpaid(day))}
+                                onValueChange={(day) => this.props.dispatch(LeavesState.updatePaidUnpaid(day))}
                                 mode="dropdown">
                                 <Picker.Item label={PAID_LEAVE} value={"Paid Leave"} />
                                 <Picker.Item label={UNPAID_LEAVE} value={"Unpaid Leave"} />
@@ -636,7 +636,8 @@ class LeavesView extends Component {
                 toDate = this.props.fromDateText;
             }
 
-            Api.applyforWfh(cakeHrId, this.props.LeavesState.fromDateText, toDate, this.props.LeavesState.partOfDay, this.props.LeavesState.briefMessage).then(
+            Api.applyforLeave(cakeHrId, this.props.LeavesState.fromDateText, toDate,
+             this.props.LeavesState.partOfDay, this.props.LeavesState.briefMessage).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
