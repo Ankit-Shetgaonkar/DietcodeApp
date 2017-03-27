@@ -210,7 +210,15 @@ class LeavesView extends Component {
                         }
                     </ AnimatedCircularProgress>
                 </View>
-
+                <View style={{ marginTop: 15 }}>
+                    <View>
+                        <Button
+                            onPress={() => {
+                                this.showHistoryScreen();
+                            }}
+                            title="View History" />
+                    </View>
+                </View>
                 {/*<Text style={{
                     backgroundColor: "transparent", alignSelf: "center",
                     paddingLeft: 5,
@@ -267,6 +275,11 @@ class LeavesView extends Component {
             console.warn(`Error in example `, message);
         }
     };
+
+    showHistoryScreen = () => {
+        //alert("history screen shown")
+        this.props.switchTab(4)
+    }
 
     applyForWorkFromHome = () => {
 

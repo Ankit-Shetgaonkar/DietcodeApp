@@ -15,7 +15,8 @@ const initialState = fromJS({
             {key: 'DashboardTab', title: 'Dashboard'},
             {key: 'ProfileTab', title: 'Profile'},
             {key: 'LeavesTab', title: 'Leaves'},
-            {key: 'WorkFromHomeTab', title: 'Wfh'}
+            {key: 'WorkFromHomeTab', title: 'Wfh'},
+            {key: 'LeavesHistoryTab', title: 'LeavesHistory'}
         ]
     },
     // Scenes for the `Dashboard` tab.
@@ -37,6 +38,10 @@ const initialState = fromJS({
     WorkFromHomeTab: {
         index: 0,
         routes: [{key: 'WorkFromHome', title: 'Work From Home Status'}]
+    },
+    LeavesHistoryTab: {
+        index: 0,
+        routes: [{key: 'LeavesHistory', title: 'Leaves History'}]
     }
 });
 

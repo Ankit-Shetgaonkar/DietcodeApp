@@ -42,7 +42,9 @@ class DashboardView extends Component {
             DashboardTab: NavigationPropTypes.navigationState.isRequired,
             ProfileTab: NavigationPropTypes.navigationState.isRequired,
             LeavesTab: NavigationPropTypes.navigationState.isRequired,
-            WorkFromHomeTab: NavigationPropTypes.navigationState.isRequired
+            WorkFromHomeTab: NavigationPropTypes.navigationState.isRequired,
+            LeavesHistoryTab: NavigationPropTypes.navigationState.isRequired
+
         }),
         switchTab: PropTypes.func.isRequired
     };
@@ -61,6 +63,8 @@ class DashboardView extends Component {
                     style={Platform.OS === 'ios' ?styles.linearGradientWithPadding:styles.linearGradientWithoutPadding}>
                     <View style={styles.header}>
                         <TouchableHighlight underlayColor="transparent" onPress={()=>{
+                                                            console.log("move to back of screen")
+
                                 this.props.switchTab(0);
                                 //sceneProps.switchTab(1);
                         }}>

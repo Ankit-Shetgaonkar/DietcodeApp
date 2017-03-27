@@ -10,6 +10,8 @@ import TimeLineContainer from './timeline/TimelineViewContainer'
 import LeavesContainer from './leaves/LeavesContainer'
 import * as wfh from './wfh/WfhView'
 import ProfileView from './profile/ProfileView';
+import LeavesHistoryContainer from './LeavesHistory/LeavesHistoryContainer'
+import * as LHView from './LeavesHistory/LeavesHistoryView'
 
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
@@ -26,6 +28,9 @@ export default function AppRouter(props,switchTabs) {
     return <LeavesContainer switchTab = {switchTabs} />;
   }else if (key === 'WorkFromHome') {
       return <WfhContainer/>;
+  }else if (key === 'LeavesHistory') {
+    console.log("returning lhcontainer")
+    return <LeavesHistoryContainer/>;
   }
 
   if (key.indexOf('Profile') === 0) {
@@ -45,6 +50,14 @@ export default function AppRouter(props,switchTabs) {
     );
   }
   if (key.indexOf('WorkFromHome') === 0) {
+    const index = props.scenes.indexOf(props.scene);
+    return (
+        <ColorViewContainer
+            index={index}
+        />
+    );
+  }
+  if (key.indexOf('LeavesHistory') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
         <ColorViewContainer
