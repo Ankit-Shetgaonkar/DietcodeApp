@@ -20,6 +20,7 @@ import * as TimeLineStateActions from './TimelineState';
 
 import * as officeApi from '../../office-server/OfficeApi';
 import Dimensions from 'Dimensions'
+import * as notification from '../../notification/Notification'
 
 function _getMonthInString(month) {
     switch (month){
@@ -70,6 +71,7 @@ function _getDayOfWeek(day) {
     }
 }
 
+notification.initializeNotification();
 
 async function createUser(token){
     if(!RealmDatabse.findUser().length >0){
@@ -127,6 +129,7 @@ class TimelineView extends Component {
 
     constructor() {
         super();
+        notification.sendNotification("test notification!!!!");
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                 //console.log("going to call timeline ",resp)
@@ -325,7 +328,8 @@ class TimelineView extends Component {
     var humanReadable = {};
     humanReadable.hours = Math.floor(hDiff);
     humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-        if(humanReadable.hours<0 || humanReadable.minutes<0){
+        if(humanReadable.hours<0 || humanReadable.minutes<0)
+        {
             return "0h : 0m ago";
         }
     let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
