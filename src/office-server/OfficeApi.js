@@ -109,10 +109,6 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
     let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
     let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
     let leaveBody;
-    console.log(from);
-    console.log(to);
-    console.log(fromString);
-    console.log(toString);
     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
         leaveBody = {
@@ -162,7 +158,7 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
         leaveBody = {
 
             "cakehr_id": cakeHrId,
-            "timeoff_id": "9931",
+            "timeoff_id": "10019",
             "from": fromString,//"2023-7-04",
             "to": toString,//"2023-7-04",
             "day_part": day_part,
@@ -173,7 +169,7 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
         console.log("outside");
         leaveBody = {
             "cakehr_id": cakeHrId,
-            "timeoff_id": "9931",
+            "timeoff_id": "10019",
             "from": fromString,//"2023-7-04",
             "to": toString,//"2023-7-04",
             "message": message
