@@ -19,7 +19,7 @@ import * as auth from '../../utils/authentication';
 import * as TimeLineStateActions from './TimelineState';
 
 import * as officeApi from '../../office-server/OfficeApi';
-
+import Dimensions from 'Dimensions'
 
 function _getMonthInString(month) {
     switch (month){
@@ -121,6 +121,7 @@ class TimelineView extends Component {
         // errorMessage: PropTypes.string.isRequired,
         // lastCheckout: PropTypes.string.isRequired,
         // checkin:PropTypes.bool.isRequired,
+        switchTab: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
@@ -154,7 +155,6 @@ class TimelineView extends Component {
         const checkin = this.props.timeLineState.checkin;
         const {dispatch} = this.props;
         console.log("CHECKINVALUE "+checkin);
-
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
         const dtaSource = {dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[])};
@@ -164,7 +164,7 @@ class TimelineView extends Component {
         var day = today.getDay();
         var mm = _getMonthInString(today.getMonth()+1); //January is 0!
         var yyyy = today.getFullYear();
-
+        var actionButtonY = ((Dimensions.get('window').height - 90)* 0.4) - 19
         return (
             <View style={styles.container}>
                 <View style={{flex:0.4}}>
@@ -244,7 +244,6 @@ class TimelineView extends Component {
                     </Image>
 
                 </View>
-
                 <View style={styles.timelineListContainer}>
                     <ListView
                         {...dtaSource}
@@ -265,12 +264,14 @@ class TimelineView extends Component {
                                             </View>
                             }
                     />
-                </View>
-
-                <ActionButton buttonColor="rgba(231,76,60,1)"
+                    </View>
+                    <ActionButton buttonColor="rgba(231,76,60,1)"
                               verticalOrientation={Platform.OS === 'ios' ? "down":"up"}
                               offsetX = {30}
-                              offsetY = {Platform.OS === 'ios' ? 210:20}
+                              onPress={()=>{
+                                    console.log("OH FUCK!!!");
+                              }}
+                              offsetY = {Platform.OS === 'ios' ? actionButtonY:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
                                        onPress={() => this.props.switchTab(2)}>
@@ -280,6 +281,9 @@ class TimelineView extends Component {
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                 </ActionButton>
+                
+
+                
             </View>
 
 
