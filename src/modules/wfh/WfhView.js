@@ -355,7 +355,7 @@ class WfhView extends Component {
                             <View
                                 style={styles.basicCalenderView}>
 
-                                <Text style={styles.basicText}> anydldasda {this.props.wfhState.toDateText} </Text>
+                                <Text style={styles.basicText}> {this.props.wfhState.toDateText} </Text>
 
                                 <Icon
                                     size={20}
@@ -388,7 +388,7 @@ class WfhView extends Component {
                                 </View>
                             </TouchableHighlight>
                             <Modal
-                                animationType={"fade"}
+                                animationType={"none"}
                                 transparent={true}
                                 visible={this.props.wfhState.showToDatePicker}
                                 onRequestClose={() => { this.props.dispatch(WfhState.updateToDatePicker(false)) }}>
