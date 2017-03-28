@@ -325,6 +325,9 @@ class TimelineView extends Component {
     var humanReadable = {};
     humanReadable.hours = Math.floor(hDiff);
     humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+        if(humanReadable.hours<0 || humanReadable.minutes<0){
+            return "0h : 0m ago";
+        }
     let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
     return stringTime;
     }
