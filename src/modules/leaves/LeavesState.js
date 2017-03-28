@@ -276,4 +276,3 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
             return state;
     }
 }
-}
