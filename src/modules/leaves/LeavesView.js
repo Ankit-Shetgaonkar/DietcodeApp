@@ -1,5 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Kohana } from 'react-native-textinput-effects';
 import {
     View,
     Text,
@@ -12,263 +14,666 @@ import {
     Picker,
     DatePickerAndroid,
     TouchableNativeFeedback,
-    ToastAndroid
+    ToastAndroid,
+    Modal,
+    Platform,
+    DatePickerIOS,
+    ScrollView
 
 } from 'react-native';
-import DatePicker from 'react-native-datepicker';
+
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import * as LeavesState from "./LeavesState";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Api from '../../office-server/OfficeApi';
-import ModalDropdown from 'react-native-modal-dropdown';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 
-const Item = Picker.Item;
-// Customize bottom tab bar height here if desired
-const TAB_BAR_HEIGHT = 50;
-
-var cakeHrId = 0;
-var leavesUsed = 0;
-var leavesAssigned = 0;
-const DEMO_OPTIONS_1 = ['One Day', 'Mulitple Days'];
-const DEMO_OPTIONS_2 = ['Full Day', 'First Half', 'Second Half'];
-const DEMO_OPTIONS_3 = ['Paid Leave', 'Unpaid Leave'];
+var mCakeHrIdPaid = 0;
+var mCakeHrIdUnPaid = 0;
+var mLeavesUsed = 0;
+var mLeavesAssigned = 0;
 
 class LeavesView extends Component {
 
-    static displayName = 'WorkFromHome';
-    static title = 'DatePickerAndroid';
+    //PAGE name
+    static displayName = 'Apply Leaves';
 
+    //date picker title 
+    static datePickerTitle = 'DatePickerAndroid';
+
+    //required properties of this class
     static propTypes = {
-        showApplyButton: PropTypes.bool.isRequired,
-        showProgress: PropTypes.bool.isRequired,
-        errorMessage: PropTypes.string.isRequired,
-        successMessage: PropTypes.string.isRequired,
-        showNumberOfDaysPicker: PropTypes.bool.isRequired,
-        fromDateText: PropTypes.string.isRequired,
-        toDateText: PropTypes.string.isRequired,
-        isSingleDay: PropTypes.bool.isRequired,
-        isPaidDay: PropTypes.bool.isRequired,
-        partOfDay: PropTypes.string.isRequired,
-        usedLeaves: PropTypes.string.isRequired,
-        remainingLeaves: PropTypes.string.isRequired,
+        LeavesState: PropTypes.shape({
+            showApplyButton: PropTypes.bool.isRequired,
+            showProgress: PropTypes.bool.isRequired,
+            errorMessage: PropTypes.string.isRequired,
+            successMessage: PropTypes.string.isRequired,
+            showNumberOfDaysPicker: PropTypes.bool.isRequired,
+            showPartOfDayPicker: PropTypes.bool.isRequired,
+            fromDateText: PropTypes.string.isRequired,
+            toDateText: PropTypes.string.isRequired,
+            isSingleDay: PropTypes.bool.isRequired,
+            partOfDay: PropTypes.string.isRequired,
+            usedLeaves: PropTypes.string.isRequired,
+            remainingLeaves: PropTypes.string.isRequired,
+            briefMessage: PropTypes.string.isRequired,
+            showFromDatePicker: PropTypes.bool.isRequired,
+            showToDatePicker: PropTypes.bool.isRequired,
+            isPaidLeave: PropTypes.bool.isRequired,
+            showPaidUnpaidPicker: PropTypes.bool.isRequired
+        }).isRequired,
         dispatch: PropTypes.func.isRequired
+
     };
 
+
+    //this call is called when the class is called for the first time
     componentWillMount() {
+        // reset the local state of this view for the first time`
+        this.props.dispatch(LeavesState.reset());
+
         Api.getLeavesDetails().then((resp) => {
-            console.log(resp);
-            cakeHrId = resp.result.cakeHR.id;
-            leavesUsed = resp.result.cakeHR.custom_types_data['10019'].used;
-            leavesAssigned = resp.result.cakeHR.custom_types_data['10019'].assigned;
-            console.log("Cake hr " + cakeHrId);
-            this.props.dispatch(LeavesState.updateUsedLeaves(leavesUsed));
-            this.props.dispatch(LeavesState.updateRemainingLeaves(leavesAssigned));
+            mCakeHrIdPaid = resp.result.cakeHR.id;
+            mLeavesUsed = resp.result.cakeHR.custom_types_data['9931'].used;
+            mLeavesAssigned = resp.result.cakeHR.custom_types_data['9931'].assigned;
+
+            this.props.dispatch(LeavesState.updateUsedLeaves(mLeavesUsed));
+            this.props.dispatch(LeavesState.updateRemainingLeaves(mLeavesAssigned));
         }).catch((e) => {
             console.log(e);
         });
     }
 
-    render() {
-        Api.getLeavesDetails().then((resp) => {
-            console.log(resp);
-            cakeHrId = resp.result.cakeHR.id;
-            leavesUsed = resp.result.cakeHR.custom_types_data['10019'].used;
-            leavesAssigned = resp.result.cakeHR.custom_types_data['10019'].assigned;
-            console.log("Cake hr " + cakeHrId);
-        }).catch((e) => {
-            console.log(e);
-        });
+    //handles the ios and android dependent coded for picker
+    rendorHowManyDays = (flexWeight) => {
+
+        let ONE_DAY = "One Day";
+        let MULTIPLE_DAYS = "Multiple Days";
 
         return (
-            <LinearGradient
-                start={{ x: 0.0, y: 0.25 }} end={{ x: 0.5, y: 1.0 }}
-                locations={[0.0, 0.5, 1.0]}
-                colors={['#60639f', '#5e73a1', '#5b87a3']} style={styles.linearGradient}>
+            <View style={{ flex: flexWeight }}>
                 <Text style={styles.plainText}>
                     How many Days?
                 </Text>
 
-                <ModalDropdown style={styles.dropCustom} defaultValue={this.props.isSingleDay ? "One Day" : "Mulitple Days"} dropdownStyle={styles.dropdown_4_dropdown} textStyle={styles.dropCustomText} options={DEMO_OPTIONS_1}
-                    onSelect={(idx, value) => this.props.dispatch(LeavesState.updateNumberOfDays(value))}>
-                </ModalDropdown>
+
+                {/*Android Picker*/}
+
+                {(Platform.OS === 'android') &&
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.SelectableBackground()}
+                        underlayColor="transparent">
+
+                        <View style={styles.basicPickerButton}>
+
+                            <Picker
+                                selectedValue={this.props.LeavesState.isSingleDay ? "One Day" : "Multiple Days"}
+                                onValueChange={(days) => this.props.dispatch(LeavesState.updateNumberOfDays(days))}
+                                mode="dropdown">
+
+                                <Picker.Item label={ONE_DAY} value="One Day" />
+                                <Picker.Item label={MULTIPLE_DAYS} value="Multiple Days" />
+
+                            </Picker>
+                        </View>
+                    </TouchableNativeFeedback>
+                }
+
+                {/*IOS Picker*/}
+
+                {(Platform.OS === 'ios') &&
+                    <TouchableHighlight
+                        underlayColor="transparent"
+                        onPress={() => this.props.dispatch(LeavesState.updateNumberDaysPicker(true))}
+                    >
+                        <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
+
+                            <Text style={styles.basicText}>
+                                {this.props.LeavesState.isSingleDay ? "One Day" : "Multiple Days"}
+                            </Text>
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showNumberOfDaysPicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updateNumberDaysPicker(false)) }}>
+
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updateNumberDaysPicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <Picker
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    selectedValue={this.props.LeavesState.isSingleDay ? "One Day" : "Multiple Days"}
+                                    onValueChange={(days) => {
+                                        this.props.dispatch(LeavesState.updateNumberOfDays(days));
+                                    }}>
+
+                                    <Picker.Item label={ONE_DAY} value={"One Day"} />
+                                    <Picker.Item label={MULTIPLE_DAYS} value={"Multiple Days"} />
+
+                                </Picker>
+
+                            </Modal>
+                        </View>
+                    </TouchableHighlight>
+                }
+
+            </View>
+        );
+    }
+
+
+    rendorHalfOrFullDay = (flexWeight) => {
+
+        if (!this.props.LeavesState.isSingleDay) {
+            return;
+        }
+
+        let FULL_DAY = "Full Day";
+        let FIRST_HALF = "First Half";
+        let SECOND_HALF = "Second Half";
+
+        return (
+            <View style={{ flex: flexWeight }}>
 
                 <Text style={styles.plainText}>
                     Half or Full day?
-                </Text>
-                <ModalDropdown style={styles.dropCustom} defaultValue={this.props.partOfDay} dropdownStyle={styles.dropdown_4_dropdown} textStyle={styles.dropCustomText} options={DEMO_OPTIONS_2}
-                    onSelect={(idx, value) => this.props.dispatch(LeavesState.updatePartOfDay(value))}>
-                </ModalDropdown>
+            </Text>
 
+                {/*Android Picker*/}
+                {(Platform.OS === 'android') &&
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.SelectableBackground()}
+                        underlayColor="transparent">
+
+                        <View style={styles.basicPickerButton}>
+                            <Picker
+                                selectedValue={this.props.LeavesState.partOfDay}
+                                onValueChange={(day) => this.props.dispatch(LeavesState.updatePartOfDay(day))}
+                                mode="dropdown">
+                                <Picker.Item label={FULL_DAY} value={FULL_DAY} />
+                                <Picker.Item label={FIRST_HALF} value={FIRST_HALF} />
+                                <Picker.Item label={SECOND_HALF} value={SECOND_HALF} />
+
+                            </Picker>
+                        </View>
+
+                    </TouchableNativeFeedback>
+                }
+
+                {/*IOS Picker*/}
+                {(Platform.OS === 'ios') &&
+                    <TouchableHighlight
+                        underlayColor="transparent"
+                        onPress={() => this.props.dispatch(LeavesState.updatePartOfDayPicker(true))}>
+                        <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
+
+                            <Text style={styles.basicText}>
+                                {this.props.LeavesState.partOfDay}
+                            </Text>
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showPartOfDayPicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updatePartOfDayPicker(false)) }}>
+
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updatePartOfDayPicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <Picker
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    selectedValue={this.props.LeavesState.partOfDay}
+                                    onValueChange={(day) => {
+                                        this.props.dispatch(LeavesState.updatePartOfDay(day))
+                                    }}>
+                                    <Picker.Item label={FULL_DAY} value={FULL_DAY} />
+                                    <Picker.Item label={FIRST_HALF} value={FIRST_HALF} />
+                                    <Picker.Item label={SECOND_HALF} value={SECOND_HALF} />
+                                </Picker>
+
+                            </Modal>
+                        </View>
+                    </TouchableHighlight>
+                }
+            </View>
+        );
+
+    }
+
+    rendorPaidOrUnPaid = (flexWeight) => {
+
+        let PAID_LEAVE = "Paid Leave";
+        let UNPAID_LEAVE = "Unpaid Leave";
+
+        return (
+            <View style={{ flex: flexWeight }}>
 
                 <Text style={styles.plainText}>
-                    Paid or Unpaid ?
-                </Text>
-                <ModalDropdown style={styles.dropCustom} defaultValue={this.props.isPaidDay ? "Paid Leave" : "Unpaid Leave"} dropdownStyle={styles.dropdown_4_dropdown} textStyle={styles.dropCustomText} options={DEMO_OPTIONS_3}
-                    onSelect={(idx, value) => this.props.dispatch(LeavesState.updatePaidLeave(value))}>
-                </ModalDropdown>
+                    Paid or Unpaid Leave?
+            </Text>
+
+                {/*Android Picker*/}
+                {(Platform.OS === 'android') &&
+                    <TouchableNativeFeedback
+                        background={TouchableNativeFeedback.SelectableBackground()}
+                        underlayColor="transparent">
+
+                        <View style={styles.basicPickerButton}>
+                            <Picker
+                                selectedValue={this.props.LeavesState.isPaidLeave ? "Paid Leave" : "Unpaid Leave"}
+                                onValueChange={(day) => this.props.dispatch(LeavesState.updatePaidUnpaid(day))}
+                                mode="dropdown">
+                                <Picker.Item label={PAID_LEAVE} value={"Paid Leave"} />
+                                <Picker.Item label={UNPAID_LEAVE} value={"Unpaid Leave"} />
+
+                            </Picker>
+                        </View>
+
+                    </TouchableNativeFeedback>
+                }
+
+                {/*IOS Picker*/}
+                {(Platform.OS === 'ios') &&
+                    <TouchableHighlight
+                        underlayColor="transparent"
+                        onPress={() => this.props.dispatch(LeavesState.updatePaidUnpaidPicker(true))}>
+                        <View style={[styles.basicPickerButton, styles.customPickerPadding]}>
+
+                            <Text style={styles.basicText}>
+                                {this.props.LeavesState.isPaidLeave ? "Paid Leave" : "Unpaid Leave"}
+                            </Text>
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showPaidUnpaidPicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updatePaidUnpaidPicker(false)) }}>
+
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updatePaidUnpaidPicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <Picker
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    selectedValue={this.props.LeavesState.isPaidLeave ? "Paid Leave" : "Unpaid Leave"}
+                                    onValueChange={(day) => {
+                                        this.props.dispatch(LeavesState.updatePaidUnpaid(day))
+                                    }}>
+                                    <Picker.Item label={PAID_LEAVE} value={"Paid Leave"} />
+                                    <Picker.Item label={UNPAID_LEAVE} value={"Unpaid Leave"} />
+                                </Picker>
+
+                            </Modal>
+                        </View>
+                    </TouchableHighlight>
+                }
+            </View>
+        );
+
+    }
+
+    rendorSelectDate = (flexWeight) => {
+
+        return (
+            <View style={{ flex: flexWeight }}>
 
                 <Text style={styles.plainText}>
-                    Select Dates for Leave
+                    Select Date for Leave
                 </Text>
 
-                <View style={styles.calenderContainer}>
-                    <DatePicker
-                        style={styles.dateStylePicker1}
-                        date={this.props.fromDateText}
-                        mode="date"
-                        placeholder="From Date"
-                        iconSource={require('./google_calendar.png')}
-                        format="YYYY-MM-DD"
-                        minDate="2017-03-23"
-                        maxDate="2020-06-01"
-                        confirmBtnText="Confirm"
-                        cancelBtnText="Cancel"
-                        customStyles={{
-                            dateIcon: {
-                                position: 'absolute',
-                                right: 5,
-                                top: 4,
-                                marginLeft: 0
-                            },
-                            dateInput: {
-                                marginLeft: 0
-                            }
-                        }}
-                        onDateChange={(date) => { this.props.dispatch(LeavesState.updateFromDate(date)); }}
-                    />
+                <View style={{ flexDirection: 'row' }}>
 
-                    {!this.props.isSingleDay &&
-                        <DatePicker
-                            style={styles.dateStylePicker2}
-                            date={this.props.toDateText}
-                            mode="date"
-                            placeholder="To Date"
-                            format="YYYY-MM-DD"
-                            minDate="2017-03-23"
-                            maxDate="2020-06-01"
-                            confirmBtnText="Confirm"
-                            cancelBtnText="Cancel"
-                            iconSource={require('./google_calendar.png')}
-                            customStyles={{
-                                dateIcon: {
-                                    position: 'absolute',
-                                    right: 5,
-                                    top: 4,
-                                    marginLeft: 0
-                                },
-                                dateInput: {
-                                    marginLeft: 0
-                                }
+                    {/*Android Picker From Date*/}
+                    {(Platform.OS === 'android') &&
+                        <TouchableNativeFeedback
+                            title="DatePickerAndroid"
+                            background={TouchableNativeFeedback.SelectableBackground()}
+                            onPress={this.showFromPicker.bind(this, this.props.LeavesState.fromDate)}
+                            underlayColor="transparent">
+
+
+                            <View
+                                style={styles.basicCalenderView}>
+                                <Text style={styles.basicText}>{this.props.LeavesState.fromDateText}</Text>
+                                <Icon
+                                    size={20}
+                                    color='#000'
+                                    name="calendar"
+                                    style={{ backgroundColor: "transparent" }}
+                                />
+                            </View>
+
+                        </TouchableNativeFeedback>
+                    }
+
+                    {/*IOS Picker From Date*/}
+
+                    {(Platform.OS === 'ios') &&
+                        <View style={{ flex: 1 }}>
+                            <TouchableHighlight
+                                onPress={() => this.props.dispatch(LeavesState.updateFromDatePicker(true))}
+                                underlayColor="transparent">
+
+                                <View
+                                    style={styles.basicCalenderView}>
+                                    <Text style={styles.basicText}>{this.props.LeavesState.fromDateText}</Text>
+                                    <Icon
+                                        size={20}
+                                        color='#000'
+                                        name="calendar"
+                                        style={{ backgroundColor: "transparent" }}
+                                    />
+                                </View>
+
+                            </TouchableHighlight>
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showFromDatePicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updateFromDatePicker(false)) }}>
+
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updateFromDatePicker(false))
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <DatePickerIOS
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    date={typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate}
+                                    mode="date"
+                                    onDateChange={(date) => {
+                                        this.props.dispatch(LeavesState.updateFromDate(date))
+                                    }}
+                                />
+
+                            </Modal>
+
+                        </View>
+                    }
+
+
+                    {/*Android Picker To Date*/}
+
+                    {!this.props.LeavesState.isSingleDay && (Platform.OS === 'android') &&
+                        <TouchableNativeFeedback
+                            title="DatePickerAndroid"
+                            background={TouchableNativeFeedback.SelectableBackground()}
+                            onPress={this.showToPicker.bind(this, this.props.LeavesState.toDate)}
+                            underlayColor="transparent">
+
+                            <View
+                                style={styles.basicCalenderView}>
+
+                                <Text style={styles.basicText}> {this.props.LeavesState.toDateText} </Text>
+
+                                <Icon
+                                    size={20}
+                                    color='#000'
+                                    name="calendar"
+                                    style={{ alignSelf: "center", backgroundColor: "transparent" }}
+                                />
+                            </View>
+                        </TouchableNativeFeedback>
+                    }
+
+
+                    {/*IOS Picker To Date*/}
+
+                    {!this.props.LeavesState.isSingleDay && (Platform.OS === 'ios') &&
+                        <View style={{ flex: 1 }}>
+                            <TouchableHighlight
+                                onPress={() => this.props.dispatch(LeavesState.updateToDatePicker(true))}
+                                underlayColor="transparent">
+
+
+                                <View
+                                    style={styles.basicCalenderView}>
+
+                                    <Text style={styles.basicText}> {this.props.LeavesState.toDateText} </Text>
+
+                                    <Icon
+                                        size={20}
+                                        color='#000'
+                                        name="calendar"
+                                        style={{ alignSelf: "center", backgroundColor: "transparent" }}
+                                    />
+                                </View>
+
+
+                            </TouchableHighlight>
+
+                            <Modal
+                                animationType={"fade"}
+                                transparent={true}
+                                visible={this.props.LeavesState.showToDatePicker}
+                                onRequestClose={() => { this.props.dispatch(LeavesState.updateToDatePicker(false)) }}>
+
+                                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                                <View style={{ backgroundColor: '#d7d7d7' }}>
+                                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(LeavesState.updateToDatePicker(false));
+                                            }}
+                                            title="Done" />
+                                    </View>
+                                </View>
+
+                                <DatePickerIOS
+                                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                                    date={typeof (this.props.LeavesState.toDate) === 'string' ? new Date() : this.props.LeavesState.toDate}
+                                    mode="date"
+                                    onDateChange={(date) => {
+                                        this.props.dispatch(LeavesState.updateToDate(date))
+                                    }}
+                                />
+
+                            </Modal>
+                        </View>
+                    }
+
+
+                </View>
+            </View>
+        );
+    }
+
+
+    rendorMessageBox = (flexWeight) => {
+        return (
+            <View style={{ flex: flexWeight }}>
+                <Text style={styles.plainText}>
+                    Brief reason
+                </Text>
+                <Kohana
+                    style={{ backgroundColor: '#d7d7d7', maxHeight: 50 }}
+                    label={'Comment'}
+                    iconClass={Icon}
+                    iconName={'commenting'}
+                    iconColor={'black'}
+                    labelStyle={{ color: '#000000', fontSize: 16, fontWeight: 'normal' }}
+                    inputStyle={{ color: '#000000' }}
+                    onChangeText={(message) => this.props.dispatch(LeavesState.updateBriefMessage(message))}
+                />
+            </View>
+
+        );
+    }
+
+    rendorApplyButton = (flexWeight) => {
+
+        return (
+
+            <View style={{ flex: flexWeight }}>
+                <View style={{ marginTop: 30 }}>
+
+                    {Platform.OS === 'android' && this.props.LeavesState.showApplyButton &&
+                        <Button
+                            onPress={() => {
+                                this.applyForLeave();
                             }}
-                            onDateChange={(date) => { this.props.dispatch(LeavesState.updateToDate(date)); }}
+                            color='#464763'
+                            title="Apply For Leave" />
+                    }
+
+                    {Platform.OS === 'ios' && this.props.LeavesState.showApplyButton &&
+                        <View style={{ backgroundColor: '#464763' }}>
+                            <Button
+                                onPress={() => {
+                                    this.applyForLeave();
+                                }}
+                                color='#ffffff'
+                                title="Apply For Leave" />
+                        </View>
+                    }
+
+                    {this.props.LeavesState.showProgress &&
+                        <ActivityIndicator
+                            size="large"
+                            color="white"
                         />
                     }
                 </View>
+            </View>
+        );
 
 
-                {/*Apply Button*/}
+    }
 
-                <View style={{ marginTop: 15 }}>
+    rendorProgressStatus = (flexWeight) => {
 
-                    <View
-                        style={this.props.showApplyButton ? styles.showButton : styles.hideButton}>
+        return (
+            <View style={{
+                marginTop: 50,
+                marginBottom: 50,
+                flex: flexWeight, alignSelf: 'center'
+            }}>
 
-                        <Button
-                            onPress={() => {
-                                this.applyForWorkFromHome();
-                            }}
-                            title="Apply Leave" />
+                <AnimatedCircularProgress
+                    size={200}
+                    width={3}
+                    fill={this.props.LeavesState.usedLeaves / this.props.LeavesState.remainingLeaves * 100}
+                    tintColor="#af00d8"
+                    backgroundColor="#00D5D5">
+                    {
+                        (fill) => (
+                            <View style={{ flexDirection: 'column' }}>
+                                <Text style={{ flex: 1, fontSize: 40, color: 'white', textAlign: 'center', marginTop: -140 }}>
+                                    {this.props.LeavesState.usedLeaves}
+                                </Text>
 
-                    </View>
-                    <ActivityIndicator
-                        style={this.props.showProgress ? styles.progressBar : styles.hideProgressBar}
-                        size="large"
-                        color="white"
-                    />
-                </View>
-                <View style={styles.baseContainer}>
+                                <Text style={{ flex: 0.2, fontSize: 12, textAlign: 'center', color: 'white', opacity: 0.5, marginTop: -300 }}>
+                                    {this.props.LeavesState.remainingLeaves - this.props.LeavesState.usedLeaves} Leaves Remaining
+                                </Text>
 
-                    <AnimatedCircularProgress
-                        style={{ marginTop: 15, alignItems: 'center' }}
-                        size={130}
-                        width={4}
-                        fill={this.props.usedLeaves / this.props.remainingLeaves * 100}
-                        tintColor="#9e00cd"
-                        backgroundColor="#49cacd">
-                        {
-                            (fill) => (
-                                <View>
-                                    <Text style={{ marginBottom:10,marginTop: -90, marginLeft:25, fontSize: 24, color: 'white' }}>
-                                        {this.props.usedLeaves}
-                                    </Text>
-                                    <Text style={{ marginLeft:10,marginTop: -5, fontSize: 12, color: 'white' }}>
-                                        {this.props.remainingLeaves - this.props.usedLeaves} Paid Leaves {"\n"}remaining
-                                    </Text>
-                                </View>
-                            )
-                        }
-                    </ AnimatedCircularProgress>
-                </View>
+                            </View>
+                        )
+                    }
+                </AnimatedCircularProgress>
+            </View>
+        );
+    }
 
-                {/*<Text style={{
-                    backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5,
-                    textAlign: 'left', color: "#fff", fontSize: 30,
-                }}>{this.props.usedLeaves} </Text>*/}
-                {/*<Text style={{
-                    backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5,
-                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 10,
-                }}>{this.props.usedLeaves} Used</Text>
 
-                <Text style={{
-                    backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5, 
-                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 10
-                }}>{this.props.remainingLeaves}  Total</Text>
-                 <Text style={{
-                    backgroundColor: "transparent", alignSelf: "center",
-                    paddingLeft: 5, 
-                    textAlign: 'left', color: "#fff", fontSize: 30, marginTop: 10
-                }}>{this.props.remainingLeaves - this.props.usedLeaves}  Remaing</Text>*/}
+
+    render() {
+
+        return (
+
+            <LinearGradient
+                start={{ x: 0.0, y: 0.25 }} end={{ x: 0.5, y: 1.0 }}
+                locations={[0.0, 0.5, 1.0]}
+                colors={['#60639f', '#5e73a1', '#5b87a3']} style={styles.linearGradient}>
+
+                <ScrollView
+                    automaticallyAdjustContentInsets={false}
+                    horizontal={false}
+                    style={styles.scrollView}>
+
+                    {this.rendorHowManyDays(1)}
+
+                    {this.rendorHalfOrFullDay(1)}
+
+                    {this.rendorPaidOrUnPaid(1)}
+
+                    {this.rendorSelectDate(1)}
+
+                    {this.rendorMessageBox(1)}
+
+                    {this.rendorApplyButton(1)}
+
+                    {this.rendorProgressStatus(2)}
+
+                </ScrollView>
 
             </LinearGradient>
         );
     }
 
+    /**Show Android From Date Picker */
     showFromPicker = async (options) => {
         console.log(options);
         try {
             const { action, year, month, day } = await DatePickerAndroid.open(null);
             if (action === DatePickerAndroid.dismissedAction) {
-                //this.props.dispatch(WfhState.updateFromDate());
+                //this.props.dispatch(LeavesState.updateFromDate());
             } else {
                 console.log(date);
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateFromDate(date));
             }
-        } catch (message) {
+        } catch ({ code, message }) {
             console.warn(`Error in example `, message);
         }
     };
 
+    /**Show Android To Date Picker */
     showToPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open(null);
             if (action === DatePickerAndroid.dismissedAction) {
-                //this.props.dispatch(WfhState.updateDate());
+                //this.props.dispatch(LeavesState.updateDate());
             } else {
                 console.log(date);
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateToDate(date));
             }
-        } catch (message) {
+        } catch ({ code, message }) {
             console.warn(`Error in example `, message);
         }
     };
 
-    applyForWorkFromHome = () => {
+    /**
+     * Api call for applying leave
+     */
+    applyForLeave = () => {
 
 
         this.props.dispatch(LeavesState.showApplyButton(false));
@@ -277,191 +682,132 @@ class LeavesView extends Component {
 
         Api.getLeavesDetails().then((resp) => {
             console.log(resp);
-            cakeHrId = resp.result.cakeHR.id;
-            leavesUsed = resp.result.cakeHR.custom_types_data['9931'].used;
-            leavesAssigned = resp.result.cakeHR.custom_types_data['9931'].assigned;
-            console.log("Cake hr " + cakeHrId);
+            mCakeHrIdPaid = resp.result.cakeHR.id;
+            mWfhUsed = resp.result.cakeHR.custom_types_data['9931'].used;
+            mWfhAssigned = resp.result.cakeHR.custom_types_data['9931'].assigned;
 
-            this.props.dispatch(LeavesState.updateUsedLeaves(leavesUsed));
-            this.props.dispatch(LeavesState.updateRemainingLeaves(leavesAssigned));
+            this.props.dispatch(LeavesState.updateUsedLeaves(mWfhUsed));
+            this.props.dispatch(LeavesState.updateRemainingLeaves(mWfhAssigned));
 
-            var toDate = this.props.toDateText;
-            if (this.props.isSingleDay) {
-                toDate = this.props.fromDateText
+
+            if (this.props.LeavesState.fromDateText === 'From Date') {
+                alert("Enter From Date");
+                //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                //this.props.dispatch(LeavesState.showError(e));         
+                this.props.dispatch(LeavesState.showApplyButton(true));
+                this.props.dispatch(LeavesState.toggleProgress(false));
+                return;
             }
 
-            Api.applyforLeave(cakeHrId, this.props.fromDateText, toDate, this.props.partOfDay, "Test Work From Home").then(
+            let toDate = this.props.LeavesState.toDate;
+
+            if (this.props.LeavesState.isSingleDay == true) {
+                toDate = this.props.LeavesState.fromDate;
+            } else {
+                if (this.props.LeavesState.toDateText === 'To Date') {
+                    alert("Enter To Date");
+                    //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                    //this.props.dispatch(LeavesState.showError(e));         
+                    this.props.dispatch(LeavesState.showApplyButton(true));
+                    this.props.dispatch(LeavesState.toggleProgress(false));
+                    return;
+                }
+            }
+
+            Api.applyforLeave(mCakeHrIdPaid, this.props.LeavesState.fromDate, toDate,
+                this.props.LeavesState.partOfDay,
+                this.props.LeavesState.briefMessage, this.props.LeavesState.isPaidLeave).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
                         alert(resp.result.error);
                         //ToastAndroid.showWithGravity(resp.result.error, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-                        //this.props.dispatch(WfhState.showError(resp.result.error));         
+                        //this.props.dispatch(LeavesState.showError(resp.result.error));         
                     } else {
                         alert(resp.result.success);
                         //ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-                        //this.props.dispatch(WfhState.showSuccess(resp.result.success));
+                        //this.props.dispatch(LeavesState.showSuccess(resp.result.success));
                     }
                     this.props.dispatch(LeavesState.showApplyButton(true));
                     this.props.dispatch(LeavesState.toggleProgress(false));
 
+                    //if success reset the state
+                    this.props.dispatch(LeavesState.reset());
+
                 }
-            ).catch((e) => {
-                //ToastAndroid.showWithGravity("There was some error", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
-                //this.props.dispatch(WfhState.showError(e));         
-                this.props.dispatch(LeavesState.showApplyButton(true));
-                this.props.dispatch(LeavesState.toggleProgress(false))
-            });
+                ).catch((e) => {
+                    //alert(e)
+                    //alert("There was some error, check your internet connection");
+                    //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+                    //this.props.dispatch(LeavesState.showError(e));         
+                    this.props.dispatch(LeavesState.showApplyButton(true));
+                    this.props.dispatch(LeavesState.toggleProgress(false));
+                });
         }).catch((e) => {
-            console.log(e);
+            alert("There was some error, check your internet connection");
+            //ToastAndroid.showWithGravity("There was some error, check your internet connection", ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+            //this.props.dispatch(LeavesState.showError(e));         
             this.props.dispatch(LeavesState.showApplyButton(true));
-            this.props.dispatch(LeavesState.toggleProgress(false))
+            this.props.dispatch(LeavesState.toggleProgress(false));
+            console.log(e);
         });
-        //dispatch(WfhState.reset())
+
     };
 
 }
 
-const onSelectDayClicked = (dispatch) => {
-    console.log(this);
-    //dispatch(WfhState.showNumberOfDaysPicker(true));
-};
+
 
 const styles = StyleSheet.create({
-    image: {
-        height: 40,
-        marginTop: 5,
-        width: 40,
-        borderRadius: 20
-    },
-    header: {
-        flexDirection: 'row'
-    },
-    canvas: {
-        width: 500,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-    },
+
     linearGradient: {
         flex: 1,
+        flexDirection: 'column',
+    },
+
+    plainText: {
+        paddingTop: 8,
+        paddingBottom: 8,
+        fontSize: 15,
+        color: '#fff'
+
+    },
+
+    basicPickerButton: {
+        backgroundColor: '#d7d7d7',
+        paddingLeft: 5,
+        marginBottom: 10
+    },
+
+    customPickerPadding: {
+        paddingTop: 12,
+        paddingBottom: 12
+    },
+
+    basicText: {
+        flex: 1,
+        backgroundColor: "transparent",
+        paddingLeft: 5,
+        textAlign: 'left', color: "#000000", fontSize: 16,
+    },
+
+    basicCalenderView: {
+        flex: 1,
+        padding: 12,
+        flexDirection: 'row',
+        backgroundColor: '#d7d7d7',
+        marginBottom: 10,
+        marginRight: 10,
+        justifyContent: 'flex-end'
+    },
+
+    scrollView: {
+        backgroundColor: 'transparent',
+        height: 800,
         paddingTop: 20,
         paddingBottom: 10,
-        flexDirection: 'column',
         paddingLeft: 15,
         paddingRight: 15
-    },
-    container: {
-        marginBottom: 20,
-        marginTop: 20,
-        paddingLeft: 15,
-        paddingRight: 15,
-        flex: 1,
-        flexDirection: "column",
-        backgroundColor: "#fa21ff"
-    },
-    sceneContainer: {
-        flex: 1,
-        backgroundColor: "#48E2FF",
-        marginBottom: TAB_BAR_HEIGHT
-    },
-    slack_button: {
-        marginTop: 50,
-        height: 35, //28
-        width: 150, //120
-        alignSelf: "center"
-    },
-    showButton: {
-        opacity: 1
-    },
-    hideButton: {
-        opacity: 0,
-        height: 0,
-        width: 0
-    },
-    applyButton: {
-        marginTop: 50,
-        height: 35, //28
-        width: 150, //120
-        alignSelf: "center"
-    },
-    plainText: {
-        paddingTop: 4,
-        paddingBottom: 4,
-        fontSize: 15,
-        color: '#fff',
-        backgroundColor: "transparent"
-    },
-    simplePicker: {
-        flexDirection: 'row'
-    },
-    progressBar: {
-        opacity: 1,
-        alignSelf: "center",
-        padding: 10,
-        marginTop: 30,
-        marginBottom: 20
-    },
-    hideProgressBar: {
-        opacity: 0,
-        height: 0,
-        width: 0,
-        position: "absolute",
-        alignSelf: "center",
-        marginTop: 30,
-        marginBottom: 20
-    },
-    btnStyle: {
-        paddingLeft: 20,
-        paddingRight: 20
-    }, picker: {
-
-    }, standardPicker: {
-        flexDirection: 'row',
-        backgroundColor: '#d7d7d7'
-    }, dateStylePicker1: {
-        width: 150,
-        backgroundColor: "#d6d6d6",
-        flex: 0.5
-
-    }, dateStylePicker2: {
-        width: 150,
-        marginLeft: 20,
-        backgroundColor: "#d6d6d6",
-        flex: 0.5
-    }, calenderContainer: {
-        flexDirection: "row",
-        position: "relative",
-        marginTop : 5
-    }, dropdown_4_dropdown: {
-        position: "relative",
-        height: 70,
-        marginRight: 30,
-
-    }, dropCustom: {
-        borderWidth: 1,
-        height: 35,
-        backgroundColor: "#d6d6d6",
-        marginTop: 5
-    },
-    dropCustomText: {
-        color: "black",
-        fontSize: 16,
-        marginTop: 7,
-        marginLeft: 5
-    }, dropdown_6_image: {
-        width: 40,
-        height: 40,
-        marginLeft: 300
-    }, dateCustomText: {
-        fontSize: 20,
-        marginLeft: 10,
-        paddingLeft: 10
-    }, baseContainer: {
-        flex: 1,
-        backgroundColor: 'transparent'
     }
 });
 

@@ -1,20 +1,9 @@
 import {connect} from 'react-redux';
 import WfhView from './WfhView';
+import {toJS} from 'immutable';
 
 export default connect(
     state => ({
-        showProgress: state.getIn(["wfhState","showProgress"]),
-        errorMessage: state.getIn(["wfhState","errorMessage"]),
-        successMessage: state.getIn(["wfhState","successMessage"]),
-        showApplyButton: state.getIn(["wfhState","showApplyButton"]),
-        fromDate: state.getIn(["wfhState","fromDate"]),
-        toDate: state.getIn(["wfhState","toDate"]),
-        fromDateText: state.getIn(["wfhState","fromDateText"]),
-        toDateText: state.getIn(["wfhState","toDateText"]),
-        isSingleDay: state.getIn(["wfhState","isSingleDay"]),
-        partOfDay: state.getIn(["wfhState","partOfDay"]),
-        usedLeaves: state.getIn(["wfhState","usedLeaves"]),
-        remainingLeaves: state.getIn(["wfhState","remainingLeaves"]),
-        showNumberOfDaysPicker: state.getIn(["wfhState","showNumberOfDaysPicker"])
+        wfhState: state.get("wfhState").toJS()
     })
 )(WfhView);
