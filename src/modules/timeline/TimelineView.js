@@ -8,7 +8,8 @@ import {
     StatusBar,
     ListView,
     Platform,
-    TouchableHighlight
+    TouchableHighlight,
+    Alert
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -20,6 +21,7 @@ import * as TimeLineStateActions from './TimelineState';
 
 import * as officeApi from '../../office-server/OfficeApi';
 import Dimensions from 'Dimensions'
+import { isUserValidLocation } from '../../services/locationService';
 
 function _getMonthInString(month) {
     switch (month){
@@ -184,40 +186,67 @@ class TimelineView extends Component {
                             <View style={{flex:1,alignItems:"center"}}>
                                 <TouchableHighlight onPress={function()
                                                 {
-
-                                                    if(!checkin){
-                                                        officeApi.checkinUser()
-                                                        .then((resp)=>{
-                                                            dispatch(TimeLineStateActions.checkUserToggle());
-                                                            officeApi.getUserTimeline()
-                                                            .then((resp)=>{
-                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-                                                            })
-                                                            .catch((err)=>{
-                                                                console.log(err);
-                                                            });
-                                                        })
-                                                        .catch((err)=>{
-                                                            console.log(err);
-                                                        });
-                                                       }
-                                                    else{
-                                                        officeApi.checkoutUser()
-                                                        .then((resp)=>{
-                                                           dispatch(TimeLineStateActions.checkUserToggle());
-                                                           officeApi.getUserTimeline()
-                                                            .then((resp)=>{
-                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-                                                            })
-                                                            .catch((err)=>{
-                                                                console.log(err);
-                                                            });
-                                                        })
-                                                        .catch((err)=>{
-                                                            console.log(err);
-                                                        });
-                                                    }
-
+                                                    isUserValidLocation().then(
+                                                        (validity) => {
+                                                            if (validity === true) {
+                                                                // user within range of office
+                                                                if(!checkin){
+                                                                    officeApi.checkinUser()
+                                                                    .then((resp)=>{
+                                                                        dispatch(TimeLineStateActions.checkUserToggle());
+                                                                        officeApi.getUserTimeline()
+                                                                        .then((resp)=>{
+                                                                            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                                                                        })
+                                                                        .catch((err)=>{
+                                                                            console.log(err);
+                                                                        });
+                                                                    })
+                                                                    .catch((err)=>{
+                                                                        console.log(err);
+                                                                    });
+                                                                }
+                                                                else{
+                                                                    officeApi.checkoutUser()
+                                                                    .then((resp)=>{
+                                                                    dispatch(TimeLineStateActions.checkUserToggle());
+                                                                    officeApi.getUserTimeline()
+                                                                        .then((resp)=>{
+                                                                            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                                                                        })
+                                                                        .catch((err)=>{
+                                                                            console.log(err);
+                                                                        });
+                                                                    })
+                                                                    .catch((err)=>{
+                                                                        console.log(err);
+                                                                    });
+                                                                }
+                                                            } else {
+                                                                // User not within range of office
+                                                                Alert.alert(
+                                                                    'Oh! Snap',
+                                                                    'You are not currently within the office premises, please be within the office premises to checkin/checkout or contact office manager.',
+                                                                    [
+                                                                        {text: 'OK', onPress: () => {}},
+                                                                    ]
+                                                                );
+                                                            }
+                                                        }
+                                                    ).catch(
+                                                        (error) => {
+                                                            // some error occoured during ranging of user
+                                                            let errorHeading = (error.code === 1 ? 'Permission Error' : 'Oh! Snap');
+                                                            let errorText = (error.code === 1 ? 'Please check location permissions granted to this app in settings.' : 'Some location services error occoured try again later or contact the office manager.');
+                                                            Alert.alert(
+                                                                errorHeading,
+                                                                errorText,
+                                                                [
+                                                                    {text: 'OK', onPress: () => {}},
+                                                                ]
+                                                            );
+                                                        }
+                                                    );
                                                 }}
                                                     underlayColor="transparent"
                                 >
