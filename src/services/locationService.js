@@ -1,7 +1,5 @@
 //"use_strict";
 
-var that = this;
-
 const officeLocation = {
     lat: 15.4561103,
     long: 73.8222992
