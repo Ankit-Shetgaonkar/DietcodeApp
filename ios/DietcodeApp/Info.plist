@@ -52,11 +52,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-<<<<<<< HEAD
 	<string>DietcodeApp must access your location during checkin and checkout. Please select allow to grant permission.</string>
-=======
-	<string></string>
->>>>>>> dev1
 	<key>UIAppFonts</key>
 	<array>
 		<string>Entypo.ttf</string>
@@ -79,11 +75,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-<<<<<<< HEAD
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-=======
->>>>>>> dev1
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
