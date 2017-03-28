@@ -89,7 +89,7 @@ export async function getLeavesDetails() {
     }
 }
 
-export async function applyforLeave(cakeHrId, from, to, day_part, message) {
+export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid) {
 
     if (day_part === "First Half") {
         day_part = 1;
@@ -98,16 +98,26 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message) {
     } else {
         day_part = 0;
     }
+    let timeoffString ;
+    if (isPaid){
+        console.log("vacation leave condition");
+    timeoffString = "9931"
+}else{
+       console.log("unpaid leave condition");
+       timeoffString = "10267" 
+    }
 
     let fromString = from.getFullYear()+"-"+from.getMonth()+"-"+from.getDate();
     let toString = to.getFullYear()+"-"+to.getMonth()+"-"+to.getDate();
     let leaveBody;
+
+
     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
         leaveBody = {
 
             "cakehr_id": cakeHrId,
-            "timeoff_id": "9931",
+            "timeoff_id": timeoffString,
             "from": fromString,//"2023-7-04",
             "to": toString,//"2023-7-04",
             "day_part": day_part,
@@ -118,7 +128,7 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message) {
         console.log("outside");
         leaveBody = {
             "cakehr_id": cakeHrId,
-            "timeoff_id": "9931",
+            "timeoff_id": timeoffString,
             "from": fromString,//"2023-7-04",
             "to": toString,//"2023-7-04",
             "message": message

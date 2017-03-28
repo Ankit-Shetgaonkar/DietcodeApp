@@ -482,7 +482,8 @@ class LeavesView extends Component {
                                             onPress={() => {
                                                 this.props.dispatch(LeavesState.updateToDatePicker(false));
                                             }}
-                                            title="Done" />
+                                            title="Done" 
+                                            />
                                     </View>
                                 </View>
 
@@ -696,10 +697,9 @@ class LeavesView extends Component {
                 toDate = this.props.LeavesState.fromDate;
             }
 
-           
             Api.applyforLeave(mCakeHrIdPaid, this.props.LeavesState.fromDate, toDate,
                 this.props.LeavesState.partOfDay,
-                this.props.LeavesState.briefMessage).then(
+                this.props.LeavesState.briefMessage,this.props.LeavesState.isPaidLeave).then(
                 (resp) => {
                     console.log(resp);
                     if (resp.result.error) {
