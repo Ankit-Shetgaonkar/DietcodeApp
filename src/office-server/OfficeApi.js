@@ -89,6 +89,7 @@ export async function getLeavesDetails() {
     }
 }
 
+
 export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid) {
 
     if (day_part === "First Half") {
@@ -134,7 +135,6 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
             "message": message
         };
     }
-
     try {
         const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff", leaveBody, true);
         return resp;

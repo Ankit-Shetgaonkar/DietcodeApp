@@ -12,14 +12,12 @@ export const NUMBER_OF_DAYS = "LeavesState/NUMBER_OF_DAYS";
 export const PART_OF_DAY = "LeavesState/PART_OF_DAY";
 export const USED_LEAVES = "LeavesState/USED_LEAVES";
 export const REMAINING_LEAVES = "LeavesState/REMAINING_LEAVES";
-export const UPDATE_NUMBER_DAYS_PICKER = "LeavesState/UPDATE_NUMBER_DAYS_PICKER";
 export const UPDATE_PART_DAY_PICKER = "LeavesState/UPDATE_PART_DAY_PICKER";
 export const UPDATE_FROM_DATE_PICKER = "LeavesState/UPDATE_FROM_DATE_PICKER";
 export const UPDATE_TO_DATE_PICKER = "LeavesState/UPDATE_TO_DATE_PICKER";
 export const BRIEF_MESSAGE = "LeavesState/BRIEF_MESSAGE";
 export const PAID_UNPAID_LEAVE = "LeavesState/PAID_UNPAID_LEAVE";
 export const PAID_UNPAID_PICKER = "LeavesState/PAID_UNPAID_PICKER";
-
 export const [FULL_DAY, FIRST_HALF, SECOND_HALF] = ['Full Day', 'First Half', 'Second Half'];
 
 
@@ -41,17 +39,11 @@ const initialState = fromJS({
     showFromDatePicker: false,
     showToDatePicker: false,
     briefMessage: "",
-    isPaidLeave:true,
-    showPaidUnpaidPicker:false
+    isPaidLeave: true,
+    showPaidUnpaidPicker: false
 });
 
 
-export function updateNumberDaysPicker(showPicker) {
-    return {
-        type: UPDATE_NUMBER_DAYS_PICKER,
-        payload: showPicker
-    }
-}
 
 export function updatePartOfDayPicker(showPicker) {
     return {
@@ -75,7 +67,7 @@ export function updateToDatePicker(showPicker) {
 }
 
 export function updateFromDate(date) {
-    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+    const dateText = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
     return {
         type: UPDATE_FROM_DATE,
         payload: [date, dateText]
@@ -83,7 +75,7 @@ export function updateFromDate(date) {
 }
 
 export function updateToDate(date) {
-    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+    const dateText = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
     return {
         type: UPDATE_TO_DATE,
         payload: [date, dateText]
@@ -95,54 +87,10 @@ export function updateNumberOfDays(day) {
     if (day != "One Day") {
         isSingle = false;
     }
-
     return {
         type: NUMBER_OF_DAYS,
         payload: isSingle
     }
-}
-
-export function updatePartOfDay(partOfDay) {
-    return {
-        type: PART_OF_DAY,
-        payload: partOfDay
-    }
-}
-
-
-export function toggleProgress(isProgress) {
-    return {
-        type: SHOW_PROGRESS,
-        payload: isProgress
-    };
-}
-
-
-export function reset() {
-    return {
-        type: RESET
-    };
-}
-
-export function showError(errorMessage) {
-    return {
-        type: APPLY_ERROR,
-        payload: errorMessage
-    };
-}
-
-export function showSuccess(successMessage) {
-    return {
-        type: APPLY_SUCCESS,
-        payload: successMessage
-    };
-}
-
-export function showApplyButton(isButtonVisible) {
-    return {
-        type: APPLY_BUTTON_TOGGLE,
-        payload: isButtonVisible
-    };
 }
 
 export function updateUsedLeaves(usedLeaves) {
@@ -184,10 +132,72 @@ export function updatePaidUnpaid(leaveType) {
     };
 }
 
-export function updatePaidUnpaidPicker(showPicker){
+export function updatePaidUnpaidPicker(showPicker) {
     return {
         type: PAID_UNPAID_PICKER,
         payload: showPicker
+    }
+}
+
+export function updatePartOfDay(partOfDay) {
+
+    return {
+        type: PART_OF_DAY,
+        payload: partOfDay
+    }
+}
+
+export function updatePaidLeave(paidDay) {
+    console.log("Chut " + paidDay)
+    var isPaid = true;
+    if (paidDay != "Paid Leave") {
+        isPaid = false;
+    }
+    return {
+        type: PAID_DAY,
+        payload: isPaid
+    }
+}
+
+
+export function toggleProgress(isProgress) {
+    return {
+        type: SHOW_PROGRESS,
+        payload: isProgress
+    };
+}
+
+export function showNumberOfDaysPicker(isVisible) {
+    return {
+        type: SHOW_NUMBER_OF_DAYS_PICKER,
+        payload: isVisible
+    }
+}
+
+export function reset() {
+    return {
+        type: RESET
+    };
+}
+
+export function showError(errorMessage) {
+    return {
+        type: APPLY_ERROR,
+        payload: errorMessage
+    };
+}
+
+export function showSuccess(successMessage) {
+    return {
+        type: APPLY_SUCCESS,
+        payload: successMessage
+    };
+}
+
+export function showApplyButton(isButtonVisible) {
+    return {
+        type: APPLY_BUTTON_TOGGLE,
+        payload: isButtonVisible
     };
 }
 
@@ -201,7 +211,6 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
             state = initialState.merge({ "usedLeaves": usedLeaves, "remainingLeaves": remainingLeaves });
             return state;
 
-
         case SHOW_PROGRESS:
             return state.set("showProgress", action.payload);
 
@@ -213,6 +222,7 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
 
         case APPLY_ERROR:
             return state.set("errorMessage", action.payload);
+
 
         case UPDATE_FROM_DATE:
             state = state.merge({
@@ -227,6 +237,9 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
                 "toDateText": action.payload[1]
             });
             return state;
+        case SHOW_NUMBER_OF_DAYS_PICKER:
+            return state.set("showNumberOfDaysPicker", action.payload);
+
 
         case NUMBER_OF_DAYS:
             return state.set("isSingleDay", action.payload);
@@ -239,9 +252,6 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
 
         case REMAINING_LEAVES:
             return state.set("remainingLeaves", action.payload);
-
-        case UPDATE_NUMBER_DAYS_PICKER:
-            return state.set("showNumberOfDaysPicker", action.payload);
 
         case UPDATE_PART_DAY_PICKER:
             return state.set("showPartOfDayPicker", action.payload);
@@ -259,7 +269,8 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
             return state.set("isPaidLeave", action.payload);
 
         case PAID_UNPAID_PICKER:
-            return state.set("showPaidUnpaidPicker",action.payload);
+            return state.set("showPaidUnpaidPicker", action.payload);
+
 
         default:
             return state;
