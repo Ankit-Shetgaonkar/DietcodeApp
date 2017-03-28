@@ -100,9 +100,13 @@ class SlackLoginView extends Component {
                     Login with Slack to manage your checkin & checkout ,
                     you can also manage your Redmine tickets directly from this app
                 </Text>
-                <Text style={styles.foot}>
+                <View style={{flex:1,flexDirection:'column',justifyContent:'center'}}>
+                    <View style = {{flex:1}}></View>
+                    <Text style={styles.foot}>
                     Made with ❤️️ & 🤓 at Dietcode
-                </Text>
+                    </Text>
+                </View>
+
             </LinearGradient>
         );
     }
@@ -231,11 +235,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
         marginLeft: 15,
         color: '#ffffff',
-        backgroundColor: 'transparent',
-        position: "absolute",
-        bottom: 0,
-        left: 80,
-        alignSelf: "stretch"
+        backgroundColor: 'transparent'
     },
     bottomBar: {
         backgroundColor: "#00ff00",
