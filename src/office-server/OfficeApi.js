@@ -98,20 +98,20 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
     } else {
         day_part = 0;
     }
-    let timeoffString ;
-    if (isPaid){
-        console.log("vacation leave condition");
-    timeoffString = "9931"
-}else{
-       console.log("unpaid leave condition");
-       timeoffString = "10267" 
+    let timeoffString;
+    if (isPaid) {
+        timeoffString = "9931"
+    } else {
+        timeoffString = "10267"
     }
 
-    let fromString = from.getFullYear()+"-"+from.getMonth()+"-"+from.getDate();
-    let toString = to.getFullYear()+"-"+to.getMonth()+"-"+to.getDate();
+    let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
+    let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
     let leaveBody;
-
-
+    console.log(from);
+    console.log(to);
+    console.log(fromString);
+    console.log(toString);
     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
         leaveBody = {
@@ -153,8 +153,8 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     } else {
         day_part = 0;
     }
-    let fromString = from.getFullYear()+"-"+from.getMonth()+"-"+from.getDate();
-    let toString = to.getFullYear()+"-"+to.getMonth()+"-"+to.getDate();
+    let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
+    let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
 
  let leaveBody;
      if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
