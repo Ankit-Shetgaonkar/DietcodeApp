@@ -10,6 +10,7 @@ import * as SessionState from "../session/SessionState";
 import * as api from "../../utils/api";
 import RealmDatabase from '../../database/RealmDatabase';
 import UserModel from '../../database/UserModel';
+import Platform from 'react-native'
 
 
 class SlackLoginView extends Component {
@@ -65,6 +66,7 @@ class SlackLoginView extends Component {
 
                 <TouchableHighlight onPress={function()
                     {
+                            manager.deauthorize("slack")
                             dispatcher(LoginState.toggleProgress(false));
                             manager.authorize('slack', {scopes: 'identity.basic,identity.email,identity.team,identity.avatar'})
                               .then(resp => _slackAuthRespose(dispatcher,resp.response.credentials.accessToken))

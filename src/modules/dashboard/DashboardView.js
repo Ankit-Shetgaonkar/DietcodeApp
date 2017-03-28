@@ -113,7 +113,6 @@ class DashboardView extends Component {
     }
 }
 
-
 // <TabBar
 //     style={{opacity:0,height:0,width:0}}
 //     height={TAB_BAR_HEIGHT}
