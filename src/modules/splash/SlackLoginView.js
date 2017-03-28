@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     toolbarTitle: {
         color: '#fff',
         textAlign: 'center',
-        fontWeight: 'bold',
+        fontWeight: 'bold'
         //Step 3
     },
     linearGradient: {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 30,
         color: '#ffffff',
-        backgroundColor: 'transparent',
+        backgroundColor: 'transparent'
     },
     desc: {
         fontSize: 14,
