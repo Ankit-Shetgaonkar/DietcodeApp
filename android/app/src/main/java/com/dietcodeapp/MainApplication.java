@@ -2,6 +2,10 @@ package com.dietcodeapp;
 
 import android.app.Application;
 
+import com.facebook.react.ReactApplication;
+import com.BV.LinearGradient.LinearGradientPackage;
+import io.realm.react.RealmReactPackage;
+import io.fullstack.oauth.OAuthManagerPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactApplication;
@@ -30,6 +34,9 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
             new ReactNativePushNotificationPackage(),
+
+            new LinearGradientPackage(),
+
             new RealmReactPackage(),
             new OAuthManagerPackage(),
             new LinearGradientPackage(),

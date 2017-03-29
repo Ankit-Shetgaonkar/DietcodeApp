@@ -71,7 +71,7 @@ function _getDayOfWeek(day) {
     }
 }
 
-notification.initializeNotification();
+//notification.initializeNotification();
 
 async function createUser(token){
     if(!RealmDatabse.findUser().length >0){
@@ -129,7 +129,7 @@ class TimelineView extends Component {
 
     constructor() {
         super();
-        notification.sendNotification("test notification!!!!");
+        //notification.sendNotification("test notification!!!!");
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                 //console.log("going to call timeline ",resp)
