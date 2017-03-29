@@ -9,7 +9,8 @@ import {
     ListView,
     Platform,
     TouchableHighlight,
-    Alert
+    Alert, 
+    PermissionsAndroid
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -345,18 +346,74 @@ class TimelineView extends Component {
     }
 
     _getHumanReadableTime(timeValue){
-    var timeStart = new Date(timeValue).getTime();
-    var timeEnd = new Date().getTime();
-    var hourDiff = timeEnd - timeStart; //in ms
-    var secDiff = hourDiff / 1000; //in s
-    var minDiff = hourDiff / 60 / 1000; //in minutes
-    var hDiff = hourDiff / 3600 / 1000; //in hours
-    var humanReadable = {};
-    humanReadable.hours = Math.floor(hDiff);
-    humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-    let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
-    return stringTime;
+        var timeStart = new Date(timeValue).getTime();
+        var timeEnd = new Date().getTime();
+        var hourDiff = timeEnd - timeStart; //in ms
+        var secDiff = hourDiff / 1000; //in s
+        var minDiff = hourDiff / 60 / 1000; //in minutes
+        var hDiff = hourDiff / 3600 / 1000; //in hours
+        var humanReadable = {};
+        humanReadable.hours = Math.floor(hDiff);
+        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+        return stringTime;
     }
+
+    componentDidMount() {
+        if (Platform.OS === 'android') {
+            checkAndDispatchAndroidLocationPermission();
+        }
+    }
+
+    async getAndroidLocationPermissions() {
+        try {
+            const permissionStatus = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    'title': 'DietCodeApp requires Location Permission',
+                    'message': 'DietCodeApp requires you to provide access to your location for conducting checkin/checkout.'
+                }
+            )
+            if (permissionStatus === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("Android: Geolocation Permission Granted");
+            } else {
+                console.log("Android: Geolocation Permission Denied");
+                Alert.alert(
+                    'Oh! Well',
+                    'You may not be able to checkin/checkout, until you provide the permission to access your location, you can change this later in settings.',
+                    [
+                        {text: 'OK', onPress: () => {}},
+                    ]
+                );
+            }
+        } catch (error) {
+            console.log('SOME ERROR OCCOURED DURING THE REQUESTING OF PERMISSIONS: ' + JSON.stringify(error));
+            Alert.alert(
+                    'Oh! Snap',
+                    'Some location services error occoured, try again later.',
+                    [
+                        {text: 'OK', onPress: () => {}},
+                    ]
+                );
+        }
+    }
+
+    checkAndDispatchAndroidLocationPermission() {
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(
+            (status) => {
+                // Status of permission
+                if (!status) {
+                    // request for location permission
+                    this.getAndroidLocationPermissions();
+                }
+            }
+        ).catch(
+            (error) => {
+                // error occoured
+                console.log('SOME ERROR OCCOURED DURING THE CHECKING OF PERMISSIONS. ' + JSON.stringify(error));
+            }
+        );
+    } 
 }
 
 const styles = StyleSheet.create({
