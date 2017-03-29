@@ -489,6 +489,7 @@ class LeavesView extends Component {
                                 <DatePickerIOS
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     date={typeof (this.props.LeavesState.toDate) === 'string' ? new Date() : this.props.LeavesState.toDate}
+                                    minimumDate= {typeof(this.props.LeavesState.fromDate) === 'string'? new Date():this.props.LeavesState.fromDate}
                                     mode="date"
                                     onDateChange={(date) => {
                                         this.props.dispatch(LeavesState.updateToDate(date))
@@ -657,7 +658,9 @@ class LeavesView extends Component {
     /**Show Android To Date Picker */
     showToPicker = async (options) => {
         try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                minDate: typeof(this.props.LeavesState.fromDate) === 'string'? new Date():this.props.LeavesState.fromDate
+            });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(LeavesState.updateDate());
             } else {
