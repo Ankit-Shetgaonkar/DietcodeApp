@@ -20,7 +20,7 @@ import * as TimeLineStateActions from './TimelineState';
 
 import * as officeApi from '../../office-server/OfficeApi';
 import Dimensions from 'Dimensions'
-import * as notification from '../../notification/Notification'
+//import * as notification from '../../notification/Notification'
 
 function _getMonthInString(month) {
     switch (month){
