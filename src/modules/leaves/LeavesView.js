@@ -489,7 +489,7 @@ class LeavesView extends Component {
                                 <DatePickerIOS
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     date={typeof (this.props.LeavesState.toDate) === 'string' ? new Date() : this.props.LeavesState.toDate}
-                                    minimumDate= {typeof(this.props.LeavesState.fromDate) === 'string'? new Date():this.props.LeavesState.fromDate}
+                                    minimumDate={typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate}
                                     mode="date"
                                     onDateChange={(date) => {
                                         this.props.dispatch(LeavesState.updateToDate(date))
@@ -659,7 +659,7 @@ class LeavesView extends Component {
     showToPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                minDate: typeof(this.props.LeavesState.fromDate) === 'string'? new Date():this.props.LeavesState.fromDate
+                minDate: typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(LeavesState.updateDate());
@@ -728,15 +728,15 @@ class LeavesView extends Component {
                         //this.props.dispatch(LeavesState.showError(resp.result.error));         
                     } else {
                         alert(resp.result.success);
+
+                        //if success reset the state
+                        this.props.dispatch(LeavesState.reset());
+
                         //ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                         //this.props.dispatch(LeavesState.showSuccess(resp.result.success));
                     }
                     this.props.dispatch(LeavesState.showApplyButton(true));
                     this.props.dispatch(LeavesState.toggleProgress(false));
-
-                    //if success reset the state
-                    this.props.dispatch(LeavesState.reset());
-
                 }
                 ).catch((e) => {
                     //alert(e)
