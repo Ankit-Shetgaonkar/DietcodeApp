@@ -43,6 +43,7 @@
 		F10B14A302754791AC4887C2 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A6448131701643E2ABD08175 /* Zocial.ttf */; };
 		F350D25EAB6C4B228A3A3553 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 909915B6F6B0438AAF741A24 /* Foundation.ttf */; };
 		FF464D689351A1E5372968E6 /* libPods-DietcodeAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC0734D70F745ECF6EC8BC72 /* libPods-DietcodeAppTests.a */; };
+		54FDB32BEE904633A5050631 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B9376EC6E1402A8867BFA0 /* libRNFIRMessaging.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -318,6 +319,8 @@
 		E33D376C46275D838DDA188C /* libPods-DietcodeApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DietcodeApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED092326CDA049839F548044 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		F32BA0ECD9B24C6BA1FBC5CC /* OAuthManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = OAuthManager.xcodeproj; path = "../node_modules/react-native-oauth/ios/OAuthManager.xcodeproj"; sourceTree = "<group>"; };
+		92F1A02FE8A94C0CA9DFCE7D /* RNFIRMessaging.xcodeproj */ = {isa = PBXFileReference; name = "RNFIRMessaging.xcodeproj"; path = "../node_modules/react-native-fcm/ios/RNFIRMessaging.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		11B9376EC6E1402A8867BFA0 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; name = "libRNFIRMessaging.a"; path = "libRNFIRMessaging.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -353,6 +356,7 @@
 				9D2E1A8FB73F48E8B202FCB8 /* libc++.tbd in Frameworks */,
 				9B4AFD6501744E209FF99BC9 /* libz.tbd in Frameworks */,
 				A382DB97C77A19BDE7DAE039 /* libPods-DietcodeApp.a in Frameworks */,
+				54FDB32BEE904633A5050631 /* libRNFIRMessaging.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,6 +538,7 @@
 				1493349F39C84A5CA43A0457 /* BVLinearGradient.xcodeproj */,
 				F32BA0ECD9B24C6BA1FBC5CC /* OAuthManager.xcodeproj */,
 				7027EE1C235D4209A0895F07 /* RealmReact.xcodeproj */,
+				92F1A02FE8A94C0CA9DFCE7D /* RNFIRMessaging.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1182,6 +1187,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -1204,6 +1210,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1235,6 +1242,7 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-oauth/ios/OAuthManager",
 					"$(SRCROOT)/../node_modules/realm/src/**",
+					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 				);
 				INFOPLIST_FILE = DietcodeApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1265,6 +1273,7 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-oauth/ios/OAuthManager",
 					"$(SRCROOT)/../node_modules/realm/src/**",
+					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 				);
 				INFOPLIST_FILE = DietcodeApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1325,6 +1334,7 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-oauth/ios/OAuthManager",
 					"$(SRCROOT)/../node_modules/realm/src/**",
+					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1372,6 +1382,7 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-oauth/ios/OAuthManager",
 					"$(SRCROOT)/../node_modules/realm/src/**",
+					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
