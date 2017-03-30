@@ -1,4 +1,7 @@
 //"use_strict";
+import {
+    Platform
+} from 'react-native';
 
 const officeLocation = {
     lat: 15.4561103,
@@ -8,7 +11,7 @@ const officeLocation = {
 const expectedRange = 200;
 
 var locationServiceOptions = {
-    enableHighAccuracy: true,
+    enableHighAccuracy: Platform.OS === 'ios'? true:false,
     timeout: 5000,
     maximumAge: 10000
 };
