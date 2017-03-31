@@ -1,6 +1,5 @@
 import React, { PropTypes, Component } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Kohana } from 'react-native-textinput-effects';
 import {
     View,
@@ -650,7 +649,7 @@ class LeavesView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateFromDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
@@ -668,7 +667,7 @@ class LeavesView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateToDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };

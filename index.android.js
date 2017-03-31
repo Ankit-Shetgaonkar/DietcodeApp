@@ -22,6 +22,12 @@ class DietcodeApp extends Component {
       // store fcm token in your server
     });
 
+    FCM.scheduleLocalNotification({
+      fire_date: new Date(Date.now()+(5*1000)),      //RN's converter is used, accept epoch time and whatever that converter supports
+      id: "abcdefghijkl",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
+      body: "from future past"
+    });
+
     this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
       alert("notification comes: "+JSON.stringify(notif));
       // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
@@ -38,11 +44,6 @@ class DietcodeApp extends Component {
       alert(token);
       // fcm token may not be available on first load, catch it here
     });
-      FCM.scheduleLocalNotification({
-        fire_date: new Date(Date.now()+(5*1000)),      //RN's converter is used, accept epoch time and whatever that converter supports
-        id: "abcdefghijkl",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
-        body: "from future past"
-      });
 
     // FCM.presentLocalNotification({
     //   id: "UNIQ_ID_STRING",                               // (optional for instant notification)
