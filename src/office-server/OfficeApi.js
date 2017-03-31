@@ -4,7 +4,6 @@ import RealmDatabse from '../database/RealmDatabase';
 let userName = RealmDatabse.findUser()[0];
 
 export function setUserName(userName1) {
-    console.log("set user name ", userName);
     userName = userName1;
 }
 

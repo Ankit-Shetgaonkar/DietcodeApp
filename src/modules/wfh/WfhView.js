@@ -408,6 +408,7 @@ class WfhView extends Component {
                                 <DatePickerIOS
                                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                                     date={typeof (this.props.wfhState.toDate) === 'string' ? new Date() : this.props.wfhState.toDate}
+                                    minimumDate= {typeof(this.props.wfhState.fromDate) === 'string'? new Date():this.props.wfhState.fromDate}
                                     mode="date"
                                     onDateChange={(date) => {
                                         this.props.dispatch(WfhState.updateToDate(date))
@@ -455,24 +456,24 @@ class WfhView extends Component {
                     {Platform.OS === 'android' && this.props.wfhState.showApplyButton &&
                         <Button
                             onPress={() => {
-                              this.applyForWorkFromHome();
+                                this.applyForWorkFromHome();
                             }}
                             color='#464763'
                             title="Apply work from home" />
                     }
 
                     {Platform.OS === 'ios' && this.props.wfhState.showApplyButton &&
-                        <View style={{backgroundColor:'#464763'}}>
+                        <View style={{ backgroundColor: '#464763' }}>
                             <Button
                                 onPress={() => {
-                                   this.applyForWorkFromHome();
+                                    this.applyForWorkFromHome();
                                 }}
                                 color='#ffffff'
                                 title="Apply work from home" />
                         </View>
                     }
 
-                        {this.props.wfhState.showProgress &&
+                    {this.props.wfhState.showProgress &&
                         <ActivityIndicator
                             size="large"
                             color="white"
@@ -563,15 +564,18 @@ class WfhView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(WfhState.updateFromDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
 
     /**Show Android To Date Picker */
     showToPicker = async (options) => {
+
         try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                minDate: typeof(this.props.wfhState.fromDate) === 'string'? new Date():this.props.wfhState.fromDate
+            });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(WfhState.updateDate());
             } else {
@@ -579,7 +583,7 @@ class WfhView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(WfhState.updateToDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
@@ -621,13 +625,11 @@ class WfhView extends Component {
                         alert(resp.result.success);
                         //ToastAndroid.showWithGravity(resp.result.success, ToastAndroid.SHORT, ToastAndroid.BOTTOM);
                         //this.props.dispatch(WfhState.showSuccess(resp.result.success));
+                        //if success reset the state
+                        this.props.dispatch(WfhState.reset());
                     }
                     this.props.dispatch(WfhState.showApplyButton(true));
                     this.props.dispatch(WfhState.toggleProgress(false));
-
-                    //if success reset the state
-                    this.props.dispatch(WfhState.reset());
-
                 }
             ).catch((e) => {
                 alert("There was some error, check your internet connection");
