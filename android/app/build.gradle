@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-
+apply plugin: 'com.google.gms.google-services'
 import com.android.build.OutputFile
 
 /**
@@ -138,6 +138,8 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-fcm')
+    compile 'com.google.firebase:firebase-core:10.0.1'
     compile project(':realm')
     compile project(':react-native-oauth')
     compile project(':react-native-linear-gradient')

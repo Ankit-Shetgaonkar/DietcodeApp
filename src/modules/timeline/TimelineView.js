@@ -10,7 +10,7 @@ import {
     Platform,
     TouchableHighlight
 } from 'react-native';
-
+import FCM from 'react-native-fcm'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 import RealmDatabse from '../../database/RealmDatabase';
@@ -136,6 +136,18 @@ class TimelineView extends Component {
                     //console.log(resp);
                     console.log("constuctor get timeline data")
                     this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                    FCM.requestPermissions(); // for iOS
+                    FCM.getFCMToken().then(token => {
+                        console.log("fcm token in timeline123", token, RealmDatabse.findUser()[0].serverId)
+                        if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+                            if (typeof token != 'undefined') {
+                                officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
+                                    console.log("register device response ", resp)
+                                });
+                            }
+                        }
+                        // store fcm token in your server
+                    });
                 })
                 .catch((err)=>{
                     console.log(err);
@@ -158,7 +170,7 @@ class TimelineView extends Component {
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
         const dtaSource = {dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[])};
-
+        var hoursToNotifyCheckout = 9
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
@@ -188,7 +200,16 @@ class TimelineView extends Component {
                                                     if(!checkin){
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
-                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                            dispatch(TimeLineStateActions.checkUserToggle());    
+                                                            console.log("time slot", new Date().getTime());
+                                                            console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));                    
+                                                            FCM.scheduleLocalNotification({
+                                                                //fire_date: new Date().getTime() + (9 * 60 * 60 * 1000), 
+                                                                fire_date: new Date().getTime() + (20 * 1000),                                                            
+                                                                id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
+                                                                body: "It has been 9 hours since you checkedin. Please check out before leaving."
+                                                            });
+                                                            console.log("schedule successful")
                                                             officeApi.getUserTimeline()
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));

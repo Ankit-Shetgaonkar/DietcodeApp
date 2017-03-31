@@ -89,6 +89,23 @@ export async function getLeavesDetails() {
     }
 }
 
+export async function registerDevice(deviceToken, userID, deviceType) {
+
+    let deviceObj = {
+        user: userID,
+        type: deviceType,
+        firebaseDeviceToken: deviceToken
+    };
+    console.log("device obj is ", deviceObj);
+    try {
+        const resp = await api.post("http://dc-office.herokuapp.com/api/v1/devices", deviceObj, true);
+        return resp;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
 
 export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid) {
 

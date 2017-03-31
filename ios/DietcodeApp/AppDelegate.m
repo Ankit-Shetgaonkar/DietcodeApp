@@ -11,6 +11,8 @@
 #import "OAuthManager.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import "RNFIRMessaging.h"
+#import "FIRInstanceID.h"
 
 @implementation AppDelegate
 
@@ -32,6 +34,8 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [FIRApp configure];
+  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
   return YES;
 }
 
@@ -44,5 +48,25 @@
                    sourceApplication:sourceApplication
                           annotation:annotation];
 }
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+     [RNFIRMessaging willPresentNotification:notification withCompletionHandler:completionHandler];
+  }
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
+     [RNFIRMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+  }
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [[FIRInstanceID instanceID] setAPNSToken:deviceToken
+                                      type:FIRInstanceIDAPNSTokenTypeSandbox];
+}
+ //You can skip this method if you don't want to use local notification
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
+     [RNFIRMessaging didReceiveLocalNotification:notification];
+  }
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+     [RNFIRMessaging didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+  }
 
 @end
