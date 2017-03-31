@@ -15,9 +15,9 @@ const initialState = fromJS({
         index: 0,
         routes: [
             {key: 'DashboardTab', title: 'Dashboard'},
-            // {key: 'ProfileTab', title: 'Profile'},
-            // {key: 'LeavesTab', title: 'Leaves'},
-            // {key: 'WorkFromHomeTab', title: 'Wfh'}
+            {key: 'ProfileTab', title: 'Profile'},
+            {key: 'LeavesTab', title: 'Leaves'},
+            {key: 'WorkFromHomeTab', title: 'Wfh'}
         ]
     },
     // Scenes for the `Dashboard` tab.
@@ -26,20 +26,20 @@ const initialState = fromJS({
         routes: [{key: 'Dashboard', title: 'Timeline'}]
     },
     // Scenes for the `ProfileTab` tab.
-    // ProfileTab: {
-    //     index: 0,
-    //     routes: [{key: 'Profile', title: 'Profile'}]
-    // },
-    // // Scenes for the `Leaves` tab.
-    // LeavesTab: {
-    //     index: 0,
-    //     routes: [{key: 'Leaves', title: 'Leaves Status'}]
-    // },
-    // // Scenes for the `WorkFromHome` tab.
-    // WorkFromHomeTab: {
-    //     index: 0,
-    //     routes: [{key: 'WorkFromHome', title: 'Work From Home Status'}]
-    // }
+    ProfileTab: {
+        index: 0,
+        routes: [{key: 'Profile', title: 'Profile'}]
+    },
+    // Scenes for the `Leaves` tab.
+    LeavesTab: {
+        index: 0,
+        routes: [{key: 'Leaves', title: 'Leaves Status'}]
+    },
+    // Scenes for the `WorkFromHome` tab.
+    WorkFromHomeTab: {
+        index: 0,
+        routes: [{key: 'WorkFromHome', title: 'Work From Home Status'}]
+    }
 });
 
 export function switchTab(key) {
