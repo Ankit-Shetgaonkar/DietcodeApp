@@ -72,7 +72,7 @@ class DashboardView extends Component {
                                 size={20}
                                 color='#fff'
                                 name= {sceneProps.scene.route.title==="Timeline"?"navicon":"angle-left"}//"angle-left" //navicon
-                                style={{alignSelf:"flex-start",marginTop:12,backgroundColor:"transparent"}}
+                                style={{alignSelf:"flex-start",marginTop:8,backgroundColor:"transparent"}}
                             />
                         </TouchableHighlight>
                         <Text
