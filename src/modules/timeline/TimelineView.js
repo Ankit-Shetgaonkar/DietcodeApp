@@ -84,9 +84,9 @@ async function createUser(token){
             .then((resp)=>{
                 let newObject = {
                     ...userObj,
-                    serverId:resp.results[0].id
+                    serverId:resp.results[0].id,
+                    role:resp.results[0].role
                 };
-
                 RealmDatabse.saveUser(newObject);
                 officeApi.setUserName(newObject);
                 return newObject
@@ -95,8 +95,7 @@ async function createUser(token){
                 console.log(JSON.stringify(err));
                 throw err;
             });
-    }else{ 
-            console.log(RealmDatabse.findUser()[0].serverId);
+    }else{
             return RealmDatabse.findUser()[0]
     }
 }
@@ -115,29 +114,17 @@ class TimelineView extends Component {
                 data: PropTypes.array.isRequired
             }).isRequired
         }).isRequired,
-        // timelineData: PropTypes.shape({
-        //     data: PropTypes.array.isRequired
-        // }).isRequired,
-        // lastCheckin: PropTypes.string.isRequired,
-        // switchTab: PropTypes.func.isRequired,
-        // errorMessage: PropTypes.string.isRequired,
-        // lastCheckout: PropTypes.string.isRequired,
-        // checkin:PropTypes.bool.isRequired,
         switchTab: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     constructor() {
         super();
-        //notification.sendNotification("test notification!!!!");
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
-                //console.log("going to call timeline ",resp)
                 officeApi.setUserName(RealmDatabse.findUser()[0])
                 officeApi.getUserTimeline()
                 .then((resp)=>{
-                    //console.log(resp);
-                    console.log("constuctor get timeline data")
                     this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                 })
                 .catch((err)=>{
@@ -154,18 +141,15 @@ class TimelineView extends Component {
     }
 
     render() {
-
         const checkin = this.props.timeLineState.checkin;
         const {dispatch} = this.props;
-        console.log("CHECKINVALUE "+checkin);
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-
         const dtaSource = {dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[])};
 
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
-        var mm = _getMonthInString(today.getMonth()+1); //January is 0!
+        var mm = _getMonthInString(today.getMonth()+1);
         var yyyy = today.getFullYear();
         var actionButtonY = ((Dimensions.get('window').height - 90)* 0.4) - 19
         return (
@@ -187,7 +171,6 @@ class TimelineView extends Component {
                             <View style={{flex:1,alignItems:"center"}}>
                                 <TouchableHighlight onPress={function()
                                                 {
-
                                                     if(!checkin){
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
@@ -283,10 +266,12 @@ class TimelineView extends Component {
                     <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                    this.props.switchTab(4)}}>
+                        <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
+                    </ActionButton.Item>
                 </ActionButton>
-                
 
-                
             </View>
 
 

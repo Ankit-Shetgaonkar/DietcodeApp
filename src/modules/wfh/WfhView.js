@@ -564,7 +564,7 @@ class WfhView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(WfhState.updateFromDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
@@ -583,7 +583,7 @@ class WfhView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(WfhState.updateToDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };

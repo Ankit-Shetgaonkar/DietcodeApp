@@ -7,6 +7,7 @@ import {Text,View} from 'react-native';
 import WfhContainer from './wfh/WfhContainer'
 import TimeLineView from './timeline/TimelineView'
 import TimeLineContainer from './timeline/TimelineViewContainer'
+import AdminDashboardController from './admin_dashboard/AdminDashboardController'
 import LeavesContainer from './leaves/LeavesContainer'
 import * as wfh from './wfh/WfhView'
 import ProfileView from './profile/ProfileView';
@@ -26,6 +27,8 @@ export default function AppRouter(props,switchTabs) {
     return <LeavesContainer switchTab = {switchTabs} />;
   }else if (key === 'WorkFromHome') {
       return <WfhContainer/>;
+  } else if (key === 'AdminDashboardTab') {
+    return <AdminDashboardController />;
   }
 
   if (key.indexOf('Profile') === 0) {
@@ -45,6 +48,14 @@ export default function AppRouter(props,switchTabs) {
     );
   }
   if (key.indexOf('WorkFromHome') === 0) {
+    const index = props.scenes.indexOf(props.scene);
+    return (
+        <ColorViewContainer
+            index={index}
+        />
+    );
+  }
+  if (key.indexOf('AdminDashboardTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
         <ColorViewContainer
