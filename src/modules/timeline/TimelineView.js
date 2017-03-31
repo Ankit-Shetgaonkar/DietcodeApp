@@ -121,7 +121,7 @@ class TimelineView extends Component {
         // errorMessage: PropTypes.string.isRequired,
         // lastCheckout: PropTypes.string.isRequired,
         // checkin:PropTypes.bool.isRequired,
-        switchTab: PropTypes.func.isRequired,
+        pushRoute: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
@@ -274,10 +274,10 @@ class TimelineView extends Component {
                               offsetY = {Platform.OS === 'ios' ? actionButtonY:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                       onPress={() => this.props.switchTab(2)}>
+                                       onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
                         <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                 </ActionButton>

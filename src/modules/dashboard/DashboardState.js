@@ -23,22 +23,22 @@ const initialState = fromJS({
     // Scenes for the `Dashboard` tab.
     DashboardTab: {
         index: 0,
-        routes: [{key: 'Dashboard', title: 'Timeline'}]
+        routes: [{key: 'DashboardTab', title: 'Timeline'}]
     },
     // Scenes for the `ProfileTab` tab.
     ProfileTab: {
         index: 0,
-        routes: [{key: 'Profile', title: 'Profile'}]
+        routes: [{key: 'ProfileTab', title: 'Profile'}]
     },
     // Scenes for the `Leaves` tab.
     LeavesTab: {
         index: 0,
-        routes: [{key: 'Leaves', title: 'Leaves Status'}]
+        routes: [{key: 'LeavesTab', title: 'Leaves Status'}]
     },
     // Scenes for the `WorkFromHome` tab.
     WorkFromHomeTab: {
         index: 0,
-        routes: [{key: 'WorkFromHome', title: 'Work From Home Status'}]
+        routes: [{key: 'WorkFromHomeTab', title: 'Work From Home Status'}]
     }
 });
 
@@ -63,7 +63,7 @@ export function popRoute() {
 
 export default function DashboardStateReducer(state = initialState, action) {
     switch (action.type) {
-            case PUSH_ROUTE: {
+      case PUSH_ROUTE: {
       // Push a route into the scenes stack.
       const route = action.payload;
       const tabs = state.get('tabs');

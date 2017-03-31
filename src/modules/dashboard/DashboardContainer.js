@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {switchTab} from './DashboardState';
+import {switchTab,pushRoute,popRoute} from './DashboardState';
 import {logoutSessionState} from '../session/SessionState';
 import DashboardView from './DashboardView';
 
@@ -10,6 +10,8 @@ export default connect(
     }),
     dispatch => {
         return {
+            popRoute: bindActionCreators(popRoute, dispatch),
+            pushRoute: bindActionCreators(pushRoute, dispatch),
             switchTab: bindActionCreators(switchTab, dispatch),
             logoutUser: bindActionCreators(logoutSessionState, dispatch)
         };
