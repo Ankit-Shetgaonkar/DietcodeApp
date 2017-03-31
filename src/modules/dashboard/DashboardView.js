@@ -62,7 +62,7 @@ class DashboardView extends Component {
                     colors={['#48E2FF', '#508FF5', '#5933EA']}
                     style={Platform.OS === 'ios' ?styles.linearGradientWithPadding:styles.linearGradientWithoutPadding}>
                     <View style={styles.header}>
-                        <TouchableHighlight style={{width:100,height:50}} underlayColor="transparent" onPress={()=>{
+                        <TouchableHighlight style={{width:40,marginTop:5,height:40}} underlayColor="transparent" onPress={()=>{
 
                             this.props.popRoute();
 //                                this.props.switchTab(0);
@@ -76,7 +76,7 @@ class DashboardView extends Component {
                             />
                         </TouchableHighlight>
                         <Text
-                            style={{flex:1,backgroundColor:"transparent",alignSelf:"center", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
+                            style={{flex:1,backgroundColor:"transparent", textAlign:'center',color:"#ffffff",fontSize:18,marginTop:10}}>{sceneProps.scene.route.title}</Text>
                         <TouchableHighlight underlayColor="transparent" onPress={()=>{
                                 this.props.pushRoute({key: 'ProfileTab', title: 'Profile'});
 //                                this.props.switchTab(1);
@@ -134,6 +134,8 @@ const styles = StyleSheet.create({
         borderRadius: 20
     },
     header: {
+        margin:0,
+        padding:0,
         flexDirection: 'row'
     },
     linearGradientWithPadding: {
