@@ -7,9 +7,3 @@ export default connect(function(state){
       isLogin: state.getIn(['session', 'isLogin'])
     };
 })(AppView);
-//   state => (
-//     {
-//     isReady: state.getIn(['session', 'isReady']),
-//     isLogin: state.getIn(['session', 'isLogin'])
-//   })
-// )(AppView);
