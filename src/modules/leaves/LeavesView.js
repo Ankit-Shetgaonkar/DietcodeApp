@@ -641,7 +641,9 @@ class LeavesView extends Component {
     showFromPicker = async (options) => {
         console.log(options);
         try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                date: typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate
+            });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(LeavesState.updateFromDate());
             } else {
@@ -658,7 +660,7 @@ class LeavesView extends Component {
     showToPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                minDate: typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate
+                date: typeof (this.props.LeavesState.toDate) === 'string' ? new Date() : this.props.LeavesState.toDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(LeavesState.updateDate());
