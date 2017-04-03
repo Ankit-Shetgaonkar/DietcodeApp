@@ -41,7 +41,7 @@ class DietcodeApp extends Component {
     });
     this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
         console.log("firebase token refreshed fcm crash",token, "user ",RealmDatabse.findUser())
-        if (typeof RealmDatabse.findUser()[0].serverId != 'undefined') {
+        if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId != 'undefined') {
             if (typeof token != 'undefined') {
                 officeApi.registerDevice(token, serverId, Platform.OS)
             }

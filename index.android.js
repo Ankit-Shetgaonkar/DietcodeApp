@@ -47,9 +47,9 @@ class DietcodeApp extends Component {
             }
         });
          this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
-            console.log(token)
-            console.log("firebase token refreshed",token, "user data ", RealmDatabse.findUser()[0])
-          if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+            //console.log(token)
+            //console.log("firebase token refreshed",token, "user data ", RealmDatabse.findUser()[0])
+          if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
               if (typeof token != 'undefined') {
                   officeApi.registerDevice(token, serverId, Platform.OS)
               }
