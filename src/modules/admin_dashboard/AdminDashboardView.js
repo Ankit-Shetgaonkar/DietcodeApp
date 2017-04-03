@@ -130,7 +130,7 @@ class AdminDashboardView extends Component {
         )
     }
 
-    
+
     /**Show Android From Date Picker */
     showFromPicker = async (options) => {
         console.log(options);
@@ -150,12 +150,41 @@ class AdminDashboardView extends Component {
 
 
 
+    /**
+     * Full screen Dialog/Modal which enables the admin to edit or enter the checkin checkout time
+     * for the selected date
+     */
+    renderEditModal = () => {
+        <Modal
+            style = {{padding: 50}}
+            animationType={"none"}
+            transparent={true}
+            visible={this.props.wfhState.showFromDatePicker}
+            onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
+
+            <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+
+            <View style={{ backgroundColor: '#d7d7d7' }}>
+                <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                    <Button
+                        onPress={() => {
+                            this.props.dispatch(WfhState.updateFromDatePicker(false));
+                        }}
+                        title="Done" />
+                </View>
+            </View>
+
+        </Modal>
+    }
+
 
     render() {
         return (
             <View style={styles.container}>
 
                 {this.renderSelectDate(0.2)}
+
+                {this.renderEditModal()}
 
                 <View style={styles.selector}>
 
@@ -224,7 +253,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         backgroundColor: "#fff"
     },
-     plainText: {
+    plainText: {
         paddingTop: 8,
         paddingBottom: 8,
         fontSize: 15,
