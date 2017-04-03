@@ -28,7 +28,9 @@ const reducers = {
     
     leavesState: LeavesStateReducer,
 
-    timelineState: TimelineStateReducer
+    timelineState: TimelineStateReducer,
+
+    leaveHistoryState: LHstateReducer
 
 
 };
