@@ -341,22 +341,16 @@ class WfhView extends Component {
                         </View>
                     }
 
-
-
                     {/*Android Picker To Date*/}
-
                     {!this.props.wfhState.isSingleDay && (Platform.OS === 'android') &&
                         <TouchableNativeFeedback
                             title="DatePickerAndroid"
                             background={TouchableNativeFeedback.SelectableBackground()}
                             onPress={this.showToPicker.bind(this, this.props.wfhState.toDate)}
                             underlayColor="transparent">
-
                             <View
                                 style={styles.basicCalenderView}>
-
                                 <Text style={styles.basicText}> {this.props.wfhState.toDateText} </Text>
-
                                 <Icon
                                     size={20}
                                     color='#000'

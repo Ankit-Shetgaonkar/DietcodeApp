@@ -122,13 +122,12 @@ class TimelineView extends Component {
         super();
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
-                officeApi.setUserName(RealmDatabse.findUser()[0])
+                officeApi.setUserName(RealmDatabse.findUser()[0]);
                 officeApi.getUserTimeline()
                 .then((resp)=>{
                     this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                     FCM.requestPermissions(); // for iOS
                     FCM.getFCMToken().then(token => {
-                        console.log("fcm token in timeline123", token, RealmDatabse.findUser()[0].serverId)
                         if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
                             if (typeof token != 'undefined') {
                                 officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
@@ -190,8 +189,8 @@ class TimelineView extends Component {
                                                             console.log("time slot", new Date().getTime());
                                                             console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));                    
                                                             FCM.scheduleLocalNotification({
-                                                                //fire_date: new Date().getTime() + (9 * 60 * 60 * 1000), 
-                                                                fire_date: new Date().getTime() + (20 * 1000),                                                            
+                                                                fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
+                                                                // fire_date: new Date().getTime() + (20 * 1000),
                                                                 id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
                                                                 body: "It has been 9 hours since you checkedin. Please check out before leaving."
                                                             });
