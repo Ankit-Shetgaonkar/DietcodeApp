@@ -6,7 +6,8 @@ import React, {Component} from 'react';
 import {AppRegistry, BackAndroid, Platform} from 'react-native';
 import * as NavigationStateActions from './src/modules/navigation/NavigationState';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
-
+import RealmDatabse from './src/database/RealmDatabase';
+import * as officeApi from './src/office-server/OfficeApi';
 class DietcodeApp extends Component {
   componentWillMount() {
     BackAndroid.addEventListener('hardwareBackPress', this.navigateBack);
@@ -47,7 +48,12 @@ class DietcodeApp extends Component {
         });
          this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
             console.log(token)
-            // fcm token may not be available on first load, catch it here
+            console.log("firebase token refreshed",token, "user data ", RealmDatabse.findUser()[0])
+          if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+              if (typeof token != 'undefined') {
+                  officeApi.registerDevice(token, serverId, Platform.OS)
+              }
+          }
         });
   }
   componentWillUnmount() {
