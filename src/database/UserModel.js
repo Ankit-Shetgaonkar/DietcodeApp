@@ -1,5 +1,5 @@
 class UserModel {
-    constructor(name,email, accessToken,company,id,image_link,serverId) {
+    constructor(name,email, accessToken,company,id,image_link,serverId,role) {
         this.name = name;
         this.email = email;
         this.access_token = accessToken;
@@ -7,6 +7,7 @@ class UserModel {
         this.id = id;
         this.image_link = image_link;
         this.serverId = serverId;
+        this.role = role;
     }
 }
 

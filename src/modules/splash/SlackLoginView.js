@@ -10,6 +10,7 @@ import * as SessionState from "../session/SessionState";
 import * as api from "../../utils/api";
 import RealmDatabase from '../../database/RealmDatabase';
 import UserModel from '../../database/UserModel';
+import Platform from 'react-native'
 
 
 class SlackLoginView extends Component {
@@ -65,6 +66,7 @@ class SlackLoginView extends Component {
 
                 <TouchableHighlight onPress={function()
                     {
+                            manager.deauthorize("slack")
                             dispatcher(LoginState.toggleProgress(false));
                             manager.authorize('slack', {scopes: 'identity.basic,identity.email,identity.team,identity.avatar'})
                               .then(resp => _slackAuthRespose(dispatcher,resp.response.credentials.accessToken))
@@ -98,9 +100,13 @@ class SlackLoginView extends Component {
                     Login with Slack to manage your checkin & checkout ,
                     you can also manage your Redmine tickets directly from this app
                 </Text>
-                <Text style={styles.foot}>
+                <View style={{flex:1,flexDirection:'column',justifyContent:'center'}}>
+                    <View style = {{flex:1}}></View>
+                    <Text style={styles.foot}>
                     Made with ❤️️ & 🤓 at Dietcode
-                </Text>
+                    </Text>
+                </View>
+
             </LinearGradient>
         );
     }
@@ -118,7 +124,7 @@ const _slackAuthRespose = (dispatcher, accessToken) => {
         .then((resp) => {
             console.log("slack data");
             console.log(resp);
-            RealmDatabase.saveUser(new UserModel(resp.user.name,resp.user.email,accessToken,resp.team.name,resp.user.id,resp.user.image_192,""))
+            RealmDatabase.saveUser(new UserModel(resp.user.name,resp.user.email,accessToken,resp.team.name,resp.user.id,resp.user.image_192,"",""))
                 .then((response) => {
                     dispatcher(LoginState.loginSuccess("Welcome to Dietcode"));
                     dispatcher(LoginState.toggleProgress(false));
@@ -192,7 +198,7 @@ const styles = StyleSheet.create({
     toolbarTitle: {
         color: '#fff',
         textAlign: 'center',
-        fontWeight: 'bold',
+        fontWeight: 'bold'
         //Step 3
     },
     linearGradient: {
@@ -209,7 +215,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 30,
         color: '#ffffff',
-        backgroundColor: 'transparent',
+        backgroundColor: 'transparent'
     },
     desc: {
         fontSize: 14,
@@ -229,11 +235,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
         marginLeft: 15,
         color: '#ffffff',
-        backgroundColor: 'transparent',
-        position: "absolute",
-        bottom: 0,
-        left: 80,
-        alignSelf: "stretch"
+        backgroundColor: 'transparent'
     },
     bottomBar: {
         backgroundColor: "#00ff00",
