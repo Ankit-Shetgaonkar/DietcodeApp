@@ -41,112 +41,22 @@ class AdminDashboardView extends Component {
 
     };
 
-    renderSelectDate = (flexWeight) => {
-
-        return (
-            <View style={{ flex: flexWeight }}>
-
-                <Text style={styles.plainText}>
-                    Select Date
-                </Text>
-
-
-                {/*Android Picker From Date*/}
-                {(Platform.OS === 'android') &&
-                    <TouchableNativeFeedback
-                        title="DatePickerAndroid"
-                        background={TouchableNativeFeedback.SelectableBackground()}
-                        onPress={this.showFromPicker.bind(this, this.props.wfhState.fromDate)}
-                        underlayColor="transparent">
-
-
-                        <View
-                            style={styles.basicCalenderView}>
-                            <Text style={styles.basicText}>{this.props.wfhState.fromDateText}</Text>
-                            <Icon
-                                size={20}
-                                color='#000'
-                                name="calendar"
-                                style={{ backgroundColor: "transparent" }}
-                            />
-                        </View>
-
-                    </TouchableNativeFeedback>
-                }
-
-                {/*IOS Picker From Date*/}
-
-                {(Platform.OS === 'ios') &&
-                    <View style={{ flex: 1 }}>
-                        <TouchableHighlight
-                            onPress={() => this.props.dispatch(WfhState.updateFromDatePicker(true))}
-                            underlayColor="transparent">
-
-
-                            <View
-                                style={[styles.basicCalenderView]}>
-                                <Text style={[styles.basicText]}>{this.props.wfhState.fromDateText}</Text>
-                                <Icon
-                                    size={20}
-                                    color='#000'
-                                    name="calendar"
-                                    style={{ backgroundColor: "transparent" }}
-                                />
-                            </View>
-                        </TouchableHighlight>
-
-
-                        <Modal
-                            animationType={"none"}
-                            transparent={true}
-                            visible={this.props.wfhState.showFromDatePicker}
-                            onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
-
-                            <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
-
-                            <View style={{ backgroundColor: '#d7d7d7' }}>
-                                <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
-                                    <Button
-                                        onPress={() => {
-                                            this.props.dispatch(WfhState.updateFromDatePicker(false));
-                                        }}
-                                        title="Done" />
-                                </View>
-                            </View>
-
-                            <DatePickerIOS
-                                style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                                date={typeof (this.props.wfhState.fromDate) === 'string' ? new Date() : this.props.wfhState.fromDate}
-                                mode="date"
-                                onDateChange={(date) => {
-                                    this.props.dispatch(WfhState.updateFromDate(date))
-                                }}
-                            />
-
-                        </Modal>
-                    </View>
-                }
-            </View>
-        )
-    }
-
-
-    /**Show Android From Date Picker */
-    showFromPicker = async (options) => {
-        console.log(options);
-        try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
-            if (action === DatePickerAndroid.dismissedAction) {
-                //this.props.dispatch(WfhState.updateFromDate());
-            } else {
-                console.log(date);
-                var date = new Date(year, month, day);
-                this.props.dispatch(WfhState.updateFromDate(date));
-            }
-        } catch (message) {
-            console.warn(`Error in example `, message);
-        }
-    };
+    // /**Show Android From Date Picker */
+    // showFromPicker = async (options) => {
+    //     console.log(options);
+    //     try {
+    //         const { action, year, month, day } = await DatePickerAndroid.open(null);
+    //         if (action === DatePickerAndroid.dismissedAction) {
+    //             //this.props.dispatch(WfhState.updateFromDate());
+    //         } else {
+    //             console.log(date);
+    //             var date = new Date(year, month, day);
+    //             this.props.dispatch(WfhState.updateFromDate(date));
+    //         }
+    //     } catch (message) {
+    //         console.warn(`Error in example `, message);
+    //     }
+    // };
 
 
 
@@ -155,34 +65,34 @@ class AdminDashboardView extends Component {
      * for the selected date
      */
     renderEditModal = () => {
-        <Modal
-            style = {{padding: 50}}
-            animationType={"none"}
-            transparent={true}
-            visible={this.props.wfhState.showFromDatePicker}
-            onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
 
-            <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+        return (
+            <Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={false}
+                onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
 
-            <View style={{ backgroundColor: '#d7d7d7' }}>
-                <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
-                    <Button
-                        onPress={() => {
-                            this.props.dispatch(WfhState.updateFromDatePicker(false));
-                        }}
-                        title="Done" />
+                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6,margin:100 }} />
+
+                <View style={{ backgroundColor: '#d7d7d7' }}>
+                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                        <Button
+                            onPress={() => {
+                                this.props.dispatch(WfhState.updateFromDatePicker(false));
+                            }}
+                            title="Done" />
+                    </View>
                 </View>
-            </View>
 
-        </Modal>
+            </Modal>
+        )
     }
 
 
     render() {
         return (
             <View style={styles.container}>
-
-                {this.renderSelectDate(0.2)}
 
                 {this.renderEditModal()}
 
