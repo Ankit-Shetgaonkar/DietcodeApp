@@ -101,6 +101,8 @@ async function createUser(token){
     }
 }
 
+var restructuredData = [];
+
 class TimelineView extends Component {
 
     static displayName = 'TimelineView';
@@ -160,8 +162,8 @@ class TimelineView extends Component {
         console.log("CHECKINVALUE "+checkin);
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
-        const dtaSource = {dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[])};
-
+        this.refactorData(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[]);
+        const dtaSource = {dataSource: ds.cloneWithRows(restructuredData.length>0?restructuredData:[])};
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
@@ -252,17 +254,15 @@ class TimelineView extends Component {
                         {...dtaSource}
                         enableEmptySections={true}
                         renderRow={(rowData) => <View style={{flex: 1, flexDirection: 'row'}}>
-                                                <View style={{flex: .2, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
+                                                <View style={{flex: .2, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
                                                     <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
-                                                    <View style={rowData.type==="checkin"?styles.circle:styles.circlered} />
+                                                    <View style={styles.circle} />
                                                     <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
                                                 </View>
-                                                <View style={{flex: .3, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}> {this._getHumanReadableTime(rowData.createdAt)} </Text>
-                                                </View>
-                                                <View style={{flex: .6, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>{rowData.type} </Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>{rowData.description} </Text>
+                                                <View style={{flex: .8, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                    <ListDates data={rowData}></ListDates>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{((new Date(rowData.weekDates[0].date)).toDateString() === (new Date()).toDateString()) ? 'Total Time Current Week' : 'Total Time Last Week'}</Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(rowData.weekDates[0].readableDate + ' to ' + rowData.weekDates[rowData.weekDates.length - 1].readableDate)+', '+((parseFloat(Math.round(rowData.totalHours * 100) / 100).toFixed(2)) + ' hrs')}</Text>
                                                 </View>
                                             </View>
                             }
@@ -319,23 +319,120 @@ class TimelineView extends Component {
     }
 
     _getHumanReadableTime(timeValue){
-    var timeStart = new Date(timeValue).getTime();
-    var timeEnd = new Date().getTime();
-    var hourDiff = timeEnd - timeStart; //in ms
-    var secDiff = hourDiff / 1000; //in s
-    var minDiff = hourDiff / 60 / 1000; //in minutes
-    var hDiff = hourDiff / 3600 / 1000; //in hours
-    var humanReadable = {};
-    humanReadable.hours = Math.floor(hDiff);
-    humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-        if(humanReadable.hours<0 || humanReadable.minutes<0)
-        {
-            return "0h : 0m ago";
-        }
-    let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
-    return stringTime;
+        var timeStart = new Date(timeValue).getTime();
+        var timeEnd = new Date().getTime();
+        var hourDiff = timeEnd - timeStart; //in ms
+        var secDiff = hourDiff / 1000; //in s
+        var minDiff = hourDiff / 60 / 1000; //in minutes
+        var hDiff = hourDiff / 3600 / 1000; //in hours
+        var humanReadable = {};
+        humanReadable.hours = Math.floor(hDiff);
+        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+            if(humanReadable.hours<0 || humanReadable.minutes<0)
+            {
+                return "0h : 0m ago";
+            }
+        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+        return stringTime;
     }
+
+    refactorData(data) {
+        if (data.length > 0) {
+            var refactoredArray = [];
+            var restructuredArray = [];
+            for (var i = 0; i < data.length; i++) 
+            {
+                if (data[i]) {
+                    let date = new Date(data[i].createdAt);
+                    var dateString = date.toDateString();
+                    let dateReadableString = (JSON.stringify(date.getDate()) + '-' + _getMonthInString(date.getMonth()+1) + '-' + JSON.stringify(date.getFullYear()));
+                    if (data[i+1]) {
+                        var hours = 0;
+                        for (var j = i+1; j <= data.length; j++) {
+                                if (data[j]) {
+                                    let prevDate = new Date(data[j].createdAt);
+                                    let prevDateString = prevDate.toDateString();
+                                    if (dateString === prevDateString) {
+                                        // same day, get diff
+                                        let diff = date.getTime() - prevDate.getTime();
+                                        hours = hours + (diff / (1000 * 60 * 60));
+                                        dateString = prevDateString;
+                                        i = j;
+                                        //refactoredArray.push({readableDate: date, hours: hours});
+                                    } else {
+                                        i = j-1;
+                                        break;
+                                    }
+                            } else {
+                                break;
+                            }
+                        }
+                        refactoredArray.push({date: date, readableDate: dateReadableString, hours: hours !== 0 ? hours : 'no-data', week: this.getWeekNumber(date)});
+                    } else {
+                        refactoredArray.push({date: date, readableDate: dateReadableString, hours: 'no-data', week: this.getWeekNumber(date)});
+                    }
+                } else {
+                    break;
+                }
+            }
+            //console.log('REFACTORED DATA: ' + JSON.stringify(refactoredArray));
+            if (refactoredArray.length > 0) {
+                for (var i = 0; i < refactoredArray.length; i++) {
+                    var data = refactoredArray[i];
+                    var weekNo = data.week;
+                    var dict = {
+                        weekDates: [data],
+                        totalHours: data.hours === 'no-data' ? 0 : data.hours
+                    };
+                    for (var j = i+1; j < refactoredArray.length; j++) {
+                        if (refactoredArray[j]) {
+                            let dta = refactoredArray[j];
+                            if (dta.week === weekNo) {
+                                dict.weekDates.push(dta);
+                                dict.totalHours = dict.totalHours + dta.hours;
+                                i = j;
+                            } else {
+                                i = j-1;
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                    restructuredArray.push(dict);
+                }
+                //console.log('RESTRUCTURED ARRAY: ' + JSON.stringify(restructuredArray));
+                restructuredData = restructuredArray;
+            }
+        }
+    }
+
+    getWeekNumber(d) {
+        // Copy date so don't modify original
+        d = new Date(+d);
+        d.setHours(0,0,0,0);
+        // Set to nearest Thursday: current date + 4 - current day number
+        // Make Sunday's day number 7
+        d.setDate(d.getDate() + 4 - (d.getDay()||7));
+        // Get first day of year
+        var yearStart = new Date(d.getFullYear(),0,1);
+        // Calculate full weeks to nearest Thursday
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        // Return array of year and week number
+        return weekNo;
+    }
+
 }
+    // Component method to be used on rendering list view, used above.
+    function ListDates(param) {
+        let items = [];
+        let today = new Date();
+        for (var i = 0; i < param.data.weekDates.length; i++) {
+            let stringDetail = ((new Date(param.data.weekDates[i].date).toDateString()) === today.toDateString()) ? ((param.data.weekDates[i].hours > 0) ? parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs' : (((checkin) ? 'not checked out yet' : 'yet to checkin'))) : (' ' + parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs');
+            items.push(<Text key={param.data.weekDates[i].date} style={{backgroundColor:"transparent",color:"#333",fontSize:16, marginBottom:2}}>{param.data.weekDates[i].readableDate + ', ' + stringDetail}</Text>);
+        }
+        return (<View style={{flex: 1, marginTop: 8, marginBottom: 8}}>{items}</View>);
+    }
 
 const styles = StyleSheet.create({
     container: {

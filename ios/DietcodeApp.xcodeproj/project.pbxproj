@@ -24,10 +24,10 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		206A7A1ED591BD9DBFD5014B /* Pods_DietcodeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC8EA89C72EBB3658D50F116 /* Pods_DietcodeApp.framework */; };
 		300D48DD52474704A4793261 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F5C80004D504B09A1753936 /* MaterialCommunityIcons.ttf */; };
 		327FF4C28B304A55B8D62433 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CA41E95FC33D41F58BD7A08C /* FontAwesome.ttf */; };
 		4ED16240AAFA468F90C70E90 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C6359AC5B8554119ACBBDC22 /* libBVLinearGradient.a */; };
-		5E9157361DD0AC6A00FF2AA8 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		76C27BBF52494A01BF642ECD /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B50F6964A1C42BCA714D472 /* MaterialIcons.ttf */; };
 		832341BD1AAA6AB300B99B32 /* ReferenceProxy in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		87E9106C2DDB4EE783D15230 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C08645563A140C5B91033D6 /* libRNVectorIcons.a */; };
@@ -37,12 +37,11 @@
 		9AD68C9FE0C44BE1812488DC /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D48CDB6E1594FF69439C93D /* Octicons.ttf */; };
 		9B4AFD6501744E209FF99BC9 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 53304422297842E8A53C5189 /* libz.tbd */; };
 		9D2E1A8FB73F48E8B202FCB8 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = C9C89E50B94F428C98A4B72E /* libc++.tbd */; };
-		A382DB97C77A19BDE7DAE039 /* libPods-DietcodeApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E33D376C46275D838DDA188C /* libPods-DietcodeApp.a */; };
 		DA46BEF77F7C46B9B7E8966C /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18413871D7494DD7900BFEA8 /* libRealmReact.a */; };
 		DE1B3E808D534E7491C40551 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0EDC7FFB304A4B26BA90D73C /* SimpleLineIcons.ttf */; };
 		F10B14A302754791AC4887C2 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A6448131701643E2ABD08175 /* Zocial.ttf */; };
 		F350D25EAB6C4B228A3A3553 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 909915B6F6B0438AAF741A24 /* Foundation.ttf */; };
-		FF464D689351A1E5372968E6 /* libPods-DietcodeAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CC0734D70F745ECF6EC8BC72 /* libPods-DietcodeAppTests.a */; };
+		F8511DF56A7949A1C50CA2F8 /* Pods_DietcodeAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 097764AAF4D60AD6717F1C84 /* Pods_DietcodeAppTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -277,6 +276,7 @@
 		00E356F21AD99517003FC87E /* DietcodeAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DietcodeAppTests.m; sourceTree = "<group>"; };
 		01DC710C1E3C150E0081C922 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		0580218E98A2274E74BD182D /* Pods-DietcodeAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DietcodeAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-DietcodeAppTests/Pods-DietcodeAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		097764AAF4D60AD6717F1C84 /* Pods_DietcodeAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DietcodeAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B50F6964A1C42BCA714D472 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		0EDC7FFB304A4B26BA90D73C /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		11F8536CEA95C4AEC586CCAA /* Pods-DietcodeApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DietcodeApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DietcodeApp/Pods-DietcodeApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -310,12 +310,11 @@
 		9D48CDB6E1594FF69439C93D /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		A6448131701643E2ABD08175 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		B96FBC008E48DD19A76A4226 /* Pods-DietcodeAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DietcodeAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DietcodeAppTests/Pods-DietcodeAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		BC8EA89C72EBB3658D50F116 /* Pods_DietcodeApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DietcodeApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6359AC5B8554119ACBBDC22 /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
 		C9C89E50B94F428C98A4B72E /* libc++.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		CA41E95FC33D41F58BD7A08C /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
-		CC0734D70F745ECF6EC8BC72 /* libPods-DietcodeAppTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DietcodeAppTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7ADCE30FFFF445FB3253808 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		E33D376C46275D838DDA188C /* libPods-DietcodeApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DietcodeApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED092326CDA049839F548044 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		F32BA0ECD9B24C6BA1FBC5CC /* OAuthManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = OAuthManager.xcodeproj; path = "../node_modules/react-native-oauth/ios/OAuthManager.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -326,7 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				140ED2AC1D01E1AD002B40FF /* ReferenceProxy in Frameworks */,
-				FF464D689351A1E5372968E6 /* libPods-DietcodeAppTests.a in Frameworks */,
+				F8511DF56A7949A1C50CA2F8 /* Pods_DietcodeAppTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,7 +351,7 @@
 				DA46BEF77F7C46B9B7E8966C /* libRealmReact.a in Frameworks */,
 				9D2E1A8FB73F48E8B202FCB8 /* libc++.tbd in Frameworks */,
 				9B4AFD6501744E209FF99BC9 /* libz.tbd in Frameworks */,
-				A382DB97C77A19BDE7DAE039 /* libPods-DietcodeApp.a in Frameworks */,
+				206A7A1ED591BD9DBFD5014B /* Pods_DietcodeApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -608,8 +607,8 @@
 			children = (
 				C9C89E50B94F428C98A4B72E /* libc++.tbd */,
 				53304422297842E8A53C5189 /* libz.tbd */,
-				E33D376C46275D838DDA188C /* libPods-DietcodeApp.a */,
-				CC0734D70F745ECF6EC8BC72 /* libPods-DietcodeAppTests.a */,
+				BC8EA89C72EBB3658D50F116 /* Pods_DietcodeApp.framework */,
+				097764AAF4D60AD6717F1C84 /* Pods_DietcodeAppTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
