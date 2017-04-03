@@ -263,8 +263,8 @@ class TimelineView extends Component {
                                                 </View>
                                                 <View style={{flex: .8, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
                                                     <ListDates data={rowData}></ListDates>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{((new Date(rowData.weekDates[0].date)).toDateString() === (new Date()).toDateString()) ? 'Total Time Current Week' : 'Total Time Last Week'}</Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(rowData.weekDates[0].readableDate + ' to ' + rowData.weekDates[rowData.weekDates.length - 1].readableDate)+', '+((parseFloat(Math.round(rowData.totalHours * 100) / 100).toFixed(2)) + ' hrs')}</Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(this.getWeekNumber(new Date()) === this.getWeekNumber((new Date(rowData.weekDates[0].date)))) ? 'Total Time Current Week' : 'Total Time Last Week'}</Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(this.getReadableDateString(this.getMonday(rowData.weekDates[0].date)) + ' to ' + ((this.getWeekNumber(new Date()) === this.getWeekNumber(rowData.weekDates[rowData.weekDates.length - 1].date)) ? this.getReadableDateString(rowData.weekDates[rowData.weekDates.length - 1].date) : this.getReadableDateString(this.jumpToNextFriday(rowData.weekDates[rowData.weekDates.length - 1].date)))) +', '+((parseFloat(Math.round(rowData.totalHours * 100) / 100).toFixed(2)) + ' hrs')}</Text>
                                                 </View>
                                             </View>
                             }
@@ -347,7 +347,7 @@ class TimelineView extends Component {
                 if (data[i]) {
                     let date = new Date(data[i].createdAt);
                     var dateString = date.toDateString();
-                    let dateReadableString = (JSON.stringify(date.getDate()) + '-' + _getMonthInString(date.getMonth()+1) + '-' + JSON.stringify(date.getFullYear()));
+                    let dateReadableString = this.getReadableDateString(date);
                     if (data[i+1]) {
                         var hours = 0;
                         for (var j = i+1; j <= data.length; j++) {
@@ -424,17 +424,48 @@ class TimelineView extends Component {
         return weekNo;
     }
 
+    getMonday(d) {
+        d = new Date(d);
+        var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+        return new Date(d.setDate(diff));
+    }
+
+    getReadableDateString(date) {
+        return (JSON.stringify(date.getDate()) + '-' + _getMonthInString(date.getMonth()+1) + '-' + JSON.stringify(date.getFullYear()));
+    }
+
+    jumpToNextFriday(date) {
+        return new Date(+date+(7-(date.getDay()+2)%7)*86400000);
+    }
 }
     // Component method to be used on rendering list view, used above.
     function ListDates(param) {
         let items = [];
         let today = new Date();
-        for (var i = 0; i < param.data.weekDates.length; i++) {
-            let stringDetail = ((new Date(param.data.weekDates[i].date).toDateString()) === today.toDateString()) ? ((param.data.weekDates[i].hours > 0) ? parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs' : (((checkinState) ? 'not checked out yet' : 'yet to checkin'))) : (' ' + parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs');
-            items.push(<Text key={param.data.weekDates[i].date} style={{backgroundColor:"transparent",color:"#333",fontSize:16, marginBottom:2}}>{param.data.weekDates[i].readableDate + ', ' + stringDetail}</Text>);
+        if (param.data.weekDates.length > 0 && (_getWeekNumber(today) === _getWeekNumber((new Date(param.data.weekDates[0].date))))) {
+            for (var i = 0; i < param.data.weekDates.length; i++) {
+                let stringDetail = ((new Date(param.data.weekDates[i].date).toDateString()) === today.toDateString()) ? ((param.data.weekDates[i].hours > 0) ? parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs' : (((checkinState) ? 'not checked out yet' : 'yet to checkin'))) : (' ' + parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs');
+                items.push(<Text key={param.data.weekDates[i].date} style={{backgroundColor:"transparent",color:"#333",fontSize:16, marginBottom:2}}>{param.data.weekDates[i].readableDate + ', ' + stringDetail}</Text>);
+            }
         }
-        return (<View style={{flex: 1, marginTop: (Platform.OS === 'ios' ? 24 : 8), marginBottom: 8}}>{items}</View>);
+        return (<View style={{flex: 1, marginTop: (items.length > 0 ? (Platform.OS === 'ios' ? 24 : 8) : 8), marginBottom: 8}}>{items}</View>);
     }
+
+    function _getWeekNumber(d) {
+        // Copy date so don't modify original
+        d = new Date(+d);
+        d.setHours(0,0,0,0);
+        // Set to nearest Thursday: current date + 4 - current day number
+        // Make Sunday's day number 7
+        d.setDate(d.getDate() + 4 - (d.getDay()||7));
+        // Get first day of year
+        var yearStart = new Date(d.getFullYear(),0,1);
+        // Calculate full weeks to nearest Thursday
+        var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+        // Return array of year and week number
+        return weekNo;
+    }
 
 const styles = StyleSheet.create({
     container: {
