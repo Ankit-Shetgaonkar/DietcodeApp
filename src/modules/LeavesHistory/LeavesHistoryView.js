@@ -78,6 +78,7 @@ class LeavesHistoryView extends Component {
                                                     {rowData.day_part === "2" &&
                                                         <Text style={{backgroundColor:"transparent",color:"#333",fontSize:12}}>Part: Second Half </Text>
                                                     }
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>type: {rowData.name == "Vacation" ? "Leave" : "Work from home"} </Text>
                                                     <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>reason: {rowData.message} </Text>
                                                 </View>
                                             </View>
