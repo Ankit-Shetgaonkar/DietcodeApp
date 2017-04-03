@@ -431,7 +431,7 @@ class TimelineView extends Component {
             let stringDetail = ((new Date(param.data.weekDates[i].date).toDateString()) === today.toDateString()) ? ((param.data.weekDates[i].hours > 0) ? parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs' : (((checkin) ? 'not checked out yet' : 'yet to checkin'))) : (' ' + parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs');
             items.push(<Text key={param.data.weekDates[i].date} style={{backgroundColor:"transparent",color:"#333",fontSize:16, marginBottom:2}}>{param.data.weekDates[i].readableDate + ', ' + stringDetail}</Text>);
         }
-        return (<View style={{flex: 1, marginTop: 8, marginBottom: 8}}>{items}</View>);
+        return (<View style={{flex: 1, marginTop: (Platform.OS === 'ios' ? 24 : 8), marginBottom: 8}}>{items}</View>);
     }
 
 const styles = StyleSheet.create({
