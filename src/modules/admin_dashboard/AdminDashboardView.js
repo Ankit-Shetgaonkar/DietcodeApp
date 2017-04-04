@@ -12,12 +12,13 @@ import {
     TouchableNativeFeedback,
     Modal,
     Image,
-    TimePickerAndroid
+    TimePickerAndroid,
+    ActivityIndicator
 } from 'react-native';
 
+import * as officeApi from '../../office-server/OfficeApi';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as
-    AdminDashboardState from '../admin_dashboard/AdminDashboardState';
+import * as AdminDashboardState from '../admin_dashboard/AdminDashboardState';
 
 class AdminDashboardView extends Component {
 
@@ -75,11 +76,11 @@ class AdminDashboardView extends Component {
                                 <Text style={{ fontWeight: 'bold', padding: 2 }}>Check in</Text>
 
                                 {Platform.OS === 'android' &&
-                                    !this.props.adminDashboardState.editModalShowCheckinPicker &&
+                                    !this.props.adminDashboardState.editModalCheckInshowProgress &&
                                     <View style={{ flex: 1, marginBottom: 5, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
-                                                this.showCheckinTimePicker();
+                                                this.showCheckinTimePicker("58c149b159a4cc83cff1909d");
                                             }}
                                             color='#464763'
                                             title={this.props.adminDashboardState.editModalCheckinText} />
@@ -87,7 +88,7 @@ class AdminDashboardView extends Component {
                                 }
 
                                 {Platform.OS === 'ios' &&
-                                    !this.props.adminDashboardState.editModalShowCheckinPicker &&
+                                    !this.props.adminDashboardState.editModalCheckInshowProgress &&
                                     <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 5, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
@@ -98,7 +99,7 @@ class AdminDashboardView extends Component {
                                     </View>
                                 }
 
-                                {this.props.adminDashboardState.editModalShowCheckinPicker &&
+                                {this.props.adminDashboardState.editModalCheckInshowProgress &&
                                     <ActivityIndicator
                                         size="small"
                                         color="white"
@@ -107,10 +108,13 @@ class AdminDashboardView extends Component {
 
                             </View>
 
+
+                            
+
                             <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
-                                <Text style={{ fontWeight: 'bold', padding: 2 }}>Check in</Text>
+                                <Text style={{ fontWeight: 'bold', padding: 2 }}>Check out</Text>
                                 {Platform.OS === 'android' &&
-                                    !this.props.adminDashboardState.editModalShowCheckoutPicker &&
+                                    !this.props.adminDashboardState.editModalCheckoutshowProgress &&
                                     <View style={{ flex: 1, marginBottom: 5, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
@@ -122,7 +126,7 @@ class AdminDashboardView extends Component {
                                 }
 
                                 {Platform.OS === 'ios' &&
-                                    !this.props.adminDashboardState.editModalShowCheckoutPicker &&
+                                    !this.props.adminDashboardState.editModalCheckoutshowProgress &&
                                     <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 5, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
@@ -133,7 +137,7 @@ class AdminDashboardView extends Component {
                                     </View>
                                 }
 
-                                {this.props.adminDashboardState.editModalShowCheckoutPicker &&
+                                {this.props.adminDashboardState.editModalCheckoutshowProgress &&
                                     <ActivityIndicator
                                         size="small"
                                         color="white"
@@ -142,8 +146,6 @@ class AdminDashboardView extends Component {
                             </View>
 
                         </View>
-
-
                         {/*{Platform.OS === 'android' &&
                             <View style={{ marginBottom: 5, alignItems: 'center' }}>
                                 <Button
@@ -173,7 +175,8 @@ class AdminDashboardView extends Component {
         )
     }
 
-    showCheckinTimePicker = async (options) => {
+    showCheckinTimePicker = async (checkinId) => {
+        this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
         let _options = {
             is24Hour: false
         }
@@ -191,7 +194,16 @@ class AdminDashboardView extends Component {
             if (action === TimePickerAndroid.dismissedAction) {
                 //do nothing
             } else {
-                //TODO: make api call
+                let date = new Date(this.props.adminDashboardState.filterDate);
+                date.setHours(hour, minute, 0);
+                this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
+                officeApi.adminUpdateCheckinCheckoutTime(checkinId, date).then((resp) => {
+                    alert("Successfully Updated Checkin Time");
+                }).catch((exp)=> {
+                    alert("Error, "+exp)
+                }).then(() => {
+                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
+                });
                 this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime(hour, minute));
             }
         } catch (message) {
@@ -199,8 +211,7 @@ class AdminDashboardView extends Component {
         }
     };
 
-    showCheckoutTimePicker = async (options) => {
-
+    showCheckoutTimePicker = async (checkoutId) => {
         let _options = {
             is24Hour: false
         }
@@ -218,6 +229,16 @@ class AdminDashboardView extends Component {
             if (action === TimePickerAndroid.dismissedAction) {
                 //do nothing
             } else {
+                let date = new Date(this.props.adminDashboardState.filterDate);
+                date.setHours(hour, minute, 0);
+                this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+                officeApi.adminUpdateCheckinCheckoutTime(checkoutId, date).then((resp) => {
+                    alert("Successfully Updated Checkout Time");
+                }).catch((exp)=> {
+                    alert("Error, "+exp)
+                }).then(() => {
+                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+                });
                 this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(hour, minute));
                 //TODO: make api call
             }
@@ -367,6 +388,7 @@ class AdminDashboardView extends Component {
                             onPress={() => {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker());
                                 //TODO: make api call
+                                Api.adminUpdateCheckinCheckoutTime
                             }}
                             title="Done" />
                     </View>

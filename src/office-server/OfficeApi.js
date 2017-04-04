@@ -198,21 +198,19 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     catch (error) {
         throw error;
     }
+}
 
+ export async function adminUpdateCheckinCheckoutTime(timelineId,createdAt) {
 
-    export async function adminUpdateCheckinCheckoutTime() {
-
-        let deviceObj = {
-            createdAt: '2017-04-30'
+        let timelineObj = {
+            createdAt: createdAt
         };
-        console.log("device obj is ", deviceObj);
 
         try {
-            const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/58c149b159a4cc83cff1909d", deviceObj, true);
+            const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/"+timelineId, timelineObj, true);
             return resp;
         }
         catch (error) {
             throw error;
         }
     }
-}

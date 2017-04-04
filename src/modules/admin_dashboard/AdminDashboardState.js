@@ -109,13 +109,13 @@ export function updateEditModalCheckoutTime(hour, min) {
 
 export function toogleEditModalCheckinProgress() {
     return {
-        type: EDIT_MODAL_CHECKOUT_PROGRESS
+        type: EDIT_MODAL_CHECKIN_PROGRESS
     }
 }
 
 export function toogleEditModalCheckoutProgress() {
     return {
-        type: EDIT_MODAL_CHECKIN_PROGRESS
+        type: EDIT_MODAL_CHECKOUT_PROGRESS
     }
 }
 
@@ -149,7 +149,7 @@ export default function AdminDashboardStateReducer(state = initialState, action 
 
 
         case EDIT_MODAL_SHOWPROGRESS:
-            return state.set("showEditModal", !state.get("editModalShowProgress"));
+            return state.set("editModalShowProgress", !state.get("editModalShowProgress"));
 
 
         case EDIT_MODAL_CHECKIN:
@@ -170,16 +170,16 @@ export default function AdminDashboardStateReducer(state = initialState, action 
 
 
         case EDIT_MODAL_CHECKIN_PICKER:
-            return state.set("showEditModal", !state.get("editModalShowCheckinPicker"));
+            return state.set("editModalShowCheckinPicker", !state.get("editModalShowCheckinPicker"));
 
         case EDIT_MODAL_CHECKOUT_PICKER:
-            return state.set("showEditModal", !state.get("editModalShowCheckoutPicker"));
+            return state.set("editModalShowCheckoutPicker", !state.get("editModalShowCheckoutPicker"));
 
         case EDIT_MODAL_CHECKIN_PROGRESS:
-            return state.set("showEditModal", !state.get("editModalCheckInshowProgress"));
+            return state.set("editModalCheckInshowProgress", !state.get("editModalCheckInshowProgress"));
 
         case EDIT_MODAL_CHECKOUT_PROGRESS:
-            return state.set("showEditModal", !state.get("editModalCheckoutshowProgress"));
+            return state.set("editModalCheckoutshowProgress", !state.get("editModalCheckoutshowProgress"));
 
         default:
             return state;
