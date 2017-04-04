@@ -13,7 +13,7 @@ import {
     ActivityIndicator,
     PermissionsAndroid
 } from 'react-native';
-
+import FCM from 'react-native-fcm'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 import RealmDatabse from '../../database/RealmDatabase';
@@ -24,6 +24,7 @@ import * as TimeLineStateActions from './TimelineState';
 import * as officeApi from '../../office-server/OfficeApi';
 import Dimensions from 'Dimensions'
 import { isUserValidLocation } from '../../services/locationService';
+import * as notification from '../../notification/Notification'
 
 function _getMonthInString(month) {
     switch (month) {
@@ -74,6 +75,7 @@ function _getDayOfWeek(day) {
     }
 }
 
+//notification.initializeNotification();
 
 async function createUser(token) {
     if (!RealmDatabse.findUser().length > 0) {
@@ -86,9 +88,9 @@ async function createUser(token) {
             .then((resp) => {
                 let newObject = {
                     ...userObj,
-                    serverId: resp.results[0].id
+                    serverId:resp.results[0].id,
+                    role:resp.results[0].role
                 };
-
                 RealmDatabse.saveUser(newObject);
                 officeApi.setUserName(newObject);
                 return newObject
@@ -97,9 +99,8 @@ async function createUser(token) {
                 console.log(JSON.stringify(err));
                 throw err;
             });
-    } else {
-        console.log(RealmDatabse.findUser()[0].serverId);
-        return RealmDatabse.findUser()[0]
+    }else{
+            return RealmDatabse.findUser()[0]
     }
 }
 
@@ -126,49 +127,55 @@ class TimelineView extends Component {
         // errorMessage: PropTypes.string.isRequired,
         // lastCheckout: PropTypes.string.isRequired,
         // checkin:PropTypes.bool.isRequired,
-        switchTab: PropTypes.func.isRequired,
+        pushRoute: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
+
     constructor() {
         super();
-        auth.getAuthenticationToken().then((resp) => {
+        auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
-                //console.log("going to call timeline ",resp)
-                officeApi.setUserName(RealmDatabse.findUser()[0])
+                officeApi.setUserName(RealmDatabse.findUser()[0]);
                 officeApi.getUserTimeline()
-                    .then((resp) => {
-                        //console.log(resp);
-                        console.log("constuctor get timeline data")
-                        this.props.dispatch(TimeLineStateActions.setTimelineData({ data: resp.results }));
-                    })
-                    .catch((err) => {
-                        console.log(err);
+                .then((resp)=>{
+                    this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                    FCM.requestPermissions(); // for iOS
+                    FCM.getFCMToken().then(token => {
+                        if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+                            if (typeof token != 'undefined') {
+                                officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
+                                    console.log("register device response ", resp)
+                                });
+                            }
+                        }
+                        // store fcm token in your server
                     });
-            })
-                .catch((err) => {
+                })
+                .catch((err)=>{
                     console.log(err);
                 });
-        }).catch((err) => {
-            console.log("Cannot find authentication token: " + err);
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
+        }).catch((err)=>{
+            console.log("Cannot find authentication token: "+err);
         });
-
+        
     }
+    
 
     render() {
-
-        this._getLastCheckinCheckout(this.props.dispatch);
         const checkin = this.props.timeLineState.checkin;
-        const { dispatch } = this.props;
-        console.log("CHECKINVALUE " + checkin);
-        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-
-        const dtaSource = { dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length > 0 ? this.props.timeLineState.timelineData.data : []) };
-
+        const {dispatch} = this.props;
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        const dtaSource = {dataSource: ds.cloneWithRows(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[])};
+        var hoursToNotifyCheckout = 9
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
-        var mm = _getMonthInString(today.getMonth() + 1); //January is 0!
+        var mm = _getMonthInString(today.getMonth()+1);
         var yyyy = today.getFullYear();
         var actionButtonY = ((Dimensions.get('window').height - 90) * 0.4) - 19
         return (
@@ -186,90 +193,58 @@ class TimelineView extends Component {
                                 <Text style={{ backgroundColor: "transparent", color: "#fff", fontSize: 24 }}>{_getDayOfWeek(day)}</Text>
                                 <Text style={{ backgroundColor: "transparent", color: "#fff", fontSize: 12 }}> {mm} {yyyy}</Text>
                             </View>
-
-                            <View style={{ flex: 1, alignItems: "center" }}>
-                                {!this.props.timeLineState.showProgress &&
-                                    <TouchableHighlight onPress={function () {
-                                        dispatch(TimeLineStateActions.toggleShowProgress(true))
-                                        isUserValidLocation().then(
-                                            (validity) => {
-                                                if (validity === true) {
-                                                    // user within range of office
-                                                    if (!checkin) {
+                            <View style={{flex:1,alignItems:"center"}}>
+                                <TouchableHighlight onPress={function()
+                                                {
+                                                    if(!checkin){
                                                         officeApi.checkinUser()
-                                                            .then((resp) => {
-                                                                dispatch(TimeLineStateActions.checkUserToggle());
-                                                                officeApi.getUserTimeline()
-                                                                    .then((resp) => {
-                                                                        dispatch(TimeLineStateActions.setTimelineData({ data: resp.results }));
-                                                                    })
-                                                                    .catch((err) => {
-                                                                        console.log(err);
-                                                                    });
+                                                        .then((resp)=>{
+                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                            console.log("time slot", new Date().getTime());
+                                                            console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
+                                                            FCM.scheduleLocalNotification({
+                                                                fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
+                                                                // fire_date: new Date().getTime() + (20 * 1000),
+                                                                id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
+                                                                body: "It has been 9 hours since you checkedin. Please check out before leaving."
+                                                            });
+                                                            console.log("schedule successful")
+                                                            officeApi.getUserTimeline()
+                                                            .then((resp)=>{
+                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                                                             })
-                                                            .catch((err) => {
+                                                            .catch((err)=>{
                                                                 console.log(err);
                                                             });
-                                                    }
-                                                    else {
+                                                        })
+                                                        .catch((err)=>{
+                                                            console.log(err);
+                                                        });
+                                                       }
+                                                    else{
                                                         officeApi.checkoutUser()
-                                                            .then((resp) => {
-                                                                dispatch(TimeLineStateActions.checkUserToggle());
-                                                                officeApi.getUserTimeline()
-                                                                    .then((resp) => {
-                                                                        dispatch(TimeLineStateActions.setTimelineData({ data: resp.results }));
-                                                                    })
-                                                                    .catch((err) => {
-                                                                        console.log(err);
-                                                                    });
+                                                        .then((resp)=>{
+                                                           dispatch(TimeLineStateActions.checkUserToggle());
+                                                           officeApi.getUserTimeline()
+                                                            .then((resp)=>{
+                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                                                             })
-                                                            .catch((err) => {
+                                                            .catch((err)=>{
                                                                 console.log(err);
                                                             });
+                                                        })
+                                                        .catch((err)=>{
+                                                            console.log(err);
+                                                        });
                                                     }
-                                                } else {
-                                                    // User not within range of office
-                                                    Alert.alert(
-                                                        'Oh! Snap',
-                                                        'You are not currently within the office premises, please be within the office premises to checkin/checkout or contact office manager.',
-                                                        [
-                                                            { text: 'OK', onPress: () => { } },
-                                                        ]
-                                                    );
-                                                }
-                                            }
-                                        ).catch(
-                                            (error) => {
-                                                // some error occoured during ranging of user
-                                                let errorHeading = (error.code === 1 ? 'Permission Error' : 'Oh! Snap');
-                                                let errorText = (error.code === 1 ? 'Please check location permissions granted to this app in settings.' : 'Some location services error occoured try again later or contact the office manager.');
-                                                Alert.alert(
-                                                    errorHeading,
-                                                    JSON.stringify(error),
-                                                    [
-                                                        { text: 'OK', onPress: () => { } },
-                                                    ]
-                                                );
-                                            }
-                                            ).finally( () => {
-                                                // Execute logic independent of success/error
-                                                dispatch(TimeLineStateActions.toggleShowProgress(false))
-                                            });
-                                    }}
-                                        underlayColor="transparent"
-                                    >
-                                        <View
-                                            style={checkin ? styles.checkoutStyle : styles.checkinStyle}
-                                        ><Text style={{ color: "#ffffff" }}>{checkin ? "Checkout" : "Checkin"}</Text></View>
-                                    </TouchableHighlight>
-                                }
 
-                                {this.props.timeLineState.showProgress &&
-                                    <ActivityIndicator
-                                        size="small"
-                                        color="white"
-                                    />
-                                }
+                                                }}
+                                                    underlayColor="transparent"
+                                >
+                                    <View
+                                        style={checkin?styles.checkoutStyle:styles.checkinStyle}
+                                    ><Text style={{color:"#ffffff"}}>{checkin?"Checkout":"Checkin"}</Text></View>
+                                </TouchableHighlight>
                             </View>
 
                         </View>
@@ -319,19 +294,18 @@ class TimelineView extends Component {
                     offsetY={Platform.OS === 'ios' ? actionButtonY : 20}
                 >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                        onPress={() => this.props.switchTab(2)}>
-                        <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon} />
+                                       onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
+                        <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => { this.props.switchTab(3) }}>
-                        <Icon name="laptop" color="#fff" style={styles.actionButtonIcon} />
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
+                        <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                    this.props.switchTab(4)}}>
+                        <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                 </ActionButton>
-
-
-
             </View>
-
-
         );
     }
 
@@ -360,18 +334,22 @@ class TimelineView extends Component {
             });
     }
 
-    _getHumanReadableTime(timeValue) {
-        var timeStart = new Date(timeValue).getTime();
-        var timeEnd = new Date().getTime();
-        var hourDiff = timeEnd - timeStart; //in ms
-        var secDiff = hourDiff / 1000; //in s
-        var minDiff = hourDiff / 60 / 1000; //in minutes
-        var hDiff = hourDiff / 3600 / 1000; //in hours
-        var humanReadable = {};
-        humanReadable.hours = Math.floor(hDiff);
-        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-        let stringTime = humanReadable.hours + "h " + Math.floor(humanReadable.minutes) + "m ago";
-        return stringTime;
+    _getHumanReadableTime(timeValue){
+    var timeStart = new Date(timeValue).getTime();
+    var timeEnd = new Date().getTime();
+    var hourDiff = timeEnd - timeStart; //in ms
+    var secDiff = hourDiff / 1000; //in s
+    var minDiff = hourDiff / 60 / 1000; //in minutes
+    var hDiff = hourDiff / 3600 / 1000; //in hours
+    var humanReadable = {};
+    humanReadable.hours = Math.floor(hDiff);
+    humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+        if(humanReadable.hours<0 || humanReadable.minutes<0)
+        {
+            return "0h : 0m ago";
+        }
+    let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+    return stringTime;
     }
 
 }

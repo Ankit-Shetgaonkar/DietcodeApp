@@ -4,7 +4,6 @@ import RealmDatabse from '../database/RealmDatabase';
 let userName = RealmDatabse.findUser()[0];
 
 export function setUserName(userName1) {
-    console.log("set user name ", userName);
     userName = userName1;
 }
 
@@ -79,9 +78,42 @@ export async function getUserTimeline() {
     }
 }
 
+export async function getLeaveHistory() {
+    try {
+        console.log("user name leave history is "+userName.serverId);
+        let requestBody = {
+            user: userName.serverId,
+            sortBy: "from",
+            sort_order: "-1"
+        }
+        const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/getHistory", requestBody, false)
+        return resp;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
 export async function getLeavesDetails() {
     try {
         const resp = await api.get("https://dc-office.herokuapp.com/api/cakehr/getUserDetails?user=" + userName.serverId, true);
+        return resp;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+export async function registerDevice(deviceToken, userID, deviceType) {
+
+    let deviceObj = {
+        user: userID,
+        type: deviceType,
+        firebaseDeviceToken: deviceToken
+    };
+    console.log("device obj is ", deviceObj);
+    try {
+        const resp = await api.post("http://dc-office.herokuapp.com/api/v1/devices", deviceObj, true);
         return resp;
     }
     catch (error) {

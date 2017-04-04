@@ -167,7 +167,7 @@ export function toggleProgress(isProgress) {
     };
 }
 
-export function showNumberOfDaysPicker(isVisible) {
+export function updateNumberDaysPicker(isVisible) {
     return {
         type: SHOW_NUMBER_OF_DAYS_PICKER,
         payload: isVisible
@@ -237,6 +237,7 @@ export default function LeavesStateReducer(state = initialState, action = {}) {
                 "toDateText": action.payload[1]
             });
             return state;
+
         case SHOW_NUMBER_OF_DAYS_PICKER:
             return state.set("showNumberOfDaysPicker", action.payload);
 
