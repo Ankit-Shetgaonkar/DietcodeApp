@@ -10,7 +10,8 @@ import {
     DatePickerAndroid,
     TouchableHighlight,
     TouchableNativeFeedback,
-    Modal
+    Modal,
+    Image
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -26,6 +27,13 @@ class AdminDashboardView extends Component {
         }).isRequired,
         dispatch: PropTypes.func.isRequired
     };
+
+
+    componentWillMount() {
+        // reset the local state of this view for the first time`
+        this.props.dispatch(AdminDashboardState.resetScreen());
+
+    }
 
     renderDateModal = () => {
         return (
@@ -83,13 +91,19 @@ class AdminDashboardView extends Component {
 
     render() {
         const {dispatch,adminDashboardState} = this.props;
+
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        const dtaSource = {dataSource: ds.cloneWithRows(["test1","test2","test3","test4"])};
+
         return (
             <View style={styles.container}>
 
                 <View style={styles.selector}>
 
                     <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
-
+                            let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate):this.props.adminDashboardState.filterDate;
+                            date.setDate(date.getDate()-1);
+                            dispatch(AdminDashboardState.setFilterDate(date));
                     }}>
                         <Icon
                             size={20}
@@ -109,7 +123,9 @@ class AdminDashboardView extends Component {
                         </View>
                     </TouchableHighlight>
                     <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
-
+                            let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate):this.props.adminDashboardState.filterDate;
+                            date.setDate(date.getDate()+1);
+                            dispatch(AdminDashboardState.setFilterDate(date));
                     }}>
                         <Icon
                             size={20}
@@ -121,12 +137,40 @@ class AdminDashboardView extends Component {
                     { this.renderDateModal() }
                 </View>
 
-                <View style={styles.checklist}></View>
+                <View style={styles.checklist}>
+
+                    <ListView
+                        {...dtaSource}
+                        enableEmptySections={true}
+                        renderRow={(rowData) =>
+                        <TouchableHighlight underlayColor="transparent" style={{ flex:1 }} onPress={() => {
+                                alert(rowData);
+                           }}>
+                                        <View style={{flex: 1, flexDirection: 'row'}}>
+                                                <View style={{flex: .2, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
+                                                   <Image style={ styles.image } source={{ uri: "https://lh4.googleusercontent.com/-wLDL5bCoI1U/AAAAAAAAAAI/AAAAAAAACsk/q1Y0JeSP8OE/photo.jpg" }}/>
+                                                </View>
+                                                <View style={{flex: .3, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}> Divyanshu negi </Text>
+                                                </View>
+                                                <View style={{flex: .25, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>Checkin </Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>09:30 AM </Text>
+                                                </View>
+                                                <View style={{flex: .25, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>Checkout </Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>06:30 PM </Text>
+                                                </View>
+                                            </View>
+                                            </TouchableHighlight>
+                            }
+                    />
+
+                </View>
 
             </View>
         );
     }
-
 
     _dateSelector = () => {
 
@@ -175,7 +219,12 @@ const styles = StyleSheet.create({
         paddingLeft: 5,
         textAlign: 'left', color: "#000000", fontSize: 16,
     },
-
+    image: {
+        height: 40,
+        marginTop: 5,
+        width: 40,
+        borderRadius: 20
+    },
     basicCalenderView: {
         flex: 1,
         padding: 12,
