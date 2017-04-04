@@ -70,10 +70,10 @@ class AdminDashboardView extends Component {
             <Modal
                 animationType={"slide"}
                 transparent={true}
-                visible={false}
+                visible={this.props.wfhState.showFromDatePicker}
                 onRequestClose={() => { this.props.dispatch(WfhState.updateFromDatePicker(false)) }}>
 
-                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6,margin:100 }} />
+                <View style={{ flex: 1, backgroundColor: '#ffffff', opacity: .8}} />
 
                 <View style={{ backgroundColor: '#d7d7d7' }}>
                     <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
