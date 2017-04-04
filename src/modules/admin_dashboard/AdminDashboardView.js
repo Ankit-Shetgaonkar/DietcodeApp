@@ -10,12 +10,14 @@ import {
     DatePickerAndroid,
     TouchableHighlight,
     TouchableNativeFeedback,
-    Modal
+    Modal,
+    Image,
+    TimePickerAndroid
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as 
-AdminDashboardState from '../admin_dashboard/AdminDashboardState';
+import * as
+    AdminDashboardState from '../admin_dashboard/AdminDashboardState';
 
 class AdminDashboardView extends Component {
 
@@ -29,7 +31,7 @@ class AdminDashboardView extends Component {
         dispatch: PropTypes.func.isRequired
     };
 
- renderEditModal = () => {
+    renderEditModal = () => {
 
         return (
             <Modal
@@ -38,15 +40,132 @@ class AdminDashboardView extends Component {
                 visible={this.props.adminDashboardState.showEditModal}
                 onRequestClose={() => { this.props.dispatch(AdminDashboardState.toogleEditModal()) }}>
 
-                <View style={{ flex: 1, backgroundColor: '#D3D3D3', opacity: .8}} />
+                <View style={{ flex: 1, flexDirection: 'row' }}>
 
-                <View style={{ backgroundColor: '#d7d7d7' }}>
-                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
-                        <Button
-                            onPress={() => {
+                    <View style={{
+                        flex: 1, flexDirection: 'column', backgroundColor: '#d7d7d7',
+                        height: 250, marginLeft: 20, marginRight: 20, alignSelf: 'center', borderRadius: 12
+                    }}>
+
+                        <View style={{
+                            alignSelf: 'flex-end',
+                            justifyContent: 'flex-start'
+                        }}>
+
+                            <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
                                 this.props.dispatch(AdminDashboardState.toogleEditModal());
-                            }}
-                            title="Done" />
+                            }}>
+                                <Icon
+                                    size={20}
+                                    color='#464763'
+                                    name="close"
+                                    style={{ alignSelf: "center", marginTop: 15, backgroundColor: "transparent" }}
+                                />
+                            </TouchableHighlight>
+                        </View>
+
+                        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                            <Image style={[styles.circularImage]} source={{ uri: 'https://media.gqindia.com/wp-content/uploads/2015/11/gq-monica-belluci-22.jpg' }} />
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Monica Belluccci</Text>
+                        </View>
+
+                        <View style={{ flex: 0.5, flexDirection: 'row' }}>
+
+                            <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
+                                <Text style={{ fontWeight: 'bold', padding: 2 }}>Check in</Text>
+
+                                {Platform.OS === 'android' &&
+                                    !this.props.adminDashboardState.editModalShowCheckinPicker &&
+                                    <View style={{ flex: 1, marginBottom: 5, alignItems: 'center' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.showCheckinTimePicker();
+                                            }}
+                                            color='#464763'
+                                            title={this.props.adminDashboardState.editModalCheckinText} />
+                                    </View>
+                                }
+
+                                {Platform.OS === 'ios' &&
+                                    !this.props.adminDashboardState.editModalShowCheckinPicker &&
+                                    <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 5, alignItems: 'center' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker());
+                                            }}
+                                            color='#ffffff'
+                                            title={this.props.adminDashboardState.editModalCheckinText} />
+                                    </View>
+                                }
+
+                                {this.props.adminDashboardState.editModalShowCheckinPicker &&
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="white"
+                                    />
+                                }
+
+                            </View>
+
+                            <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
+                                <Text style={{ fontWeight: 'bold', padding: 2 }}>Check in</Text>
+                                {Platform.OS === 'android' &&
+                                    !this.props.adminDashboardState.editModalShowCheckoutPicker &&
+                                    <View style={{ flex: 1, marginBottom: 5, alignItems: 'center' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.showCheckoutTimePicker();
+                                            }}
+                                            color='#464763'
+                                            title={this.props.adminDashboardState.editModalCheckoutText} />
+                                    </View>
+                                }
+
+                                {Platform.OS === 'ios' &&
+                                    !this.props.adminDashboardState.editModalShowCheckoutPicker &&
+                                    <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 5, alignItems: 'center' }}>
+                                        <Button
+                                            onPress={() => {
+                                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
+                                            }}
+                                            color='#ffffff'
+                                            title={this.props.adminDashboardState.editModalCheckoutText} />
+                                    </View>
+                                }
+
+                                {this.props.adminDashboardState.editModalShowCheckoutPicker &&
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="white"
+                                    />
+                                }
+                            </View>
+
+                        </View>
+
+
+                        {/*{Platform.OS === 'android' &&
+                            <View style={{ marginBottom: 5, alignItems: 'center' }}>
+                                <Button
+                                    onPress={() => {
+                                        this.props.dispatch(AdminDashboardState.toogleEditShowProgress());
+                                    }}
+                                    color='#464763'
+                                    title="Update Time" />
+                            </View>
+                        }
+
+                        {Platform.OS === 'ios' &&
+                            <View style={{ backgroundColor: '#464763', marginBottom: 5 }}>
+                                <Button
+                                    onPress={() => {
+                                        this.props.dispatch(AdminDashboardState.toogleEditShowProgress());
+                                    }}
+                                    color='#ffffff'
+                                    title="Update Time" />
+                            </View>
+                        }*/}
+
                     </View>
                 </View>
 
@@ -54,45 +173,98 @@ class AdminDashboardView extends Component {
         )
     }
 
+    showCheckinTimePicker = async (options) => {
+        let _options = {
+            is24Hour: false
+        }
+
+        if (this.props.adminDashboardState.editModalCheckinHour !== -1) {
+            _options = {
+                is24Hour: false,
+                hour: this.props.adminDashboardState.editModalCheckinHour,
+                minute: this.props.adminDashboardState.editModalCheckinMins,
+            }
+        }
+
+        try {
+            const { action, hour, minute } = await TimePickerAndroid.open(_options);
+            if (action === TimePickerAndroid.dismissedAction) {
+                //do nothing
+            } else {
+                //TODO: make api call
+                this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime(hour, minute));
+            }
+        } catch (message) {
+            console.warn(`Error in example `, message);
+        }
+    };
+
+    showCheckoutTimePicker = async (options) => {
+
+        let _options = {
+            is24Hour: false
+        }
+
+        if (this.props.adminDashboardState.editModalCheckoutHour !== -1) {
+            _options = {
+                is24Hour: false,
+                hour: this.props.adminDashboardState.editModalCheckoutHour,
+                minute: this.props.adminDashboardState.editModalCheckoutMins,
+            }
+        }
+
+        try {
+            const { action, hour, minute } = await TimePickerAndroid.open(_options);
+            if (action === TimePickerAndroid.dismissedAction) {
+                //do nothing
+            } else {
+                this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(hour, minute));
+                //TODO: make api call
+            }
+        } catch (message) {
+            console.warn(`Error in example `, message);
+        }
+    };
+
     renderDateModal = () => {
         return (
-                <Modal
-                    animationType={"none"}
-                    transparent={true}
-                    visible={this.props.adminDashboardState.showDatePicker}
-                    onRequestClose={() => { this.props.dispatch(AdminDashboardState.toggleDatePicker()) }}>
+            <Modal
+                animationType={"none"}
+                transparent={true}
+                visible={this.props.adminDashboardState.showDatePicker}
+                onRequestClose={() => { this.props.dispatch(AdminDashboardState.toggleDatePicker()) }}>
 
-                    <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
 
-                    <View style={{ backgroundColor: '#d7d7d7' }}>
-                        <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
-                            <Button
-                                onPress={() => {
-                                            this.props.dispatch(AdminDashboardState.toggleDatePicker());
-                                        }}
-                                title="Done" />
-                        </View>
+                <View style={{ backgroundColor: '#d7d7d7' }}>
+                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                        <Button
+                            onPress={() => {
+                                this.props.dispatch(AdminDashboardState.toggleDatePicker());
+                            }}
+                            title="Done" />
                     </View>
+                </View>
 
-                    <DatePickerIOS
-                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                        date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate}
-                        mode="date"
-                        onDateChange={(date) => {
-                                    this.props.dispatch(AdminDashboardState.setFilterDate(date))
-                                }}
-                    />
+                <DatePickerIOS
+                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate}
+                    mode="date"
+                    onDateChange={(date) => {
+                        this.props.dispatch(AdminDashboardState.setFilterDate(date))
+                    }}
+                />
 
-                </Modal>
+            </Modal>
         )
     }
 
-    
+
     /**Show Android From Date Picker */
     showFromPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-            date: typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate
+                date: typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //do nothing
@@ -109,7 +281,7 @@ class AdminDashboardView extends Component {
 
 
     render() {
-        const {dispatch,adminDashboardState} = this.props;
+        const { dispatch, adminDashboardState } = this.props;
         return (
             <View style={styles.container}>
 
@@ -127,14 +299,14 @@ class AdminDashboardView extends Component {
                             style={{ alignSelf: "center", marginTop: 15, backgroundColor: "transparent" }}
                         />
                     </TouchableHighlight>
-                    <TouchableHighlight underlayColor="transparent" style={{ flex:1 }} onPress={() => {
-                        {(Platform.OS === 'android') && this.showFromPicker()}
-                        {(Platform.OS === 'ios') && dispatch(AdminDashboardState.toggleDatePicker());}
+                    <TouchableHighlight underlayColor="transparent" style={{ flex: 1 }} onPress={() => {
+                        { (Platform.OS === 'android') && this.showFromPicker() }
+                        { (Platform.OS === 'ios') && dispatch(AdminDashboardState.toggleDatePicker()); }
                     }}>
-                    <View style={{flex:1 ,backgroundColor:"transparent",justifyContent:"center"}}>
-                        <Text style={{color:"#ffffff",fontSize:20,alignSelf:"center"}}>{
-                            this.props.adminDashboardState.filterDateString
-                        }</Text>
+                        <View style={{ flex: 1, backgroundColor: "transparent", justifyContent: "center" }}>
+                            <Text style={{ color: "#ffffff", fontSize: 20, alignSelf: "center" }}>{
+                                this.props.adminDashboardState.filterDateString
+                            }</Text>
                         </View>
                     </TouchableHighlight>
                     <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
@@ -147,14 +319,16 @@ class AdminDashboardView extends Component {
                             style={{ alignSelf: "center", marginTop: 15, backgroundColor: "transparent" }}
                         />
                     </TouchableHighlight>
-                    { this.renderDateModal() }
+                    {this.renderDateModal()}
+                    {this.renderEditModalCheckinPicker()}
+                    {this.renderEditModalCheckoutPicker()}
                 </View>
 
                 <View style={styles.checklist}></View>
 
                 <Button
                     onPress={() => {
-                       this.props.dispatch(AdminDashboardState.toogleEditModal());
+                        this.props.dispatch(AdminDashboardState.toogleEditModal());
                     }}
                     title="Show Modal" />
             </View>
@@ -176,6 +350,75 @@ class AdminDashboardView extends Component {
         );
 
     }
+
+    renderEditModalCheckinPicker = () => {
+        return (
+            <Modal
+                animationType={"none"}
+                transparent={true}
+                visible={this.props.adminDashboardState.editModalShowCheckinPicker}
+                onRequestClose={() => { this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker()) }}>
+
+                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+
+                <View style={{ backgroundColor: '#d7d7d7' }}>
+                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                        <Button
+                            onPress={() => {
+                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker());
+                                //TODO: make api call
+                            }}
+                            title="Done" />
+                    </View>
+                </View>
+
+                <DatePickerIOS
+                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                    date={new Date()}
+                    mode="time"
+                    onDateChange={(date) => {
+                        alert("Getting some date" + date);
+                    }}
+                />
+
+            </Modal>
+        );
+    }
+
+    renderEditModalCheckoutPicker = () => {
+        return (
+            <Modal
+                animationType={"none"}
+                transparent={true}
+                visible={this.props.adminDashboardState.editModalShowCheckoutPicker}
+                onRequestClose={() => { this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker()) }}>
+
+                <View style={{ flex: 1, backgroundColor: '#000000', opacity: .6 }} />
+
+                <View style={{ backgroundColor: '#d7d7d7' }}>
+                    <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
+                        <Button
+                            onPress={() => {
+                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
+                                //TODO: make api call
+                            }}
+                            title="Done" />
+                    </View>
+                </View>
+
+                <DatePickerIOS
+                    style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
+                    date={new Date()}
+                    mode="time"
+                    onDateChange={(date) => {
+                        alert("Getting some date" + date);
+                    }}
+                />
+
+            </Modal>
+        );
+    }
+
 
 }
 
@@ -219,6 +462,11 @@ const styles = StyleSheet.create({
         marginRight: 10,
         justifyContent: 'flex-end'
     },
+    circularImage: {
+        height: 80,
+        width: 80,
+        borderRadius: 40
+    }
 });
 
 export default AdminDashboardView;
