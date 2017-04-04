@@ -1,6 +1,5 @@
 import React, { PropTypes, Component } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Kohana } from 'react-native-textinput-effects';
 import {
     View,
@@ -62,7 +61,8 @@ class LeavesView extends Component {
             isPaidLeave: PropTypes.bool.isRequired,
             showPaidUnpaidPicker: PropTypes.bool.isRequired
         }).isRequired,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+          pushRoute: PropTypes.func.isRequired
 
     };
 
@@ -573,7 +573,7 @@ class LeavesView extends Component {
         return (
             <View style={{
                 marginTop: 50,
-                marginBottom: 50,
+                marginBottom: 25,
                 flex: flexWeight, alignSelf: 'center'
             }}>
 
@@ -600,6 +600,33 @@ class LeavesView extends Component {
                 </AnimatedCircularProgress>
             </View>
         );
+    }
+    renderLeaveHistory = (flexWeight) => {
+         return (
+        <View style={{ marginTop: 15 ,
+                 marginBottom: 50,
+                flex: flexWeight}}>
+            {Platform.OS === 'android' &&
+                <Button
+                    onPress={() => {
+                        this.showHistoryScreen();
+                    }}
+                    color='#464763'
+                    title="View History" />
+            }
+
+            {Platform.OS === 'ios' &&
+                <View style={{ backgroundColor: '#464763' }}>
+                    <Button
+                        onPress={() => {
+                            this.showHistoryScreen();
+                        }}
+                        color='#ffffff'
+                        title="View History" />
+                </View>
+            }
+        </View>
+         )
     }
 
 
@@ -632,6 +659,8 @@ class LeavesView extends Component {
 
                     {this.rendorProgressStatus(2)}
 
+                    {this.renderLeaveHistory(1)}
+
                 </ScrollView>
 
             </LinearGradient>
@@ -650,7 +679,7 @@ class LeavesView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateFromDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
@@ -668,10 +697,15 @@ class LeavesView extends Component {
                 var date = new Date(year, month, day);
                 this.props.dispatch(LeavesState.updateToDate(date));
             }
-        } catch ({ code, message }) {
+        } catch (message) {
             console.warn(`Error in example `, message);
         }
     };
+
+    showHistoryScreen = () => {
+        //alert("history screen shown")
+        this.props.pushRoute({key: 'LeavesHistoryTab', title: 'LeavesHistory'});
+    }
 
     /**
      * Api call for applying leave
@@ -806,7 +840,7 @@ const styles = StyleSheet.create({
 
     scrollView: {
         backgroundColor: 'transparent',
-        height: 800,
+        height: 850,
         paddingTop: 20,
         paddingBottom: 10,
         paddingLeft: 15,

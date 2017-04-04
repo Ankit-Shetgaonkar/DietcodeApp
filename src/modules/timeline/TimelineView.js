@@ -10,7 +10,7 @@ import {
     Platform,
     TouchableHighlight
 } from 'react-native';
-
+import FCM from 'react-native-fcm'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 import RealmDatabse from '../../database/RealmDatabase';
@@ -84,9 +84,9 @@ async function createUser(token){
             .then((resp)=>{
                 let newObject = {
                     ...userObj,
-                    serverId:resp.results[0].id
+                    serverId:resp.results[0].id,
+                    role:resp.results[0].role
                 };
-
                 RealmDatabse.saveUser(newObject);
                 officeApi.setUserName(newObject);
                 return newObject
@@ -95,8 +95,7 @@ async function createUser(token){
                 console.log(JSON.stringify(err));
                 throw err;
             });
-    }else{ 
-            console.log(RealmDatabse.findUser()[0].serverId);
+    }else{
             return RealmDatabse.findUser()[0]
     }
 }
@@ -126,22 +125,29 @@ class TimelineView extends Component {
         // errorMessage: PropTypes.string.isRequired,
         // lastCheckout: PropTypes.string.isRequired,
         // checkin:PropTypes.bool.isRequired,
-        switchTab: PropTypes.func.isRequired,
+        pushRoute: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     constructor() {
         super();
-        //notification.sendNotification("test notification!!!!");
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
-                //console.log("going to call timeline ",resp)
-                officeApi.setUserName(RealmDatabse.findUser()[0])
+                officeApi.setUserName(RealmDatabse.findUser()[0]);
                 officeApi.getUserTimeline()
                 .then((resp)=>{
-                    //console.log(resp);
-                    console.log("constuctor get timeline data")
                     this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                    FCM.requestPermissions(); // for iOS
+                    FCM.getFCMToken().then(token => {
+                        if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+                            if (typeof token != 'undefined') {
+                                officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
+                                    console.log("register device response ", resp)
+                                });
+                            }
+                        }
+                        // store fcm token in your server
+                    });
                 })
                 .catch((err)=>{
                     console.log(err);
@@ -157,19 +163,17 @@ class TimelineView extends Component {
     }
 
     render() {
-
         const checkin = this.props.timeLineState.checkin;
         checkinState = checkin;
         const {dispatch} = this.props;
-        console.log("CHECKINVALUE "+checkin);
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-
         this.refactorData(this.props.timeLineState.timelineData.data.length>0?this.props.timeLineState.timelineData.data:[]);
         const dtaSource = {dataSource: ds.cloneWithRows(restructuredData.length>0?restructuredData:[])};
+        var hoursToNotifyCheckout = 9
         var today = new Date();
         var dd = today.getDate();
         var day = today.getDay();
-        var mm = _getMonthInString(today.getMonth()+1); //January is 0!
+        var mm = _getMonthInString(today.getMonth()+1);
         var yyyy = today.getFullYear();
         var actionButtonY = ((Dimensions.get('window').height - 90)* 0.4) - 19
         return (
@@ -191,11 +195,19 @@ class TimelineView extends Component {
                             <View style={{flex:1,alignItems:"center"}}>
                                 <TouchableHighlight onPress={function()
                                                 {
-
                                                     if(!checkin){
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
                                                             dispatch(TimeLineStateActions.checkUserToggle());
+                                                            console.log("time slot", new Date().getTime());
+                                                            console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
+                                                            FCM.scheduleLocalNotification({
+                                                                fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
+                                                                // fire_date: new Date().getTime() + (20 * 1000),
+                                                                id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
+                                                                body: "It has been 9 hours since you checkedin. Please check out before leaving."
+                                                            });
+                                                            console.log("schedule successful")
                                                             officeApi.getUserTimeline()
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
@@ -279,16 +291,18 @@ class TimelineView extends Component {
                               offsetY = {Platform.OS === 'ios' ? actionButtonY:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                       onPress={() => this.props.switchTab(2)}>
+                                       onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
                         <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                    this.props.switchTab(4)}}>
+                        <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
+                    </ActionButton.Item>
                 </ActionButton>
-                
 
-                
             </View>
 
 
