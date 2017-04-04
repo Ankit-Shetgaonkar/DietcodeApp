@@ -56,7 +56,8 @@ export function switchTab(key) {
 
 export default function DashboardStateReducer(state = initialState, action) {
     switch (action.type) {
-        case SWITCH_TAB: {
+        case SWITCH_TAB:
+        {
             // Switches the tab.
             const tabs = state.get('tabs').toJS();
             let nextTabs;
