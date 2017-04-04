@@ -18,16 +18,16 @@ import * as LHView from './LeavesHistory/LeavesHistoryView'
  * AppRouter is responsible for mapping a navigator scene to a view
  */
 
-export default function AppRouter(props,switchTabs) {
+export default function AppRouter(props,pushRoute) {
   const key = props.scene.route.key;
 
-  if (key === 'Dashboard') {
-    return <TimeLineContainer switchTab = {switchTabs} />;
-  }else if (key === 'Profile') {
+  if (key === 'DashboardTab') {
+    return <TimeLineContainer pushRoute = {pushRoute} />;
+  }else if (key === 'ProfileTab') {
     return <ProfileView />;
-  }else if (key === 'Leaves') {
-    return <LeavesContainer switchTab = {switchTabs} />;
-  }else if (key === 'WorkFromHome') {
+  }else if (key === 'LeavesTab') {
+    return <LeavesContainer pushRoute = {pushRoute} />;
+  }else if (key === 'WorkFromHomeTab') {
       return <WfhContainer/>;
   }else if (key === 'LeavesHistory') {
     console.log("returning lhcontainer")
