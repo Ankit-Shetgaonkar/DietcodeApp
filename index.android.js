@@ -55,7 +55,7 @@ class DietcodeApp extends Component {
             //console.log("firebase token refreshed",token, "user data ", RealmDatabse.findUser()[0])
           if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
               if (typeof token != 'undefined') {
-                  officeApi.registerDevice(token, serverId, Platform.OS)
+                  officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS)
               }
           }
         });
