@@ -120,8 +120,8 @@ class TimelineView extends Component {
             lastCheckout: PropTypes.string.isRequired,
             timelineData: PropTypes.shape({
                 data: PropTypes.array.isRequired
-            }).isRequired,
-            showProgress: PropTypes.bool.isRequired
+            }).isRequired/*,
+            showProgress: PropTypes.bool.isRequired*/
         }).isRequired,
         // timelineData: PropTypes.shape({
         //     data: PropTypes.array.isRequired
