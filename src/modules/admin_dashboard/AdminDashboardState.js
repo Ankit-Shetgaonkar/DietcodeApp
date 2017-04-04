@@ -4,6 +4,7 @@ import {fromJS} from 'immutable';
 export const RESET = 'AdminDashboardState/RESET';
 export const TOGGLE_DATE_FILTER = 'AdminDashboardState/SELECT_DATE_FILTER';
 export const FILTER_DATE = 'AdminDashboardState/FILTER_DATE';
+export const TIMELINE_DATA = 'AdminDashboardState/TIMELINE_DATA';
 
 const dateText = new Date();
 const initialState = fromJS({
@@ -11,10 +12,19 @@ const initialState = fromJS({
     errorMessage: "",
     successMessage: "",
     filterDate: new Date(),
-    filterDateString: dateText.getDate()+"/"+(dateText.getMonth()+1)+"/"+dateText.getFullYear(),
-    showDatePicker: false
+    filterDateString: dateText.getFullYear()+"-"+(dateText.getMonth()+1)+"-"+dateText.getDate(),
+    showDatePicker: false,
+    timelineData: {
+        data : []
+    }
 });
 
+export function setTimelineData(data) {
+    return {
+        type: TIMELINE_DATA,
+        payload: data
+    };
+}
 
 export function resetScreen() {
     return {
@@ -30,7 +40,7 @@ export function toggleDatePicker() {
 
 
 export function setFilterDate(date) {
-    const dateText = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+    const dateText = dateText.getFullYear()+"-"+(dateText.getMonth()+1)+"-"+dateText.getDate();
     return {
         type: FILTER_DATE,
         dateString: dateText,
@@ -56,7 +66,8 @@ export default function AdminDashboardStateReducer(state = initialState, action 
                 "filterDateString": action.dateString
             });
             return state;
-
+        case TIMELINE_DATA:
+            return state.set("timelineData",action.payload);
         default:
             return state;
 

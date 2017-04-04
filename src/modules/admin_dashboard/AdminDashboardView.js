@@ -16,7 +16,7 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as AdminDashboardState from '../admin_dashboard/AdminDashboardState';
-
+import * as officeApi from '../../office-server/OfficeApi';
 class AdminDashboardView extends Component {
 
     static displayName = 'AdminDashboardView';
@@ -32,6 +32,12 @@ class AdminDashboardView extends Component {
     componentWillMount() {
         // reset the local state of this view for the first time`
         this.props.dispatch(AdminDashboardState.resetScreen());
+        officeApi.getAllUserstimelineforDay("2017-04-03").then((resp)=>{
+            console.log(this._manipulateArrayList(resp.results));
+            this.props.dispatch(AdminDashboardState.setTimelineData({data:this._manipulateArrayList(resp.results)}));
+        }).catch((err)=>{
+          alert(err);
+        })
 
     }
 
@@ -93,7 +99,7 @@ class AdminDashboardView extends Component {
         const {dispatch,adminDashboardState} = this.props;
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        const dtaSource = {dataSource: ds.cloneWithRows(["test1","test2","test3","test4"])};
+        const dtaSource = {dataSource: ds.cloneWithRows(this.props.adminDashboardState.timelineData.data.length>0?this.props.adminDashboardState.timelineData.data:[])};
 
         return (
             <View style={styles.container}>
@@ -148,18 +154,18 @@ class AdminDashboardView extends Component {
                            }}>
                                         <View style={{flex: 1, flexDirection: 'row'}}>
                                                 <View style={{flex: .2, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
-                                                   <Image style={ styles.image } source={{ uri: "https://lh4.googleusercontent.com/-wLDL5bCoI1U/AAAAAAAAAAI/AAAAAAAACsk/q1Y0JeSP8OE/photo.jpg" }}/>
+                                                   <Image style={ styles.image } source={{ uri: rowData.image }}/>
                                                 </View>
                                                 <View style={{flex: .3, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}> Divyanshu negi </Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}> {rowData.name} </Text>
                                                 </View>
                                                 <View style={{flex: .25, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
                                                     <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>Checkin </Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>09:30 AM </Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>{this._getTimeFromDate(rowData.checkinTime)} </Text>
                                                 </View>
                                                 <View style={{flex: .25, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
                                                     <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>Checkout </Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>06:30 PM </Text>
+                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>{this._getTimeFromDate(rowData.checkoutTime)}</Text>
                                                 </View>
                                             </View>
                                             </TouchableHighlight>
@@ -187,6 +193,44 @@ class AdminDashboardView extends Component {
 
     }
 
+    _manipulateArrayList(results) {
+
+        let newList = []
+        let counter = 0;
+        for(let i=0;i<results.length;i++){
+            console.log(results[i].type);
+            if(results[i].type==='checkin'){
+                let userObject = {
+                    userId: results[i].user.id,
+                    name : results[i].user.firstName,
+                    image : results[i].user.profileImage,
+                    checkinTime: results[i].createdAt,
+                    updateId : results[i].id
+                }
+                newList.splice(counter,0,userObject);
+                counter++;
+            }
+        }
+        console.log(newList);
+        for(let i=0;i<newList.length;i++){
+            for(let j=0;j<results.length;j++){
+                if(results[j].type==='checkout'){
+                    if(newList[i].userId === results[j].user.id){
+                        newList[i] = {...newList[i],checkoutTime:results[j].createdAt}
+                    }
+                }
+            }
+        }
+
+        return newList;
+    }
+
+    _getTimeFromDate(checkinTime) {
+        let date = new Date(checkinTime);
+        let hours = date.getHours();
+        let minute = date.getMinutes();
+        return hours+":"+minute;
+    }
 }
 
 const styles = StyleSheet.create({

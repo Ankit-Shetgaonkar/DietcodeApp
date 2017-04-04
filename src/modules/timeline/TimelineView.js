@@ -133,8 +133,8 @@ class TimelineView extends Component {
                                         officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
                                             //alert("register device response "+ JSON.stringify(resp));
                                         })
-                                            .catch(()=>{
-                                                //alert("error");
+                                            .catch((error)=>{
+                                               // alert("error : "+error);
                                             });
                                     }
                                 }
@@ -292,14 +292,15 @@ class TimelineView extends Component {
                     <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+
+                    {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
                     this.props.switchTab(4)}}>
                         <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
-                    </ActionButton.Item>
-                </ActionButton>
+                    </ActionButton.Item>}
+
+                    </ActionButton>
 
             </View>
-
 
         );
     }

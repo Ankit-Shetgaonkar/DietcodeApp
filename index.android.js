@@ -13,13 +13,16 @@ class DietcodeApp extends Component {
   }
   componentDidMount() {
       FCM.getFCMToken().then(token => {
-            console.log(token)
+            console.log(token);
             // store fcm token in your server
       });
       this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
             // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
+              alert(JSON.stringify(notif));
+              if(notif.notification){
+                alert(notif.notification);
+              }
             if(notif.local_notification){
-              console.log(notif);
               alert(notif.body)
               //this is a local notification
             }

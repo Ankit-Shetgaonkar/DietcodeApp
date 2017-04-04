@@ -105,6 +105,14 @@ export async function registerDevice(deviceToken, userID, deviceType) {
     }
 }
 
+export async function getAllUserstimelineforDay(date){
+    try{
+        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&createdAt="+date+"&alldata=true&limit=50&skip=0&sort=createdAt DESC",true);
+        return resp;
+    }catch(err){
+        throw err;
+    }
+}
 
 export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid) {
 
