@@ -106,7 +106,7 @@ export async function registerDevice(deviceToken, userID, deviceType) {
 }
 
 
-export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid) {
+export async function applyforLeave(cakeHrId, from, to, day_part, message, isPaid) {
 
     if (day_part === "First Half") {
         day_part = 1;
@@ -122,8 +122,8 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
         timeoffString = "10267"
     }
 
-    let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
-    let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
+    let fromString = from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate();
+    let toString = to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate();
     let leaveBody;
     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
@@ -158,18 +158,18 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
 
 export async function applyforWfh(cakeHrId, from, to, day_part, message) {
 
-   if (day_part === "First Half") {
+    if (day_part === "First Half") {
         day_part = 1;
     } else if (day_part === "Second Half") {
         day_part = 2;
     } else {
         day_part = 0;
     }
-    let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
-    let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
+    let fromString = from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate();
+    let toString = to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate();
 
- let leaveBody;
-     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
+    let leaveBody;
+    if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
         leaveBody = {
 
@@ -197,5 +197,22 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     }
     catch (error) {
         throw error;
+    }
+
+
+    export async function adminUpdateCheckinCheckoutTime() {
+
+        let deviceObj = {
+            createdAt: '2017-04-30'
+        };
+        console.log("device obj is ", deviceObj);
+
+        try {
+            const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/58c149b159a4cc83cff1909d", deviceObj, true);
+            return resp;
+        }
+        catch (error) {
+            throw error;
+        }
     }
 }
