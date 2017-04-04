@@ -18,25 +18,25 @@ import * as LHView from './LeavesHistory/LeavesHistoryView'
  * AppRouter is responsible for mapping a navigator scene to a view
  */
 
-export default function AppRouter(props,switchTabs) {
+export default function AppRouter(props,pushRoute) {
   const key = props.scene.route.key;
 
-  if (key === 'Dashboard') {
-    return <TimeLineContainer switchTab = {switchTabs} />;
-  }else if (key === 'Profile') {
+  if (key === 'DashboardTab') {
+    return <TimeLineContainer pushRoute = {pushRoute} />;
+  }else if (key === 'ProfileTab') {
     return <ProfileView />;
-  }else if (key === 'Leaves') {
-    return <LeavesContainer switchTab = {switchTabs} />;
-  }else if (key === 'WorkFromHome') {
+  }else if (key === 'LeavesTab') {
+    return <LeavesContainer pushRoute = {pushRoute} />;
+  }else if (key === 'WorkFromHomeTab') {
       return <WfhContainer/>;
-  }else if (key === 'LeavesHistory') {
+  }else if (key === 'LeavesHistoryTab') {
     console.log("returning lhcontainer")
     return <LeavesHistoryContainer/>;
   } else if (key === 'AdminDashboardTab') {
     return <AdminDashboardController />;
   }
 
-  if (key.indexOf('Profile') === 0) {
+  if (key.indexOf('ProfileTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
       <ColorViewContainer
@@ -44,7 +44,7 @@ export default function AppRouter(props,switchTabs) {
       />
     );
   }
-  if (key.indexOf('Leaves') === 0) {
+  if (key.indexOf('LeavesTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
         <ColorViewContainer
@@ -52,7 +52,7 @@ export default function AppRouter(props,switchTabs) {
         />
     );
   }
-  if (key.indexOf('WorkFromHome') === 0) {
+  if (key.indexOf('WorkFromHomeTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
         <ColorViewContainer
@@ -68,7 +68,7 @@ export default function AppRouter(props,switchTabs) {
         />
     );
   }
-    if (key.indexOf('LeavesHistory') === 0) {
+    if (key.indexOf('LeavesHistoryTab') === 0) {
         const index = props.scenes.indexOf(props.scene);
         return (
             <ColorViewContainer

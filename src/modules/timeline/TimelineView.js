@@ -114,7 +114,15 @@ class TimelineView extends Component {
                 data: PropTypes.array.isRequired
             }).isRequired
         }).isRequired,
-        switchTab: PropTypes.func.isRequired,
+        // timelineData: PropTypes.shape({
+        //     data: PropTypes.array.isRequired
+        // }).isRequired,
+        // lastCheckin: PropTypes.string.isRequired,
+        // switchTab: PropTypes.func.isRequired,
+        // errorMessage: PropTypes.string.isRequired,
+        // lastCheckout: PropTypes.string.isRequired,
+        // checkin:PropTypes.bool.isRequired,
+        pushRoute: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
@@ -185,9 +193,9 @@ class TimelineView extends Component {
                                                     if(!checkin){
                                                         officeApi.checkinUser()
                                                         .then((resp)=>{
-                                                            dispatch(TimeLineStateActions.checkUserToggle());    
+                                                            dispatch(TimeLineStateActions.checkUserToggle());
                                                             console.log("time slot", new Date().getTime());
-                                                            console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));                    
+                                                            console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
                                                             FCM.scheduleLocalNotification({
                                                                 fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
                                                                 // fire_date: new Date().getTime() + (20 * 1000),
@@ -280,10 +288,10 @@ class TimelineView extends Component {
                               offsetY = {Platform.OS === 'ios' ? actionButtonY:20}
                               >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                       onPress={() => this.props.switchTab(2)}>
+                                       onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
                         <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.switchTab(3)}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                     <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {

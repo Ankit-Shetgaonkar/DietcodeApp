@@ -61,7 +61,8 @@ class LeavesView extends Component {
             isPaidLeave: PropTypes.bool.isRequired,
             showPaidUnpaidPicker: PropTypes.bool.isRequired
         }).isRequired,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+          pushRoute: PropTypes.func.isRequired
 
     };
 
@@ -703,7 +704,7 @@ class LeavesView extends Component {
 
     showHistoryScreen = () => {
         //alert("history screen shown")
-        this.props.switchTab(4)
+        this.props.pushRoute({key: 'LeavesHistoryTab', title: 'LeavesHistory'});
     }
 
     /**
