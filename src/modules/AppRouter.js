@@ -29,14 +29,14 @@ export default function AppRouter(props,pushRoute) {
     return <LeavesContainer pushRoute = {pushRoute} />;
   }else if (key === 'WorkFromHomeTab') {
       return <WfhContainer/>;
-  }else if (key === 'LeavesHistory') {
+  }else if (key === 'LeavesHistoryTab') {
     console.log("returning lhcontainer")
     return <LeavesHistoryContainer/>;
   } else if (key === 'AdminDashboardTab') {
     return <AdminDashboardController />;
   }
 
-  if (key.indexOf('Profile') === 0) {
+  if (key.indexOf('ProfileTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
       <ColorViewContainer
@@ -44,7 +44,7 @@ export default function AppRouter(props,pushRoute) {
       />
     );
   }
-  if (key.indexOf('Leaves') === 0) {
+  if (key.indexOf('LeavesTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
         <ColorViewContainer
@@ -52,7 +52,7 @@ export default function AppRouter(props,pushRoute) {
         />
     );
   }
-  if (key.indexOf('WorkFromHome') === 0) {
+  if (key.indexOf('WorkFromHomeTab') === 0) {
     const index = props.scenes.indexOf(props.scene);
     return (
         <ColorViewContainer
@@ -68,7 +68,7 @@ export default function AppRouter(props,pushRoute) {
         />
     );
   }
-    if (key.indexOf('LeavesHistory') === 0) {
+    if (key.indexOf('LeavesHistoryTab') === 0) {
         const index = props.scenes.indexOf(props.scene);
         return (
             <ColorViewContainer

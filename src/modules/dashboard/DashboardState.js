@@ -44,7 +44,7 @@ const initialState = fromJS({
     },
     LeavesHistoryTab: {
         index: 0,
-        routes: [{key: 'LeavesHistory', title: 'Leaves History'}]
+        routes: [{key: 'LeavesHistoryTab', title: 'Leaves History'}]
     },
     // Scenes for the `Admin Dashboard` tab.
     AdminDashboardTab: {
