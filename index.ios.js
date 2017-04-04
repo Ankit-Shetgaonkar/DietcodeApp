@@ -43,7 +43,7 @@ class DietcodeApp extends Component {
         console.log("firebase token refreshed fcm crash",token, "user ",RealmDatabse.findUser())
         if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId != 'undefined') {
             if (typeof token != 'undefined') {
-                officeApi.registerDevice(token, serverId, Platform.OS)
+                officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS)
             }
         }
         // fcm token may not be available on first load, catch it here
