@@ -268,15 +268,8 @@ class TimelineView extends Component {
                         {...dtaSource}
                         enableEmptySections={true}
                         renderRow={(rowData) => <View style={{flex: 1, flexDirection: 'row'}}>
-                                                <View style={{flex: .2, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
-                                                    <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
-                                                    <View style={styles.circle} />
-                                                    <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
-                                                </View>
-                                                <View style={{flex: .8, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
+                                                <View style={{marginLeft:16 ,flex: 1, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
                                                     <ListDates data={rowData}></ListDates>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(this.getWeekNumber(new Date()) === this.getWeekNumber((new Date(rowData.weekDates[0].date)))) ? 'Total Time Current Week' : 'Total Time Last Week'}</Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(this.getReadableDateString(this.getMonday(rowData.weekDates[0].date)) + ' to ' + ((this.getWeekNumber(new Date()) === this.getWeekNumber(rowData.weekDates[rowData.weekDates.length - 1].date)) ? this.getReadableDateString(rowData.weekDates[rowData.weekDates.length - 1].date) : ((new Date(rowData.weekDates[rowData.weekDates.length - 1].date).getDay() === 5)?this.getReadableDateString(rowData.weekDates[rowData.weekDates.length - 1].date) : this.getReadableDateString(this.jumpToNextFriday(rowData.weekDates[rowData.weekDates.length - 1].date))))) +', '+((parseFloat(Math.round(rowData.totalHours * 100) / 100).toFixed(2)) + ' hrs')}</Text>
                                                 </View>
                                             </View>
                             }
@@ -459,8 +452,18 @@ class TimelineView extends Component {
         let today = new Date();
         if (param.data.weekDates.length > 0 && (_getWeekNumber(today) === _getWeekNumber((new Date(param.data.weekDates[0].date))))) {
             for (var i = 0; i < param.data.weekDates.length; i++) {
-                let stringDetail = ((new Date(param.data.weekDates[i].date).toDateString()) === today.toDateString()) ? ((param.data.weekDates[i].hours > 0) ? parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs' : (((checkinState) ? 'not checked out yet' : 'yet to checkin'))) : (' ' + parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs');
-                items.push(<Text key={param.data.weekDates[i].date} style={{backgroundColor:"transparent",color:"#333",fontSize:16, marginBottom:2}}>{param.data.weekDates[i].readableDate + ', ' + stringDetail}</Text>);
+                let stringDetail = ((new Date(param.data.weekDates[i].date).toDateString()) === today.toDateString()) ? (((parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2)) > 0) ? parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs' : (((checkinState) ? 'not checked out yet' : 'yet to checkin'))) : (' ' + parseFloat(Math.round(param.data.weekDates[i].hours * 100) / 100).toFixed(2) + ' hrs');
+                items.push(<Text key={param.data.weekDates[i].date} style={{marginTop: 5, backgroundColor:"transparent",color:"#333",fontSize:16, marginBottom:2}}>{param.data.weekDates[i].readableDate + ', ' + stringDetail}</Text>);
+            }
+            console.log('CHECKIN STATE: ' + JSON.stringify(checkinState) + ' DAY TODAY ' + JSON.stringify(today.getDay()));
+            if (today.getDay() !== 1) {
+                items.push(<Text key={'key1'} style={{marginTop: 21, backgroundColor:"transparent",color:"#333",fontSize:14}}>{(_getWeekNumber(today) === _getWeekNumber((new Date(param.data.weekDates[0].date)))) ? 'Total Time Current Week' : 'Total Time Last Week'}</Text>);
+                items.push(<Text key={'key2'} style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(_getReadableDateString(_getMonday(param.data.weekDates[0].date)) + ' to ' + ((_getWeekNumber(today) === _getWeekNumber(param.data.weekDates[param.data.weekDates.length - 1].date)) ? _getReadableDateString(param.data.weekDates[0].date) : ((new Date(param.data.weekDates[0].date).getDay() === 5)?_getReadableDateString(param.data.weekDates[0].date) : _getReadableDateString(_jumpToNextFriday(param.data.weekDates[0].date))))) +', '+((parseFloat(Math.round(param.data.totalHours * 100) / 100).toFixed(2)) + ' hrs')}</Text>);
+            }
+        } else {
+            if (today.getDay() === 1) {
+                items.push(<Text key={'key1'} style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(_getWeekNumber(today) === _getWeekNumber((new Date(param.data.weekDates[0].date)))) ? 'Total Time Current Week' : 'Total Time Last Week'}</Text>);
+                items.push(<Text key={'key2'} style={{backgroundColor:"transparent",color:"#333",fontSize:14}}>{(_getReadableDateString(_getMonday(param.data.weekDates[0].date)) + ' to ' + ((_getWeekNumber(today) === _getWeekNumber(param.data.weekDates[0].date)) ? _getReadableDateString(param.data.weekDates[0].date) : ((new Date(param.data.weekDates[0].date).getDay() === 5)?_getReadableDateString(param.data.weekDates[0].date) : _getReadableDateString(_jumpToNextFriday(param.data.weekDates[0].date))))) +', '+((parseFloat(Math.round(param.data.totalHours * 100) / 100).toFixed(2)) + ' hrs')}</Text>);
             }
         }
         return (<View style={{flex: 1, marginTop: (items.length > 0 ? (Platform.OS === 'ios' ? 24 : 8) : 8), marginBottom: 8}}>{items}</View>);
@@ -480,6 +483,21 @@ class TimelineView extends Component {
         // Return array of year and week number
         return weekNo;
     }
+
+    function _getMonday(d) {
+        d = new Date(d);
+        var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+        return new Date(d.setDate(diff));
+    }
+
+    function _getReadableDateString(date) {
+        return (JSON.stringify(date.getDate()) + '-' + _getMonthInString(date.getMonth()+1) + '-' + JSON.stringify(date.getFullYear()));
+    }
+
+    function _jumpToNextFriday(date) {
+        return new Date(+date+(7-(date.getDay()+2)%7)*86400000);
+    }
 
 const styles = StyleSheet.create({
     container: {
