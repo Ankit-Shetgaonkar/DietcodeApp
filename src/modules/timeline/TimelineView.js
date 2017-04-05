@@ -136,8 +136,8 @@ class TimelineView extends Component {
     };
 
 
-    constructor() {
-        super();
+
+    componentWillMount(){
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                 officeApi.setUserName(RealmDatabse.findUser()[0]);
@@ -166,9 +166,8 @@ class TimelineView extends Component {
         }).catch((err)=>{
             console.log("Cannot find authentication token: "+err);
         });
-        
     }
-    
+
 
     render() {
         const checkin = this.props.timeLineState.checkin;
@@ -297,14 +296,16 @@ class TimelineView extends Component {
                     <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
-                    this.props.switchTab(4)}}>
+
+                    {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                        this.props.pushRoute({key: 'AdminDashboardTab', title: 'Admin Dashboard'});
+                    }}>
                         <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
-                    </ActionButton.Item>
+                    </ActionButton.Item>}
                 </ActionButton>
             </View>
         );
-    }
+        }
 
     _getLastCheckinCheckout(dispatch) {
 
