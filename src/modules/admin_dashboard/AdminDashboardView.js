@@ -210,7 +210,6 @@ class AdminDashboardView extends Component {
      * Android Checkin Time Native Picker
      */
     showCheckinTimePicker = async (checkinId) => {
-        this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
         let _options = {
             is24Hour: false
         }
@@ -228,7 +227,8 @@ class AdminDashboardView extends Component {
             if (action === TimePickerAndroid.dismissedAction) {
                 //do nothing
             } else {
-                let date = new Date(this.props.adminDashboardState.filterDate);
+                let date = typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date(this.props.adminDashboardState.filterDate) :
+                    this.props.adminDashboardState.filterDate;
                 date.setHours(hour, minute, 0);
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
                 officeApi.adminUpdateCheckinCheckoutTime(checkinId, date).then((resp) => {
@@ -266,7 +266,8 @@ class AdminDashboardView extends Component {
             if (action === TimePickerAndroid.dismissedAction) {
                 //do nothing
             } else {
-                let date = new Date(this.props.adminDashboardState.filterDate);
+                let date = typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date(this.props.adminDashboardState.filterDate) :
+                    this.props.adminDashboardState.filterDate;
                 date.setHours(hour, minute, 0);
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
                 officeApi.adminUpdateCheckinCheckoutTime(checkoutId, date).then((resp) => {
@@ -306,7 +307,8 @@ class AdminDashboardView extends Component {
 
                 <DatePickerIOS
                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate}
+                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? 
+                    new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate}
                     mode="date"
                     onDateChange={(date) => {
                         this.props.dispatch(AdminDashboardState.setFilterDate(date))
@@ -322,7 +324,8 @@ class AdminDashboardView extends Component {
     showFromPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                date: typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate
+                date: typeof (this.props.adminDashboardState.filterDate) === 'string' ? 
+                new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //do nothing
