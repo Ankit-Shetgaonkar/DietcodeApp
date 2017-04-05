@@ -205,11 +205,11 @@ class TimelineView extends Component {
                                 <Text style={{ backgroundColor: "transparent", color: "#fff", fontSize: 12 }}> {mm} {yyyy}</Text>
                             </View>
                             <View style={{flex:1,alignItems:"center"}}>
-                                <TouchableHighlight onPress={function()
+                                <TouchableHighlight onPress={()=>
                                                 {
                                                     if(!checkin){
                                                         officeApi.checkinUser()
-                                                        .then((resp)=>{
+                                                        .then((resp) => {
                                                             dispatch(TimeLineStateActions.checkUserToggle());
                                                             console.log("time slot", new Date().getTime());
                                                             console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
@@ -227,6 +227,8 @@ class TimelineView extends Component {
                                                             .catch((err)=>{
                                                                 console.log(err);
                                                             });
+
+                                                            this._getLastCheckinCheckout(dispatch);
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -243,6 +245,8 @@ class TimelineView extends Component {
                                                             .catch((err)=>{
                                                                 console.log(err);
                                                             });
+                                                            
+                                                            this._getLastCheckinCheckout(dispatch)
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -264,7 +268,7 @@ class TimelineView extends Component {
                             <View style={{ alignItems: "center", margin: 20 }}>
                                 <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
                                     Checkin</Text>
-                                <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckin}{this._getLastCheckinCheckout(dispatch)}</Text>
+                                <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckin}</Text>
                             </View>
                             <View style={{ alignItems: "center", margin: 20 }}>
                                 <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
@@ -315,7 +319,7 @@ class TimelineView extends Component {
         );
     }
 
-    _getLastCheckinCheckout(dispatch) {
+    _getLastCheckinCheckout = (dispatch)=> {
 
         officeApi.getLastCheckinCheckout("checkin")
             .then((resp) => {
