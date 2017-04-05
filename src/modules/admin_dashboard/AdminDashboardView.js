@@ -89,9 +89,23 @@ class AdminDashboardView extends Component {
 
                                 {Platform.OS === 'ios' &&
                                     !this.props.adminDashboardState.editModalCheckInshowProgress &&
-                                    <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 5, alignItems: 'center' }}>
+                                    <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 10, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
+
+                                                checkinDate = typeof (this.props.adminDashboardState.filterDate) === 'string' ?
+                                                    new Date(this.props.adminDashboardState.filterDate) :
+                                                    this.props.adminDashboardState.filterDate;
+
+                                                if (this.props.adminDashboardState.editModalCheckinHour !== -1) {
+                                                    checkinDate.setHours(this.props.adminDashboardState.editModalCheckinHour)
+                                                }
+                                                if (this.props.adminDashboardState.editModalCheckinMins !== -1) {
+                                                    checkinDate.setMinutes(this.props.adminDashboardState.editModalCheckinMins);
+                                                }
+
+                                                this.props.dispatch(AdminDashboardState.setFilterDate(checkinDate))
+
                                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker());
                                             }}
                                             color='#ffffff'
@@ -109,7 +123,7 @@ class AdminDashboardView extends Component {
                             </View>
 
 
-                            
+
 
                             <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
                                 <Text style={{ fontWeight: 'bold', padding: 2 }}>Check out</Text>
@@ -127,9 +141,23 @@ class AdminDashboardView extends Component {
 
                                 {Platform.OS === 'ios' &&
                                     !this.props.adminDashboardState.editModalCheckoutshowProgress &&
-                                    <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 5, alignItems: 'center' }}>
+                                    <View style={{ flex: 1, backgroundColor: '#464763', marginBottom: 10, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
+
+                                                checkoutDate = typeof (this.props.adminDashboardState.filterDate) === 'string' ?
+                                                    new Date(this.props.adminDashboardState.filterDate) :
+                                                    this.props.adminDashboardState.filterDate;
+
+                                                if (this.props.adminDashboardState.editModalCheckoutHour !== -1) {
+                                                    checkoutDate.setHours(this.props.adminDashboardState.editModalCheckoutHour)
+                                                }
+                                                if (this.props.adminDashboardState.editModalCheckoutMins !== -1) {
+                                                    checkoutDate.setMinutes(this.props.adminDashboardState.editModalCheckoutMins);
+                                                }
+
+                                                this.props.dispatch(AdminDashboardState.setFilterDate(checkoutDate))
+
                                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
                                             }}
                                             color='#ffffff'
@@ -171,10 +199,16 @@ class AdminDashboardView extends Component {
                     </View>
                 </View>
 
+                {this.renderEditModalCheckinPicker()}
+                {this.renderEditModalCheckoutPicker()}
+
             </Modal>
         )
     }
 
+    /**
+     * Android Checkin Time Native Picker
+     */
     showCheckinTimePicker = async (checkinId) => {
         this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
         let _options = {
@@ -199,8 +233,8 @@ class AdminDashboardView extends Component {
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
                 officeApi.adminUpdateCheckinCheckoutTime(checkinId, date).then((resp) => {
                     alert("Successfully Updated Checkin Time");
-                }).catch((exp)=> {
-                    alert("Error, "+exp)
+                }).catch((exp) => {
+                    alert("Error, " + exp)
                 }).then(() => {
                     this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
                 });
@@ -211,6 +245,9 @@ class AdminDashboardView extends Component {
         }
     };
 
+    /**
+     * Android Checkout Time Native Picker
+     */
     showCheckoutTimePicker = async (checkoutId) => {
         let _options = {
             is24Hour: false
@@ -234,8 +271,8 @@ class AdminDashboardView extends Component {
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
                 officeApi.adminUpdateCheckinCheckoutTime(checkoutId, date).then((resp) => {
                     alert("Successfully Updated Checkout Time");
-                }).catch((exp)=> {
-                    alert("Error, "+exp)
+                }).catch((exp) => {
+                    alert("Error, " + exp)
                 }).then(() => {
                     this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
                 });
@@ -341,8 +378,6 @@ class AdminDashboardView extends Component {
                         />
                     </TouchableHighlight>
                     {this.renderDateModal()}
-                    {this.renderEditModalCheckinPicker()}
-                    {this.renderEditModalCheckoutPicker()}
                 </View>
 
                 <View style={styles.checklist}></View>
@@ -372,7 +407,7 @@ class AdminDashboardView extends Component {
 
     }
 
-    renderEditModalCheckinPicker = () => {
+    renderEditModalCheckinPicker = (checkinId) => {
         return (
             <Modal
                 animationType={"none"}
@@ -387,8 +422,16 @@ class AdminDashboardView extends Component {
                         <Button
                             onPress={() => {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker());
-                                //TODO: make api call
-                                Api.adminUpdateCheckinCheckoutTime
+
+                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
+                                officeApi.adminUpdateCheckinCheckoutTime(checkinId, this.props.adminDashboardState.filterDate).then((resp) => {
+                                    alert("Successfully Updated Checkin Time");
+                                }).catch((exp) => {
+                                    alert("Error, " + exp)
+                                }).then(() => {
+                                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
+                                });
+                                this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime(this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
                             }}
                             title="Done" />
                     </View>
@@ -396,10 +439,11 @@ class AdminDashboardView extends Component {
 
                 <DatePickerIOS
                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                    date={new Date()}
+                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ?
+                        new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate}
                     mode="time"
                     onDateChange={(date) => {
-                        alert("Getting some date" + date);
+                        this.props.dispatch(AdminDashboardState.setFilterDate(date))
                     }}
                 />
 
@@ -407,7 +451,7 @@ class AdminDashboardView extends Component {
         );
     }
 
-    renderEditModalCheckoutPicker = () => {
+    renderEditModalCheckoutPicker = (checkoutId) => {
         return (
             <Modal
                 animationType={"none"}
@@ -422,7 +466,16 @@ class AdminDashboardView extends Component {
                         <Button
                             onPress={() => {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
-                                //TODO: make api call
+
+                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+                                officeApi.adminUpdateCheckinCheckoutTime(checkoutId, this.props.adminDashboardState.filterDate).then((resp) => {
+                                    alert("Successfully Updated Checkin Time");
+                                }).catch((exp) => {
+                                    alert("Error, " + exp)
+                                }).then(() => {
+                                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+                                });
+                                this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
                             }}
                             title="Done" />
                     </View>
@@ -430,10 +483,11 @@ class AdminDashboardView extends Component {
 
                 <DatePickerIOS
                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                    date={new Date()}
+                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ?
+                        new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate}
                     mode="time"
                     onDateChange={(date) => {
-                        alert("Getting some date" + date);
+                        this.props.dispatch(AdminDashboardState.setFilterDate(date))
                     }}
                 />
 
