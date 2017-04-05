@@ -244,8 +244,6 @@ export async function adminUpdateCheckinCheckoutTime(userId, timelineId, type, c
         };
     }
 
-    alert('user ' + userId)
-
     try {
         const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/" + timelineId, timelineObj, true);
         return resp;
