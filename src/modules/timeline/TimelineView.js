@@ -293,7 +293,7 @@ class TimelineView extends Component {
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
 
-                    {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                    {<ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
                     this.props.switchTab(4)}}>
                         <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>}

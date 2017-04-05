@@ -20,6 +20,8 @@ import * as officeApi from '../../office-server/OfficeApi';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as AdminDashboardState from '../admin_dashboard/AdminDashboardState';
 
+let dtaSource
+
 class AdminDashboardView extends Component {
 
     static displayName = 'AdminDashboardView';
@@ -32,7 +34,7 @@ class AdminDashboardView extends Component {
         dispatch: PropTypes.func.isRequired
     };
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         let date = new Date();
         this.props.dispatch(AdminDashboardState.setFilterDate(date));
     }
@@ -43,15 +45,18 @@ class AdminDashboardView extends Component {
         let date = new Date();
         this.props.dispatch(AdminDashboardState.setFilterDate(date));
 
-//        let date = typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date(this.props.adminDashboardState.filterDateString) : this.props.adminDashboardState.filterDate
-            officeApi.getAllUserstimelineforDay(this.props.adminDashboardState.filterDateString).then((resp)=>{
-            console.log(this._manipulateArrayList(resp.results));
-            this.props.dispatch(AdminDashboardState.setTimelineData({data:this._manipulateArrayList(resp.results)}));
-            this.props.dispatch(AdminDashboardState.loadinDataFromApi(false));
-        }).catch((err)=>{
-          alert(err);
-        })
+        //        let date = typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date(this.props.adminDashboardState.filterDateString) : this.props.adminDashboardState.filterDate
+        this.fetchListData();
+    }
 
+    fetchListData(){
+        officeApi.getAllUserstimelineforDay(this.props.adminDashboardState.filterDateString).then((resp) => {
+            console.log(this._manipulateArrayList(resp.results));
+            this.props.dispatch(AdminDashboardState.setTimelineData({ data: this._manipulateArrayList(resp.results) }));
+            this.props.dispatch(AdminDashboardState.loadinDataFromApi(false));
+        }).catch((err) => {
+            alert(err);
+        })
     }
 
 
@@ -61,7 +66,10 @@ class AdminDashboardView extends Component {
                 animationType={"slide"}
                 transparent={true}
                 visible={this.props.adminDashboardState.showEditModal}
-                onRequestClose={() => { this.props.dispatch(AdminDashboardState.toogleEditModal()) }}>
+                onRequestClose={() => { 
+                    this.props.dispatch(AdminDashboardState.toogleEditModal());
+                    this.fetchListData()
+                 }}>
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
 
@@ -77,6 +85,7 @@ class AdminDashboardView extends Component {
 
                             <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
                                 this.props.dispatch(AdminDashboardState.toogleEditModal());
+                                this.fetchListData();
                             }}>
                                 <Icon
                                     size={20}
@@ -87,10 +96,12 @@ class AdminDashboardView extends Component {
                             </TouchableHighlight>
                         </View>
 
+
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Image style={[styles.circularImage]} source={{ uri: 'https://media.gqindia.com/wp-content/uploads/2015/11/gq-monica-belluci-22.jpg' }} />
-                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Monica Belluccci</Text>
+                            <Image style={[styles.circularImage]} source={{ uri: this.props.adminDashboardState.editTimingData.image }} />
+                            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{this.props.adminDashboardState.editTimingData.name}</Text>
                         </View>
+
 
                         <View style={{ flex: 0.5, flexDirection: 'row' }}>
 
@@ -102,7 +113,7 @@ class AdminDashboardView extends Component {
                                     <View style={{ flex: 1, marginBottom: 5, alignItems: 'center' }}>
                                         <Button
                                             onPress={() => {
-                                                this.showCheckinTimePicker("58c149b159a4cc83cff1909d");
+                                                this.showCheckinTimePicker();
                                             }}
                                             color='#464763'
                                             title={this.props.adminDashboardState.editModalCheckinText} />
@@ -196,47 +207,42 @@ class AdminDashboardView extends Component {
                             </View>
 
                         </View>
-                        {/*{Platform.OS === 'android' &&
-                            <View style={{ marginBottom: 5, alignItems: 'center' }}>
-                                <Button
-                                    onPress={() => {
-                                        this.props.dispatch(AdminDashboardState.toogleEditShowProgress());
-                                    }}
-                                    color='#464763'
-                                    title="Update Time" />
-                            </View>
-                        }
-
-                        {Platform.OS === 'ios' &&
-                            <View style={{ backgroundColor: '#464763', marginBottom: 5 }}>
-                                <Button
-                                    onPress={() => {
-                                        this.props.dispatch(AdminDashboardState.toogleEditShowProgress());
-                                    }}
-                                    color='#ffffff'
-                                    title="Update Time" />
-                            </View>
-                        }*/}
-
                     </View>
                 </View>
 
                 {this.renderEditModalCheckinPicker()}
                 {this.renderEditModalCheckoutPicker()}
 
-                    <DatePickerIOS
-                        style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                        date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate}
-                        mode="date"
-                        onDateChange={(date) => {
-                                    this.props.dispatch(AdminDashboardState.setFilterDate(date));
-                                    this._loadListData(date);
-                                }}
-                    />
-
             </Modal>
         )
     }
+
+
+
+    renderEditModal2 = () => {
+        return (
+
+            <View>
+                {
+                    this.props.adminDashboardState.showEditModal &&
+                    <View style={{ flex: 1, flexDirection: 'row' }}>
+
+                        <View style={{
+                            flex: 1, flexDirection: 'column', backgroundColor: '#d7d7d7',
+                            height: 250, marginLeft: 20, marginRight: 20, alignSelf: 'center', borderRadius: 12
+                        }}>
+
+
+                        </View>
+
+                    </View>
+                }
+
+            </View>
+
+        )
+    }
+
 
     /**
      * Android Checkin Time Native Picker
@@ -263,14 +269,15 @@ class AdminDashboardView extends Component {
                     this.props.adminDashboardState.filterDate;
                 date.setHours(hour, minute, 0);
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
-                officeApi.adminUpdateCheckinCheckoutTime(checkinId, date).then((resp) => {
-                    alert("Successfully Updated Checkin Time");
-                }).catch((exp) => {
-                    alert("Error, " + exp)
-                }).then(() => {
-                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
-                });
-                this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime(hour, minute));
+                officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
+                    this.props.adminDashboardState.editTimingData.timeline.checkinId, 'checkin', date).then((resp) => {
+                        alert("Successfully Updated Checkin Time");
+                        this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime(hour, minute));
+                    }).catch((exp) => {
+                        alert("Error, " + exp)
+                    }).then(() => {
+                        this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
+                    });
             }
         } catch (message) {
             console.warn(`Error in example `, message);
@@ -302,14 +309,15 @@ class AdminDashboardView extends Component {
                     this.props.adminDashboardState.filterDate;
                 date.setHours(hour, minute, 0);
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
-                officeApi.adminUpdateCheckinCheckoutTime(checkoutId, date).then((resp) => {
-                    alert("Successfully Updated Checkout Time");
-                }).catch((exp) => {
-                    alert("Error, " + exp)
-                }).then(() => {
-                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
-                });
-                this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(hour, minute));
+                officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
+                    this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout', date).then((resp) => {
+                        this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(hour, minute));
+                        alert("Successfully Updated Checkout Time");
+                    }).catch((exp) => {
+                        alert("Error, " + exp)
+                    }).then(() => {
+                        this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+                    });
                 //TODO: make api call
             }
         } catch (message) {
@@ -337,13 +345,14 @@ class AdminDashboardView extends Component {
                     </View>
                 </View>
 
+
                 <DatePickerIOS
                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
-                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? 
-                    new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate}
+                    date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate}
                     mode="date"
                     onDateChange={(date) => {
-                        this.props.dispatch(AdminDashboardState.setFilterDate(date))
+                        this.props.dispatch(AdminDashboardState.setFilterDate(date));
+                        this._loadListData(date);
                     }}
                 />
 
@@ -356,8 +365,8 @@ class AdminDashboardView extends Component {
     showFromPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                date: typeof (this.props.adminDashboardState.filterDate) === 'string' ? 
-                new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate
+                date: typeof (this.props.adminDashboardState.filterDate) === 'string' ?
+                    new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //do nothing
@@ -376,10 +385,11 @@ class AdminDashboardView extends Component {
 
     render() {
 
-        const {dispatch,adminDashboardState} = this.props;
 
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        const dtaSource = {dataSource: ds.cloneWithRows(this.props.adminDashboardState.timelineData.data.length>0?this.props.adminDashboardState.timelineData.data:[])};
+        const { dispatch, adminDashboardState } = this.props;
+
+        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+        dtaSource = { dataSource: ds.cloneWithRows(this.props.adminDashboardState.timelineData.data.length > 0 ? this.props.adminDashboardState.timelineData.data : []) };
 
         return (
             <View style={styles.container}>
@@ -389,7 +399,7 @@ class AdminDashboardView extends Component {
                 <View style={styles.selector}>
 
                     <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
-                            this._clickPreviousDate(dispatch);
+                        this._clickPreviousDate(dispatch);
                     }}>
                         <Icon
                             size={20}
@@ -409,7 +419,7 @@ class AdminDashboardView extends Component {
                         </View>
                     </TouchableHighlight>
                     <TouchableHighlight underlayColor="transparent" style={{ width: 50 }} onPress={() => {
-                            this._clickNextDate(dispatch);
+                        this._clickNextDate(dispatch);
                     }}>
                         <Icon
                             size={20}
@@ -423,36 +433,39 @@ class AdminDashboardView extends Component {
 
                 <View style={styles.checklist}>
 
-                    {!this.props.adminDashboardState.showProgress &&  <ListView
+                    {!this.props.adminDashboardState.showProgress && <ListView
                         {...dtaSource}
                         enableEmptySections={true}
                         renderRow={(rowData) =>
-                        <TouchableHighlight underlayColor="transparent" style={{ flex:1 }} onPress={() => {
-                                alert(rowData);
-                           }}>
-                                        <View style={{flex: 1, flexDirection: 'row'}}>
-                                                <View style={{flex: .2, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center"}}>
-                                                   <Image style={ styles.image } source={{ uri: rowData.image }}/>
-                                                </View>
-                                                <View style={{flex: .3, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}> {rowData.name} </Text>
-                                                </View>
-                                                <View style={{flex: .25, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>Checkin </Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>{this._getTimeFromDate(rowData.timeline.checkinTime)} </Text>
-                                                </View>
-                                                <View style={{flex: .25, height: 70, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
-                                                    <Text style={{backgroundColor:"transparent",color:"#333",fontSize:16}}>Checkout </Text>
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>{this._getTimeFromDate(rowData.timeline.checkoutTime)}</Text>
-                                                </View>
-                                            </View>
-                                            </TouchableHighlight>
-                            }
+                            <TouchableHighlight underlayColor="transparent" style={{ flex: 1 }} onPress={() => {
+
+                                this.props.dispatch(AdminDashboardState.toogleEditModal())
+                                this.props.dispatch(AdminDashboardState.setEditTimingData(rowData));
+
+                            }}>
+                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                    <View style={{ flex: .2, height: 70, flexDirection: 'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center" }}>
+                                        <Image style={styles.image} source={{ uri: rowData.image }} />
+                                    </View>
+                                    <View style={{ flex: .3, height: 70, flexDirection: 'column', backgroundColor: '#fff', justifyContent: 'center' }}>
+                                        <Text style={{ backgroundColor: "transparent", color: "#999", fontSize: 12 }}> {rowData.name} </Text>
+                                    </View>
+                                    <View style={{ flex: .25, height: 70, flexDirection: 'column', backgroundColor: '#fff', justifyContent: 'center' }}>
+                                        <Text style={{ backgroundColor: "transparent", color: "#333", fontSize: 16 }}>Checkin </Text>
+                                        <Text style={{ backgroundColor: "transparent", color: "#999", fontSize: 12 }}>{this._getTimeFromDate(rowData.timeline.checkinTime)} </Text>
+                                    </View>
+                                    <View style={{ flex: .25, height: 70, flexDirection: 'column', backgroundColor: '#fff', justifyContent: 'center' }}>
+                                        <Text style={{ backgroundColor: "transparent", color: "#333", fontSize: 16 }}>Checkout </Text>
+                                        <Text style={{ backgroundColor: "transparent", color: "#999", fontSize: 12 }}>{this._getTimeFromDate(rowData.timeline.checkoutTime)}</Text>
+                                    </View>
+                                </View>
+                            </TouchableHighlight>
+                        }
                     />}
-                    
-                    {this.props.adminDashboardState.showProgress &&  <ActivityIndicator style={styles.progressBar}
-                                                        size="large"
-                                                        color="blue"
+
+                    {this.props.adminDashboardState.showProgress && <ActivityIndicator style={styles.progressBar}
+                        size="large"
+                        color="blue"
                     />}
 
                 </View>
@@ -498,14 +511,18 @@ class AdminDashboardView extends Component {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinPicker());
 
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
-                                officeApi.adminUpdateCheckinCheckoutTime(checkinId, this.props.adminDashboardState.filterDate).then((resp) => {
-                                    alert("Successfully Updated Checkin Time");
-                                }).catch((exp) => {
-                                    alert("Error, " + exp)
-                                }).then(() => {
-                                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
-                                });
-                                this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime(this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
+                                officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
+                                    this.props.adminDashboardState.editTimingData.timeline.checkinId, 'checkin', date).then((resp) => {
+                                        this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime
+                                        (this.props.adminDashboardState.filterDate.getHours(), 
+                                        this.props.adminDashboardState.filterDate.getMinutes()));
+                                        alert("Successfully Updated Checkin Time");
+                                    }).catch((exp) => {
+                                        alert("Error, " + exp)
+                                    }).then(() => {
+                                        this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
+                                    });
+                                
                             }}
                             title="Done" />
                     </View>
@@ -542,14 +559,16 @@ class AdminDashboardView extends Component {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
 
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
-                                officeApi.adminUpdateCheckinCheckoutTime(checkoutId, this.props.adminDashboardState.filterDate).then((resp) => {
-                                    alert("Successfully Updated Checkin Time");
-                                }).catch((exp) => {
-                                    alert("Error, " + exp)
-                                }).then(() => {
-                                    this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
-                                });
-                                this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
+                                officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
+                                    this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout', date).then((resp) => {
+                                         this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime
+                                         (this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
+                                        alert("Successfully Updated Checkin Time");
+                                    }).catch((exp) => {
+                                        alert("Error, " + exp)
+                                    }).then(() => {
+                                        this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+                                    });
                             }}
                             title="Done" />
                     </View>
@@ -575,30 +594,30 @@ class AdminDashboardView extends Component {
         let newList = []
         let counter = 0;
 
-        for(let i=0;i<results.length;i++){
-                let userObject = {
-                    userId: results[i].user.id,
-                    name: results[i].user.firstName,
-                    image: results[i].user.profileImage,
-                    timeline:{
-                        checkinTime:null,
-                        checkoutTime:null,
-                        checkinId:null,
-                        checkoutId:null
-                    }
+        for (let i = 0; i < results.length; i++) {
+            let userObject = {
+                userId: results[i].user.id,
+                name: results[i].user.firstName,
+                image: results[i].user.profileImage,
+                timeline: {
+                    checkinTime: null,
+                    checkoutTime: null,
+                    checkinId: null,
+                    checkoutId: null
                 }
+            }
 
 
 
-            let checkinTimeline = results[i].timeline.filter((t)=>{
-             if(t.type==='checkin'){
-                 return t;
-             }
+            let checkinTimeline = results[i].timeline.filter((t) => {
+                if (t.type === 'checkin') {
+                    return t;
+                }
 
             });
 
-            let checkoutTimeline = results[i].timeline.reverse().filter((t)=>{
-                if(t.type==='checkout'){
+            let checkoutTimeline = results[i].timeline.reverse().filter((t) => {
+                if (t.type === 'checkout') {
                     return t;
                 }
 
@@ -609,7 +628,7 @@ class AdminDashboardView extends Component {
             userObject.timeline.checkinId = (checkinTimeline && checkinTimeline.length && checkinTimeline[0].id) || null;
             userObject.timeline.checkoutId = (checkoutTimeline && checkoutTimeline.length && checkoutTimeline[0].id) || null;
 
-            newList.splice(counter,0,userObject);
+            newList.splice(counter, 0, userObject);
             counter++;
         }
 
@@ -617,37 +636,37 @@ class AdminDashboardView extends Component {
     }
 
     _getTimeFromDate(checkinTime) {
-        if (checkinTime === null){
+        if (checkinTime === null) {
             return "No Data";
         }
         let date = new Date(checkinTime);
         let hours = date.getHours();
         let minute = date.getMinutes();
-        return hours+":"+minute;
+        return hours + ":" + minute;
     }
 
     _clickPreviousDate(dispatch) {
-        let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate):this.props.adminDashboardState.filterDate;
-        date.setDate(date.getDate()-1);
+        let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate;
+        date.setDate(date.getDate() - 1);
         dispatch(AdminDashboardState.setFilterDate(date));
         this._loadListData(date);
 
     }
 
     _clickNextDate(dispatch) {
-        let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate):this.props.adminDashboardState.filterDate;
-        date.setDate(date.getDate()+1);
+        let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate;
+        date.setDate(date.getDate() + 1);
         dispatch(AdminDashboardState.setFilterDate(date));
         this._loadListData(date);
     }
 
     _loadListData(date) {
         this.props.dispatch(AdminDashboardState.loadinDataFromApi(true));
-        officeApi.getAllUserstimelineforDay(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()).then((resp)=>{
+        officeApi.getAllUserstimelineforDay(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()).then((resp) => {
             console.log(this._manipulateArrayList(resp.results));
-            this.props.dispatch(AdminDashboardState.setTimelineData({data:this._manipulateArrayList(resp.results)}));
+            this.props.dispatch(AdminDashboardState.setTimelineData({ data: this._manipulateArrayList(resp.results) }));
             this.props.dispatch(AdminDashboardState.loadinDataFromApi(false));
-        }).catch((err)=>{
+        }).catch((err) => {
             this.props.dispatch(AdminDashboardState.loadinDataFromApi(false));
             alert(err);
         })
