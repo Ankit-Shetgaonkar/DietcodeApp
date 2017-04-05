@@ -12,15 +12,15 @@ export const EDIT_MODAL_CHECKIN_PICKER = 'AdminDashboardState/EDIT_MODAL_CHECKIN
 export const EDIT_MODAL_CHECKOUT_PICKER = 'AdminDashboardState/EDIT_MODAL_CHECKOUT_PICKER';
 export const EDIT_MODAL_CHECKIN_PROGRESS = 'AdminDashboardState/EDIT_MODAL_CHECKIN_PROGRESS';
 export const EDIT_MODAL_CHECKOUT_PROGRESS = 'AdminDashboardState/EDIT_MODAL_CHECKOUT_PROGRESS';
-
+export const TIMELINE_DATA = 'AdminDashboardState/TIMELINE_DATA';
+export const SHOW_PROGRESS = 'AdminDashboardState/SHOW_PROGRESS';
 
 const dateText = new Date();
 const initialState = fromJS({
-    showProgress: false,
+    showProgress: true,
     errorMessage: "",
     successMessage: "",
     filterDate: new Date(),
-    filterDateString: dateText.getDate() + "/" + (dateText.getMonth() + 1) + "/" + dateText.getFullYear(),
     showDatePicker: false,
     showEditModal: false,
     editModalCheckinHour: -1,
@@ -34,9 +34,18 @@ const initialState = fromJS({
     editModalShowCheckoutPicker: false,
     editModalCheckInshowProgress: false,
     editModalCheckoutshowProgress: false,
-
+    filterDateString: dateText.getFullYear()+"-"+(dateText.getMonth()+1)+"-"+dateText.getDate(),
+    timelineData: {
+        data : []
+    }
 });
 
+export function setTimelineData(data) {
+    return {
+        type: TIMELINE_DATA,
+        payload: data
+    };
+}
 
 export function resetScreen() {
     return {
@@ -50,9 +59,18 @@ export function toggleDatePicker() {
     }
 }
 
+export function loadinDataFromApi(isLoading) {
+    return {
+        type: SHOW_PROGRESS,
+        isLoading: isLoading
+    }
+}
+
 
 export function setFilterDate(date) {
-    const dateText = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    date = typeof (date) === 'string' ? new Date(date) : date;
+    const dateText = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+    
     return {
         type: FILTER_DATE,
         dateString: dateText,
@@ -180,6 +198,11 @@ export default function AdminDashboardStateReducer(state = initialState, action 
 
         case EDIT_MODAL_CHECKOUT_PROGRESS:
             return state.set("editModalCheckoutshowProgress", !state.get("editModalCheckoutshowProgress"));
+
+        case TIMELINE_DATA:
+            return state.set("timelineData",action.payload);
+        case SHOW_PROGRESS:
+            return state.set("showProgress",action.isLoading);
 
         default:
             return state;

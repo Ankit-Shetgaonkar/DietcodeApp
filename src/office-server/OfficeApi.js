@@ -95,7 +95,7 @@ export async function registerDevice(deviceToken, userID, deviceType) {
         type: deviceType,
         firebaseDeviceToken: deviceToken
     };
-    console.log("device obj is ", deviceObj);
+
     try {
         const resp = await api.post("http://dc-office.herokuapp.com/api/v1/devices", deviceObj, true);
         return resp;
@@ -105,6 +105,16 @@ export async function registerDevice(deviceToken, userID, deviceType) {
     }
 }
 
+export async function getAllUserstimelineforDay(date){
+    console.log(date+" THE DATE IS");
+    try{
+        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines/all-user-timeline?createdAt="+date,true);
+        console.log(resp);
+        return resp;
+    }catch(err){
+        throw err;
+    }
+}
 
 export async function applyforLeave(cakeHrId, from, to, day_part, message, isPaid) {
 

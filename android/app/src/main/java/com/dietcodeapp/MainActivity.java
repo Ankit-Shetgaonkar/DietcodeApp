@@ -1,6 +1,7 @@
 package com.dietcodeapp;
 
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.facebook.react.ReactActivity;
 
@@ -15,10 +16,12 @@ public class MainActivity extends ReactActivity {
         return "DietcodeApp";
     }
 
+
     @Override
      public void onNewIntent (Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        Toast.makeText(this, "intent received!", Toast.LENGTH_SHORT).show();
     }
 }
 
