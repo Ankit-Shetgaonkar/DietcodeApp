@@ -49,7 +49,7 @@ class AdminDashboardView extends Component {
         this.fetchListData();
     }
 
-    fetchListData(){
+    fetchListData() {
         officeApi.getAllUserstimelineforDay(this.props.adminDashboardState.filterDateString).then((resp) => {
             console.log(this._manipulateArrayList(resp.results));
             this.props.dispatch(AdminDashboardState.setTimelineData({ data: this._manipulateArrayList(resp.results) }));
@@ -66,10 +66,10 @@ class AdminDashboardView extends Component {
                 animationType={"slide"}
                 transparent={true}
                 visible={this.props.adminDashboardState.showEditModal}
-                onRequestClose={() => { 
+                onRequestClose={() => {
                     this.props.dispatch(AdminDashboardState.toogleEditModal());
                     this.fetchListData()
-                 }}>
+                }}>
 
                 <View style={{ flex: 1, flexDirection: 'row' }}>
 
@@ -512,17 +512,18 @@ class AdminDashboardView extends Component {
 
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
                                 officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
-                                    this.props.adminDashboardState.editTimingData.timeline.checkinId, 'checkin', date).then((resp) => {
+                                    this.props.adminDashboardState.editTimingData.timeline.checkinId, 'checkin', this.props.adminDashboardState.filterDate)
+                                    .then((resp) => {
                                         this.props.dispatch(AdminDashboardState.updateEditModalCheckinTime
-                                        (this.props.adminDashboardState.filterDate.getHours(), 
-                                        this.props.adminDashboardState.filterDate.getMinutes()));
+                                            (this.props.adminDashboardState.filterDate.getHours(),
+                                            this.props.adminDashboardState.filterDate.getMinutes()));
                                         alert("Successfully Updated Checkin Time");
                                     }).catch((exp) => {
                                         alert("Error, " + exp)
                                     }).then(() => {
                                         this.props.dispatch(AdminDashboardState.toogleEditModalCheckinProgress());
                                     });
-                                
+
                             }}
                             title="Done" />
                     </View>
@@ -560,9 +561,10 @@ class AdminDashboardView extends Component {
 
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
                                 officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
-                                    this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout', date).then((resp) => {
-                                         this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime
-                                         (this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
+                                    this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout', 
+                                    this.props.adminDashboardState.filterDate).then((resp) => {
+                                        this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime
+                                            (this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
                                         alert("Successfully Updated Checkin Time");
                                     }).catch((exp) => {
                                         alert("Error, " + exp)
