@@ -121,13 +121,13 @@ export async function registerDevice(deviceToken, userID, deviceType) {
     }
 }
 
-export async function getAllUserstimelineforDay(date){
-    console.log(date+" THE DATE IS");
-    try{
-        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines/all-user-timeline?createdAt="+date,true);
+export async function getAllUserstimelineforDay(date) {
+    console.log(date + " THE DATE IS");
+    try {
+        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines/all-user-timeline?createdAt=" + date, true);
         console.log(resp);
         return resp;
-    }catch(err){
+    } catch (err) {
         throw err;
     }
 }
@@ -226,17 +226,29 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     }
 }
 
- export async function adminUpdateCheckinCheckoutTime(timelineId,createdAt) {
+export async function adminUpdateCheckinCheckoutTime(userId, timelineId, type, createdAt) {
 
-        let timelineObj = {
+    let timelineObj = null;
+
+    if (timelineId === null) {
+        timelineObj = {
+            createdAt: createdAt,
+            user: userId,
+            description: type + ' successfully',
+            type: type
+        };
+        timelineId = "";
+    } else {
+        timelineObj = {
             createdAt: createdAt
         };
-
-        try {
-            const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/"+timelineId, timelineObj, true);
-            return resp;
-        }
-        catch (error) {
-            throw error;
-        }
     }
+
+    try {
+        const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/" + timelineId, timelineObj, true);
+        return resp;
+    }
+    catch (error) {
+        throw error;
+    }
+}
