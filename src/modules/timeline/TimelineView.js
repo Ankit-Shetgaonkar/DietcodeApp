@@ -136,7 +136,7 @@ class TimelineView extends Component {
     };
 
 
-    componentWillMount(){
+    componentDidMount(){
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                     officeApi.setUserName(RealmDatabse.findUser()[0]);
@@ -169,6 +169,8 @@ class TimelineView extends Component {
         }).catch((err)=>{
             console.log("Cannot find authentication token: "+err);
         });
+
+        this._getLastCheckinCheckout(this.props.dispatch);
     }
     
 
@@ -218,6 +220,7 @@ class TimelineView extends Component {
                                                             });
                                                             console.log("schedule successful")
                                                             officeApi.getUserTimeline()
+                                                            _getLastCheckinCheckout(dispatch)
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                                                             })
@@ -233,6 +236,7 @@ class TimelineView extends Component {
                                                         officeApi.checkoutUser()
                                                         .then((resp)=>{
                                                            dispatch(TimeLineStateActions.checkUserToggle());
+                                                           this._getLastCheckinCheckout(dispatch)
                                                            officeApi.getUserTimeline()
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
@@ -301,7 +305,10 @@ class TimelineView extends Component {
                     </ActionButton.Item>
 
                     {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
-                    this.props.switchTab(4)}}>
+
+                        this.props.pushRoute({key: 'AdminDashboardTab', title: 'Admin Dashboard'})
+
+                    }}>
                         <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>}
                 </ActionButton>
