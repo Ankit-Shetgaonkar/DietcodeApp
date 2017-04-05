@@ -5,10 +5,11 @@ export const RESET = 'AdminDashboardState/RESET';
 export const TOGGLE_DATE_FILTER = 'AdminDashboardState/SELECT_DATE_FILTER';
 export const FILTER_DATE = 'AdminDashboardState/FILTER_DATE';
 export const TIMELINE_DATA = 'AdminDashboardState/TIMELINE_DATA';
+export const SHOW_PROGRESS = 'AdminDashboardState/SHOW_PROGRESS';
 
 const dateText = new Date();
 const initialState = fromJS({
-    showProgress: false,
+    showProgress: true,
     errorMessage: "",
     successMessage: "",
     filterDate: new Date(),
@@ -38,9 +39,17 @@ export function toggleDatePicker() {
     }
 }
 
+export function loadinDataFromApi(isLoading) {
+    return {
+        type: SHOW_PROGRESS,
+        isLoading: isLoading
+    }
+}
+
 
 export function setFilterDate(date) {
-    const dateText = dateText.getFullYear()+"-"+(dateText.getMonth()+1)+"-"+dateText.getDate();
+    date = typeof (date) === 'string' ? new Date(date) : date;
+    const dateText = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
     return {
         type: FILTER_DATE,
         dateString: dateText,
@@ -68,6 +77,8 @@ export default function AdminDashboardStateReducer(state = initialState, action 
             return state;
         case TIMELINE_DATA:
             return state.set("timelineData",action.payload);
+        case SHOW_PROGRESS:
+            return state.set("showProgress",action.isLoading);
         default:
             return state;
 

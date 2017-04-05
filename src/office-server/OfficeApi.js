@@ -106,8 +106,10 @@ export async function registerDevice(deviceToken, userID, deviceType) {
 }
 
 export async function getAllUserstimelineforDay(date){
+    console.log(date+" THE DATE IS");
     try{
-        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines?user="+userName.serverId+"&createdAt="+date+"&alldata=true&limit=50&skip=0&sort=createdAt DESC",true);
+        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines/all-user-timeline?createdAt="+date,true);
+        console.log(resp);
         return resp;
     }catch(err){
         throw err;
