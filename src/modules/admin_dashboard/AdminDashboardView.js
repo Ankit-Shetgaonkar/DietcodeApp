@@ -469,12 +469,6 @@ class AdminDashboardView extends Component {
                     />}
 
                 </View>
-
-                <Button
-                    onPress={() => {
-                        this.props.dispatch(AdminDashboardState.toogleEditModal());
-                    }}
-                    title="Show Modal" />
             </View>
         );
     }
