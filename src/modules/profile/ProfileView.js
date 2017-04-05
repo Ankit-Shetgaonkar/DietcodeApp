@@ -92,7 +92,7 @@ class ProfileView extends Component {
                                     backgroundColor="#3d5875">
                                     {
                                         () => (
-                                        <Text style={styles.headingText}>
+                                        <Text style={styles.progressIndicatorText}>
                                             80%
                                         </Text>
                                         )
@@ -199,6 +199,15 @@ const styles = StyleSheet.create({
         holderContainer: {
             backgroundColor: 'transparent',
             alignItems: 'center'
+        },
+        progressIndicatorText: {
+            marginTop: -120,
+            textAlign: 'center',
+            color: '#ffffff',
+            fontSize: 32,
+            backgroundColor:"transparent",
+            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto',
+            alignSelf: 'center'
         }
     });
 

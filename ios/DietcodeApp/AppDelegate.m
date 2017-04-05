@@ -12,7 +12,7 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import "RNFIRMessaging.h"
-#import "FIRInstanceID.h"
+#import <FirebaseInstanceID/FirebaseInstanceID.h>
 
 @implementation AppDelegate
 

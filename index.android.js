@@ -3,13 +3,19 @@ import {Provider} from 'react-redux';
 import store from './src/redux/store';
 import AppViewContainer from './src/modules/AppViewContainer';
 import React, {Component} from 'react';
-import {AppRegistry, BackAndroid, Platform} from 'react-native';
-import * as NavigationStateActions from './src/modules/navigation/NavigationState';
+import {AppRegistry, BackAndroid, Platform,PermissionsAndroid} from 'react-native';
+import * as NavigationStateActions from './src/modules/dashboard/DashboardState';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
-
+import RealmDatabse from './src/database/RealmDatabase';
+import * as officeApi from './src/office-server/OfficeApi';
+import {fromJS} from 'immutable';
+let listener = null
 class DietcodeApp extends Component {
+
   componentWillMount() {
     BackAndroid.addEventListener('hardwareBackPress', this.navigateBack);
+    this.askAndroidLocationPermissions();
+
   }
   componentDidMount() {
       FCM.getFCMToken().then(token => {
@@ -29,10 +35,9 @@ class DietcodeApp extends Component {
             if(notif.opened_from_tray){
               //app is open/resumed because user clicked banner
             }
-            
             if(Platform.OS ==='ios'){
               //optional
-              //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link. 
+              //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
               //This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
               //notif._notificationType is available for iOS platfrom
               switch(notif._notificationType){
@@ -49,8 +54,13 @@ class DietcodeApp extends Component {
             }
         });
          this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
-            console.log(token)
-            // fcm token may not be available on first load, catch it here
+            //console.log(token)
+            //console.log("firebase token refreshed",token, "user data ", RealmDatabse.findUser()[0])
+          if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+              if (typeof token != 'undefined') {
+                  officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS)
+              }
+          }
         });
   }
   componentWillUnmount() {
@@ -58,25 +68,67 @@ class DietcodeApp extends Component {
       this.notificationListener.remove();
       this.refreshTokenListener.remove();
   }
+
+   askAndroidLocationPermissions() {
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(
+            (status) => {
+                // Status of permission
+                if (!status) {
+                    // request for location permission
+                    this.getAndroidLocationPermissions();
+                }
+            }
+        ).catch(
+            (error) => {
+                // error occoured
+                console.log('SOME ERROR OCCOURED DURING THE CHECKING OF PERMISSIONS. ' + JSON.stringify(error));
+            }
+            );
+    }
+
+    async getAndroidLocationPermissions() {
+        try {
+            const permissionStatus = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    'title': 'DietCodeApp requires Location Permission',
+                    'message': 'DietCodeApp requires you to provide access to your location for conducting checkin/checkout.'
+                }
+            )
+            if (permissionStatus === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("Android: Geolocation Permission Granted");
+            } else {
+                console.log("Android: Geolocation Permission Denied");
+                Alert.alert(
+                    'Oh! Well',
+                    'You may not be able to checkin/checkout, until you provide the permission to access your location, you can change this later in settings.',
+                    [
+                        { text: 'OK', onPress: () => { } },
+                    ]
+                );
+            }
+        } catch (error) {
+            console.log('SOME ERROR OCCOURED DURING THE REQUESTING OF PERMISSIONS: ' + JSON.stringify(error));
+            Alert.alert(
+                'Oh! Snap',
+                'Some location services error occoured, try again later.',
+                [
+                    { text: 'OK', onPress: () => { } },
+                ]
+            );
+        }
+    }
+
   navigateBack() {
-    const navigationState = store.getState().get('navigationState');
+    const navigationState = store.getState().get('dashboardState');
     const tabs = navigationState.get('tabs');
     const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
     const currentTab = navigationState.get(tabKey);
-
     // if we are in the beginning of our tab stack
+
     if (currentTab.get('index') === 0) {
-
-      // if we are not in the first tab, switch tab to the leftmost one
-      if (tabs.get('index') !== 0) {
-        store.dispatch(NavigationStateActions.switchTab(0));
-        return true;
-      }
-
-      // otherwise let OS handle the back button action
       return false;
     }
-
     store.dispatch(NavigationStateActions.popRoute());
     return true;
   }

@@ -5,6 +5,8 @@ import {isNumber} from 'lodash';
 const {StateUtils: NavigationStateUtils} = NavigationExperimental;
 
 // Actions
+const PUSH_ROUTE = 'DashboardState/PUSH_ROUTE';
+const POP_ROUTE = 'DashboardState/POP_ROUTE';
 const SWITCH_TAB = 'DashboardState/SWITCH_TAB';
 
 // reducers for tabs and scenes are separate
@@ -16,33 +18,39 @@ const initialState = fromJS({
             {key: 'ProfileTab', title: 'Profile'},
             {key: 'LeavesTab', title: 'Leaves'},
             {key: 'WorkFromHomeTab', title: 'Wfh'},
+            {key: 'LeavesHistoryTab', title: 'LeavesHistory'},
             {key: 'AdminDashboardTab', title: 'Admin Dashboard'}
         ]
     },
     // Scenes for the `Dashboard` tab.
     DashboardTab: {
         index: 0,
-        routes: [{key: 'Dashboard', title: 'Timeline'}]
+        routes: [{key: 'DashboardTab', title: 'Timeline'}]
     },
     // Scenes for the `ProfileTab` tab.
     ProfileTab: {
         index: 0,
-        routes: [{key: 'Profile', title: 'Profile'}]
+        routes: [{key: 'ProfileTab', title: 'Profile'}]
     },
     // Scenes for the `Leaves` tab.
     LeavesTab: {
         index: 0,
-        routes: [{key: 'Leaves', title: 'Leaves Status'}]
+        routes: [{key: 'LeavesTab', title: 'Leaves Status'}]
     },
     // Scenes for the `WorkFromHome` tab.
     WorkFromHomeTab: {
         index: 0,
-        routes: [{key: 'WorkFromHome', title: 'Work From Home Status'}]
+        routes: [{key: 'WorkFromHomeTab', title: 'Work From Home Status'}]
+    },
+    LeavesHistoryTab: {
+        index: 0,
+        routes: [{key: 'LeavesHistoryTab', title: 'Leaves History'}]
     },
     // Scenes for the `Admin Dashboard` tab.
     AdminDashboardTab: {
         index: 0,
         routes: [{key: 'AdminDashboardTab', title: 'Admin Dashboard'}]
+
     }
 });
 
@@ -52,12 +60,54 @@ export function switchTab(key) {
         payload: key
     };
 }
+// Action creators
+export function pushRoute(route) {
+  return {
+    type: PUSH_ROUTE,
+    payload: route
+  };
+}
+
+export function popRoute() {
+  return {type: POP_ROUTE};
+}
 
 
 export default function DashboardStateReducer(state = initialState, action) {
     switch (action.type) {
-        case SWITCH_TAB:
-        {
+      case PUSH_ROUTE: {
+      // Push a route into the scenes stack.
+      const route = action.payload;
+      const tabs = state.get('tabs');
+      const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
+      const scenes = state.get(tabKey).toJS();
+      let nextScenes;
+      // fixes issue #52
+      // the try/catch block prevents throwing an error when the route's key pushed
+      // was already present. This happens when the same route is pushed more than once.
+      try {
+        nextScenes = NavigationStateUtils.push(scenes, route);
+      } catch (e) {
+        nextScenes = scenes;
+      }
+      if (scenes !== nextScenes) {
+        return state.set(tabKey, fromJS(nextScenes));
+      }
+      return state;
+    }
+
+    case POP_ROUTE: {
+      // Pops a route from the scenes stack.
+      const tabs = state.get('tabs');
+      const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
+      const scenes = state.get(tabKey).toJS();
+      const nextScenes = NavigationStateUtils.pop(scenes);
+      if (scenes !== nextScenes) {
+        return state.set(tabKey, fromJS(nextScenes));
+      }
+      return state;
+    }
+        case SWITCH_TAB: {
             // Switches the tab.
             const tabs = state.get('tabs').toJS();
             let nextTabs;
