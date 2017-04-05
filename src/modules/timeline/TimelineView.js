@@ -136,8 +136,6 @@ class TimelineView extends Component {
     };
 
 
-    constructor() {
-        super();
     componentWillMount(){
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
@@ -171,10 +169,6 @@ class TimelineView extends Component {
         }).catch((err)=>{
             console.log("Cannot find authentication token: "+err);
         });
-    }
-
-    constructor() {
-        super();
     }
     
 
@@ -309,7 +303,7 @@ class TimelineView extends Component {
                     {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
                     this.props.switchTab(4)}}>
                         <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
-                    </ActionButton.Item>
+                    </ActionButton.Item>}
                 </ActionButton>
             </View>
         );
