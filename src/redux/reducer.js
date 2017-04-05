@@ -6,7 +6,7 @@ import SessionStateReducer, {RESET_STATE} from '../modules/session/SessionState'
 import LoginStateReducer from '../modules/login/LoginState';
 import DashboardStateReducer from '../modules/dashboard/DashboardState';
 import WfhStateReducer from '../modules/wfh/WfhState'
-
+import LHstateReducer from '../modules/LeavesHistory/LeavesHistoryState'
 import TimelineStateReducer from '../modules/timeline/TimelineState';
 import LeavesStateReducer from '../modules/leaves/LeavesState';
 import AdminDashboardStateReducer from '../modules/admin_dashboard/AdminDashboardState';
@@ -31,7 +31,9 @@ const reducers = {
 
     timelineState: TimelineStateReducer,
 
-    adminDashboardState: AdminDashboardStateReducer
+    adminDashboardState: AdminDashboardStateReducer,
+
+    leaveHistoryState: LHstateReducer
 
 };
 

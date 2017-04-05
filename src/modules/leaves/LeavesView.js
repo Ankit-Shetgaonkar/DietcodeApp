@@ -61,7 +61,8 @@ class LeavesView extends Component {
             isPaidLeave: PropTypes.bool.isRequired,
             showPaidUnpaidPicker: PropTypes.bool.isRequired
         }).isRequired,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+          pushRoute: PropTypes.func.isRequired
 
     };
 
@@ -572,7 +573,7 @@ class LeavesView extends Component {
         return (
             <View style={{
                 marginTop: 50,
-                marginBottom: 50,
+                marginBottom: 25,
                 flex: flexWeight, alignSelf: 'center'
             }}>
 
@@ -599,6 +600,33 @@ class LeavesView extends Component {
                 </AnimatedCircularProgress>
             </View>
         );
+    }
+    renderLeaveHistory = (flexWeight) => {
+         return (
+        <View style={{ marginTop: 15 ,
+                 marginBottom: 50,
+                flex: flexWeight}}>
+            {Platform.OS === 'android' &&
+                <Button
+                    onPress={() => {
+                        this.showHistoryScreen();
+                    }}
+                    color='#464763'
+                    title="View History" />
+            }
+
+            {Platform.OS === 'ios' &&
+                <View style={{ backgroundColor: '#464763' }}>
+                    <Button
+                        onPress={() => {
+                            this.showHistoryScreen();
+                        }}
+                        color='#ffffff'
+                        title="View History" />
+                </View>
+            }
+        </View>
+         )
     }
 
 
@@ -630,6 +658,8 @@ class LeavesView extends Component {
                     {this.rendorApplyButton(1)}
 
                     {this.rendorProgressStatus(2)}
+
+                    {this.renderLeaveHistory(1)}
 
                 </ScrollView>
 
@@ -673,6 +703,11 @@ class LeavesView extends Component {
             console.warn(`Error in example `, message);
         }
     };
+
+    showHistoryScreen = () => {
+        //alert("history screen shown")
+        this.props.pushRoute({key: 'LeavesHistoryTab', title: 'LeavesHistory'});
+    }
 
     /**
      * Api call for applying leave
@@ -807,7 +842,7 @@ const styles = StyleSheet.create({
 
     scrollView: {
         backgroundColor: 'transparent',
-        height: 800,
+        height: 850,
         paddingTop: 20,
         paddingBottom: 10,
         paddingLeft: 15,

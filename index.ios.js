@@ -5,6 +5,8 @@ import AppViewContainer from './src/modules/AppViewContainer';
 import React, {Component} from 'react';
 import {AppRegistry, Platform} from 'react-native';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
+import RealmDatabse from './src/database/RealmDatabase';
+import * as officeApi from './src/office-server/OfficeApi';
 
 class DietcodeApp extends Component {
   componentDidMount() {
@@ -38,10 +40,10 @@ class DietcodeApp extends Component {
         }
     });
     this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
-        console.log("firebase token refreshed",token)
-        if (typeof RealmDatabse.findUser()[0].serverId != 'undefined') {
+        console.log("firebase token refreshed fcm crash",token, "user ",RealmDatabse.findUser())
+        if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId != 'undefined') {
             if (typeof token != 'undefined') {
-                officeApi.registerDevice(token, serverId, Platform.OS)
+                officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS)
             }
         }
         // fcm token may not be available on first load, catch it here
