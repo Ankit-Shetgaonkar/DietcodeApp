@@ -79,6 +79,7 @@ function _getDayOfWeek(day) {
 //notification.initializeNotification();
 
 async function createUser(token) {
+    console.log(RealmDatabse.findUser()[0].serverId);
     if (!RealmDatabse.findUser().length > 0) {
         return;
     }
@@ -220,7 +221,6 @@ class TimelineView extends Component {
                                                             });
                                                             console.log("schedule successful")
                                                             officeApi.getUserTimeline()
-                                                            _getLastCheckinCheckout(dispatch)
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
                                                             })
@@ -236,7 +236,6 @@ class TimelineView extends Component {
                                                         officeApi.checkoutUser()
                                                         .then((resp)=>{
                                                            dispatch(TimeLineStateActions.checkUserToggle());
-                                                           this._getLastCheckinCheckout(dispatch)
                                                            officeApi.getUserTimeline()
                                                             .then((resp)=>{
                                                                 dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
@@ -265,7 +264,7 @@ class TimelineView extends Component {
                             <View style={{ alignItems: "center", margin: 20 }}>
                                 <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
                                     Checkin</Text>
-                                <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckin}</Text>
+                                <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckin}{this._getLastCheckinCheckout(dispatch)}</Text>
                             </View>
                             <View style={{ alignItems: "center", margin: 20 }}>
                                 <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
