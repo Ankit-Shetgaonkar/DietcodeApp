@@ -9,6 +9,7 @@ import WfhStateReducer from '../modules/wfh/WfhState'
 import LHstateReducer from '../modules/LeavesHistory/LeavesHistoryState'
 import TimelineStateReducer from '../modules/timeline/TimelineState';
 import LeavesStateReducer from '../modules/leaves/LeavesState';
+import AdminDashboardStateReducer from '../modules/admin_dashboard/AdminDashboardState';
 
 const reducers = {
     // Counter sample app state. This can be removed in a live application
@@ -30,8 +31,9 @@ const reducers = {
 
     timelineState: TimelineStateReducer,
 
-    leaveHistoryState: LHstateReducer
+    adminDashboardState: AdminDashboardStateReducer,
 
+    leaveHistoryState: LHstateReducer
 
 };
 

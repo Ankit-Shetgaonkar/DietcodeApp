@@ -79,6 +79,7 @@ function _getDayOfWeek(day) {
 //notification.initializeNotification();
 
 async function createUser(token) {
+    console.log(RealmDatabse.findUser()[0].serverId);
     if (!RealmDatabse.findUser().length > 0) {
         return;
     }
@@ -137,37 +138,41 @@ class TimelineView extends Component {
     };
 
 
-    constructor() {
-        super();
+    componentDidMount(){
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
-                officeApi.setUserName(RealmDatabse.findUser()[0]);
-                officeApi.getUserTimeline()
-                .then((resp)=>{
-                    this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-                    FCM.requestPermissions(); // for iOS
-                    FCM.getFCMToken().then(token => {
-                        if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
-                            if (typeof token != 'undefined') {
-                                officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
-                                    console.log("register device response ", resp)
-                                });
-                            }
-                        }
-                        // store fcm token in your server
-                    });
+                    officeApi.setUserName(RealmDatabse.findUser()[0]);
+                    //alert(RealmDatabse.findUser()[0].serverId+" SERVER ID");
+                    officeApi.getUserTimeline()
+                        .then((resp)=>{
+                            this.props.dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                            FCM.requestPermissions(); // for iOS
+                            FCM.getFCMToken().then(token => {
+                                if (typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+                                    if (typeof token != 'undefined') {
+                                        officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS).then((resp) => {
+                                            //alert("register device response "+ JSON.stringify(resp));
+                                        })
+                                            .catch((error)=>{
+                                               // alert("error : "+error);
+                                            });
+                                    }
+                                }
+                                // store fcm token in your server
+                            });
+                        })
+                        .catch((err)=>{
+                            console.log(err);
+                        });
                 })
                 .catch((err)=>{
                     console.log(err);
                 });
-            })
-            .catch((err)=>{
-                console.log(err);
-            });
         }).catch((err)=>{
             console.log("Cannot find authentication token: "+err);
         });
-        
+
+        this._getLastCheckinCheckout(this.props.dispatch);
     }
     
 
@@ -201,11 +206,11 @@ class TimelineView extends Component {
                                 <Text style={{ backgroundColor: "transparent", color: "#fff", fontSize: 12 }}> {mm} {yyyy}</Text>
                             </View>
                             <View style={{flex:1,alignItems:"center"}}>
-                                <TouchableHighlight onPress={function()
+                                <TouchableHighlight onPress={()=>
                                                 {
                                                     if(!checkin){
                                                         officeApi.checkinUser()
-                                                        .then((resp)=>{
+                                                        .then((resp) => {
                                                             dispatch(TimeLineStateActions.checkUserToggle());
                                                             console.log("time slot", new Date().getTime());
                                                             console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
@@ -223,6 +228,8 @@ class TimelineView extends Component {
                                                             .catch((err)=>{
                                                                 console.log(err);
                                                             });
+
+                                                            this._getLastCheckinCheckout(dispatch);
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -239,6 +246,8 @@ class TimelineView extends Component {
                                                             .catch((err)=>{
                                                                 console.log(err);
                                                             });
+                                                            
+                                                            this._getLastCheckinCheckout(dispatch)
                                                         })
                                                         .catch((err)=>{
                                                             console.log(err);
@@ -294,16 +303,18 @@ class TimelineView extends Component {
                     <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
-                    this.props.switchTab(4)}}>
+                    {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                        this.props.pushRoute({key: 'AdminDashboardTab', title: 'Admin Dashboard'})
+
+                    }}>
                         <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
-                    </ActionButton.Item>
+                    </ActionButton.Item>}
                 </ActionButton>
             </View>
         );
     }
 
-    _getLastCheckinCheckout(dispatch) {
+    _getLastCheckinCheckout = (dispatch)=> {
 
         officeApi.getLastCheckinCheckout("checkin")
             .then((resp) => {
