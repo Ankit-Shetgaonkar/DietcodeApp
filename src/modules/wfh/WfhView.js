@@ -550,7 +550,9 @@ class WfhView extends Component {
     showFromPicker = async (options) => {
         console.log(options);
         try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                date: typeof (this.props.wfhState.fromDate) === 'string' ? new Date() : this.props.wfhState.fromDate
+            });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(WfhState.updateFromDate());
             } else {
@@ -568,7 +570,8 @@ class WfhView extends Component {
 
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                minDate: typeof(this.props.wfhState.fromDate) === 'string'? new Date():this.props.wfhState.fromDate
+                minDate: typeof(this.props.wfhState.fromDate) === 'string'? new Date():this.props.wfhState.fromDate,
+                date: typeof (this.props.wfhState.toDate) === 'string' ? new Date() : this.props.wfhState.toDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(WfhState.updateDate());
