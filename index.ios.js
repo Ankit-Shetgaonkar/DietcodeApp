@@ -7,6 +7,7 @@ import {AppRegistry, Platform} from 'react-native';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 import RealmDatabse from './src/database/RealmDatabase';
 import * as officeApi from './src/office-server/OfficeApi';
+import SettingsView from './src/modules/settings/SettingsView';
 
 class DietcodeApp extends Component {
   componentDidMount() {
@@ -54,7 +55,7 @@ class DietcodeApp extends Component {
 
     return (
       <Provider store={store}>
-        <AppViewContainer />
+        <SettingsView />
       </Provider>
     );
   }
