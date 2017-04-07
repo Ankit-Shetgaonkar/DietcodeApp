@@ -571,10 +571,11 @@ class AdminDashboardView extends Component {
                     <View style={{ alignSelf: 'flex-end', backgroundColor: '#d7d7d7' }}>
                         <Button
                             onPress={() => {
-                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
+                                //this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
+                                
 
                                 //if hours are greater no need to check minutes
-                                if (this.props.adminDashboardState.filterDate.getHours() > this.props.adminDashboardState.editModalCheckinHour) {
+                                if (this.props.adminDashboardState.filterDate.getHours() < this.props.adminDashboardState.editModalCheckinHour) {
                                     alert('Checkout Time cannot be before Checkin Time')
                                     return;
 
@@ -582,13 +583,16 @@ class AdminDashboardView extends Component {
 
                                 //if hours are same, check minutes
                                 if (this.props.adminDashboardState.filterDate.getHours() === this.props.adminDashboardState.editModalCheckinHour) {
-                                    if (this.props.adminDashboardState.filterDate.getMinutes() > this.props.adminDashboardState.editModalCheckinMins) {
+                                    if (this.props.adminDashboardState.filterDate.getMinutes() < this.props.adminDashboardState.editModalCheckinMins) {
                                         alert('Checkout Time cannot be before Checkin Time')
                                         return;
                                     }
                                 }
 
+                                this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+
+                                
                                 officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
                                     this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout',
                                     this.props.adminDashboardState.filterDate).then((resp) => {
