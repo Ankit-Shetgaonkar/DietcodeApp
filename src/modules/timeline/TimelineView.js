@@ -212,7 +212,7 @@ class TimelineView extends Component {
                                                         officeApi.checkinUser()
                                                         .then((resp) => {
                                                             dispatch(TimeLineStateActions.checkUserToggle());
-                                                            console.log("time slot", new Date().getTime());
+                                                           console.log("time slot", new Date().getTime());
                                                             console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
                                                             FCM.scheduleLocalNotification({
                                                                 fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
