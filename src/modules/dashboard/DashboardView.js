@@ -9,9 +9,10 @@ import {
     StatusBar,
     Platform,
     TouchableHighlight,
-    Image
+    Image,
+    ActivityIndicator
 } from 'react-native';
-
+import Dimensions from 'Dimensions'
 import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
 import LinearGradient from 'react-native-linear-gradient';
@@ -43,8 +44,8 @@ class DashboardView extends Component {
             ProfileTab: NavigationPropTypes.navigationState.isRequired,
             LeavesTab: NavigationPropTypes.navigationState.isRequired,
             WorkFromHomeTab: NavigationPropTypes.navigationState.isRequired,
-            LeavesHistoryTab: NavigationPropTypes.navigationState.isRequired
-
+            LeavesHistoryTab: NavigationPropTypes.navigationState.isRequired,
+            loading: PropTypes.bool.isRequired
         }),
         switchTab: PropTypes.func.isRequired,
         pushRoute: PropTypes.func.isRequired,
@@ -89,6 +90,11 @@ class DashboardView extends Component {
                         </TouchableHighlight>
                     </View>
                 </LinearGradient>
+                {this.props.dashboardState.loading && 
+                    <View style={[styles.overlay, { height: Dimensions.get('window').height}]}>
+                        <ActivityIndicator animating={this.props.dashboardState.loading} style={[styles.centering, {height: 80}]} size="large"/>
+                    </View>
+                }
             </View>
         );
     };
@@ -164,6 +170,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#48E2FF",
         marginBottom: TAB_BAR_HEIGHT
+    }, overlay: {
+        flex: 1,
+        position: 'absolute',
+        justifyContent: 'center',
+        //alignItems: 'center',
+        left: 0,
+        top: 0,
+        opacity: 0.5,
+        backgroundColor: 'black',
+        width: Dimensions.get('window').width,
     }
 });
 

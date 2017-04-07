@@ -11,7 +11,8 @@ import {
     TouchableHighlight,
     Alert,
     ActivityIndicator,
-    PermissionsAndroid
+    PermissionsAndroid,
+    Modal
 } from 'react-native';
 import FCM from 'react-native-fcm'
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -20,6 +21,8 @@ import RealmDatabse from '../../database/RealmDatabase';
 import * as auth from '../../utils/authentication';
 
 import * as TimeLineStateActions from './TimelineState';
+
+import * as DashboardActions from '../dashboard/DashboardState';
 
 import * as officeApi from '../../office-server/OfficeApi';
 import Dimensions from 'Dimensions'
@@ -76,10 +79,57 @@ function _getDayOfWeek(day) {
     }
 }
 
+function checkinUser(dispatch) {
+    dispatch(DashboardActions.showLoading(true));
+    officeApi.checkinUser()
+    .then((resp)=>{
+        dispatch(TimeLineStateActions.checkUserToggle());
+        console.log("time slot", new Date().getTime());
+        console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
+        FCM.scheduleLocalNotification({
+            fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
+            // fire_date: new Date().getTime() + (20 * 1000),
+            id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
+            body: "It has been 9 hours since you checkedin. Please check out before leaving."
+        });
+        console.log("schedule successful")
+        officeApi.getUserTimeline()
+        .then((resp)=>{
+            dispatch(DashboardActions.showLoading(false));
+            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+        })
+        .catch((err)=>{
+            dispatch(DashboardActions.showLoading(false));
+            console.log(err);
+        });
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
+}
+
+function checkoutUser(dispatch) {
+    dispatch(DashboardActions.showLoading(true));
+    officeApi.checkoutUser()
+    .then((resp)=>{
+        dispatch(TimeLineStateActions.checkUserToggle());
+        officeApi.getUserTimeline()
+        .then((resp)=>{
+            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+            dispatch(DashboardActions.showLoading(false));
+        })
+        .catch((err)=>{
+            dispatch(DashboardActions.showLoading(false));
+            console.log(err);
+        });
+    })
+    .catch((err)=>{
+        console.log(err);
+    });
+}
 //notification.initializeNotification();
 
 async function createUser(token) {
-    console.log(RealmDatabse.findUser()[0].serverId);
     if (!RealmDatabse.findUser().length > 0) {
         return;
     }
@@ -206,52 +256,50 @@ class TimelineView extends Component {
                                 <Text style={{ backgroundColor: "transparent", color: "#fff", fontSize: 12 }}> {mm} {yyyy}</Text>
                             </View>
                             <View style={{flex:1,alignItems:"center"}}>
-                                <TouchableHighlight onPress={()=>
+                                <TouchableHighlight onPress={function()
                                                 {
+                                                    console.log("going to checkin checkout");
+                                                     var current = new Date();
+                                                     
                                                     if(!checkin){
-                                                        officeApi.checkinUser()
-                                                        .then((resp) => {
-                                                            dispatch(TimeLineStateActions.checkUserToggle());
-                                                           console.log("time slot", new Date().getTime());
-                                                            console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
-                                                            FCM.scheduleLocalNotification({
-                                                                fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
-                                                                // fire_date: new Date().getTime() + (20 * 1000),
-                                                                id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
-                                                                body: "It has been 9 hours since you checkedin. Please check out before leaving."
-                                                            });
-                                                            console.log("schedule successful")
-                                                            officeApi.getUserTimeline()
-                                                            .then((resp)=>{
-                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-                                                            })
-                                                            .catch((err)=>{
-                                                                console.log(err);
-                                                            });
+                                                      //  console.log("time is ",d.getHours(),":",d.getMinutes(),":",d.getSeconds());
+                                                        var earlyCheckinStart = new Date();
+                                                        earlyCheckinStart.setHours(0, 0, 0);
+                                                        var earlyCheckinEnd = new Date();
+                                                        earlyCheckinEnd.setHours(8, 59, 59);
 
-                                                            this._getLastCheckinCheckout(dispatch);
-                                                        })
-                                                        .catch((err)=>{
-                                                            console.log(err);
-                                                        });
+                                                        if (current >=  earlyCheckinStart && current <= earlyCheckinEnd) {
+                                                            Alert.alert(
+                                                                'You are early!',
+                                                                'Are you sure you want to check-in',
+                                                                [
+                                                                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                    {text: 'OK', onPress: () => checkinUser(dispatch)},
+                                                                ],
+                                                                { cancelable: false }
+                                                                )
+                                                        } else {
+                                                            checkinUser(dispatch);
+                                                        }
                                                        }
                                                     else{
-                                                        officeApi.checkoutUser()
-                                                        .then((resp)=>{
-                                                           dispatch(TimeLineStateActions.checkUserToggle());
-                                                           officeApi.getUserTimeline()
-                                                            .then((resp)=>{
-                                                                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-                                                            })
-                                                            .catch((err)=>{
-                                                                console.log(err);
-                                                            });
-                                                            
-                                                            this._getLastCheckinCheckout(dispatch)
-                                                        })
-                                                        .catch((err)=>{
-                                                            console.log(err);
-                                                        });
+                                                        var earlyCheckoutStart = new Date();
+                                                        earlyCheckoutStart.setHours(9, 0, 0);
+                                                        var earlyCheckoutEnd = new Date();
+                                                        earlyCheckoutEnd.setHours(18, 0, 0);
+                                                        if (current >= earlyCheckoutStart && current <= earlyCheckoutEnd) {
+                                                            Alert.alert(
+                                                                'You are early!',
+                                                                'Are you sure you want to check-out',
+                                                                [
+                                                                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                    {text: 'OK', onPress: () => checkoutUser(dispatch)},
+                                                                ],
+                                                                { cancelable: false }
+                                                                )
+                                                        } else {
+                                                            checkoutUser(dispatch);
+                                                        }
                                                     }
 
                                                 }}
