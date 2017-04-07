@@ -65,7 +65,7 @@ class SettingsView extends Component {
                                 Checkin Notification Alert Time:
                             </Text>
                             <View style={{height: 50, marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width-32), borderRadius: 4, marginBottom: 8}}>
-                                <TouchableHighlight style={{flex: 1, width: (Dimensions.get('window').width-32), borderRadius: 4}} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => {this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker))}}>
+                                <TouchableHighlight style={{flex: 1, width: (Dimensions.get('window').width-32), borderRadius: 4}} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => {Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showPicker()}}>
                                     <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'center'}}>
                                         <Icon size={26} color='#000000' name={"clock-o"} style={styles.iconStyle} />
                                         <Text style={styles.textInput_TextStyle}>{(dateToDisplay.getHours() > 12 ? (dateToDisplay.getHours() - 12) : dateToDisplay.getHours()) + ':' + dateToDisplay.getMinutes() + ' ' + (dateToDisplay.getHours() > 12 ? 'pm' : 'am')}</Text>
@@ -80,7 +80,7 @@ class SettingsView extends Component {
                                 </View>
                                 <View style={{backgroundColor:'#d7d7d7', alignItems: 'flex-end', height: 40, justifyContent: 'center'}}>
                                     <View style={{ backgroundColor: 'transparent', borderRadius: 2 }}>
-                                        <Button title={'Done'} accessibilityLabel={'Finish selection of time.'} color={'#000080'} onPress={() => {Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showPicker()}}/>
+                                        <Button title={'Done'} accessibilityLabel={'Finish selection of time.'} color={'#000080'} onPress={() => {this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker))}}/>
                                     </View>
                                 </View>
                                 <DatePickerIOS style={{backgroundColor: '#d7d7d7'}} date={dateToDisplay} mode={'time'} onDateChange={(date) => {this.updateTime(date)}}/>
