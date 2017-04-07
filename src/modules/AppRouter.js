@@ -28,7 +28,7 @@ export default function AppRouter(props,pushRoute) {
   }else if (key === 'LeavesTab') {
     return <LeavesContainer pushRoute = {pushRoute} />;
   }else if (key === 'WorkFromHomeTab') {
-      return <WfhContainer/>;
+      return <WfhContainer pushRoute = {pushRoute} />;
   }else if (key === 'LeavesHistoryTab') {
     console.log("returning lhcontainer")
     return <LeavesHistoryContainer/>;

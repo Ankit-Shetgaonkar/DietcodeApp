@@ -31,19 +31,53 @@ class LeavesHistoryView extends Component {
             leaveHistoryData: PropTypes.shape({
                 data: PropTypes.array.isRequired
             }).isRequired,
+            leaveHistoryType: PropTypes.string.isRequired
         }).isRequired,
         dispatch: PropTypes.func.isRequired
     }
-    constructor() {
+    /*constructor() {
         super();
         officeApi.getLeaveHistory()
         .then((resp)=>{
             console.log("leave history response ",resp)
-            this.props.dispatch(LeavesHistoryStateActions.setLeaveHistoryData({data:resp.result}));
+            var leavesData = []
+            if (resp.result.length > 0) {
+                leavesData = resp.result.filter(function(leave) {
+                    return name != "Work from home"
+                });
+            }
+            this.props.dispatch(LeavesHistoryStateActions.setLeaveHistoryData({data:leavesData}));
+        });
+    }*/
+    componentDidMount() {
+        this.props.dispatch(LeavesHistoryStateActions.setLeaveHistoryData({data:[]}));
+         officeApi.getLeaveHistory()
+        .then((resp)=>{
+            //console.log("leave history response ",resp, "count ", resp.result.length)
+            //console.log("props leave hiostory mount ",this.props.leaveHistoryState);
+
+            var leavesData = []
+            if (this.props.leaveHistoryType != "") {
+                if (typeof resp != 'undefined' && resp.result.length > 0) {
+                    leavesData = resp.result.filter((leave)=> {
+                        console.log("leave ",leave,"type is ",leave.name, "this.props",this.props);
+                        console.log("props leave hiostory mount 1",this.props.leaveHistoryState);
+
+                        return leave.name == this.props.leaveHistoryState.leaveHistoryType
+                    });
+                }
+            } else {
+                leavesData = resp.result;
+            }
+            this.props.dispatch(LeavesHistoryStateActions.setLeaveHistoryData({data:leavesData}));
+        }).catch((err) => {
+            alert("Network error. Try after some time");
+            console.log(err);
         });
     }
     render() {
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        console.log("props leave hiostory ",this.props.leaveHistoryState);
         const dataSource = {dataSource: ds.cloneWithRows(this.props.leaveHistoryState.leaveHistoryData.data.length>0?this.props.leaveHistoryState.leaveHistoryData.data:[])};
 
         console.log("render method of leave history view called");
@@ -78,7 +112,6 @@ class LeavesHistoryView extends Component {
                                                     {rowData.day_part === "2" &&
                                                         <Text style={{backgroundColor:"transparent",color:"#333",fontSize:12}}>Part: Second Half </Text>
                                                     }
-                                                    <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>type: {rowData.name == "Vacation" ? "Leave" : "Work from home"} </Text>
                                                     <Text style={{backgroundColor:"transparent",color:"#999",fontSize:12}}>reason: {rowData.message} </Text>
                                                 </View>
                                             </View>
