@@ -308,7 +308,25 @@ class AdminDashboardView extends Component {
                 let date = typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date(this.props.adminDashboardState.filterDate) :
                     this.props.adminDashboardState.filterDate;
                 date.setHours(hour, minute, 0);
+
+                //if hours are greater no need to check minutes
+                if (hour <  this.props.adminDashboardState.editModalCheckinHour) {
+                    alert('Checkout Time cannot be before Checkin Time')
+                    return;
+
+                }
+
+                //if hours are same, check minutes
+                if (hour === this.props.adminDashboardState.editModalCheckinHour) {
+                    alert('gaan tuji'+minute)
+                    if (minute < this.props.adminDashboardState.editModalCheckinMins) {
+                        alert('Checkout Time cannot be before Checkin Time')
+                        return;
+                    }
+                }
+
                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
+
                 officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
                     this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout', date).then((resp) => {
                         this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime(hour, minute));
@@ -349,6 +367,7 @@ class AdminDashboardView extends Component {
                 <DatePickerIOS
                     style={{ backgroundColor: '#d7d7d7', paddingBottom: 10, paddingLeft: 10 }}
                     date={typeof (this.props.adminDashboardState.filterDate) === 'string' ? new Date() : this.props.adminDashboardState.filterDate}
+                    maximumDate={new Date()}
                     mode="date"
                     onDateChange={(date) => {
                         this.props.dispatch(AdminDashboardState.setFilterDate(date));
@@ -366,7 +385,8 @@ class AdminDashboardView extends Component {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
                 date: typeof (this.props.adminDashboardState.filterDate) === 'string' ?
-                    new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate
+                    new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate,
+                maxDate: new Date()
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //do nothing
@@ -553,9 +573,24 @@ class AdminDashboardView extends Component {
                             onPress={() => {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
 
+                                //if hours are greater no need to check minutes
+                                if (this.props.adminDashboardState.filterDate.getHours() > this.props.adminDashboardState.editModalCheckinHour) {
+                                    alert('Checkout Time cannot be before Checkin Time')
+                                    return;
+
+                                }
+
+                                //if hours are same, check minutes
+                                if (this.props.adminDashboardState.filterDate.getHours() === this.props.adminDashboardState.editModalCheckinHour) {
+                                    if (this.props.adminDashboardState.filterDate.getMinutes() > this.props.adminDashboardState.editModalCheckinMins) {
+                                        alert('Checkout Time cannot be before Checkin Time')
+                                        return;
+                                    }
+                                }
+
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
                                 officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
-                                    this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout', 
+                                    this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout',
                                     this.props.adminDashboardState.filterDate).then((resp) => {
                                         this.props.dispatch(AdminDashboardState.updateEditModalCheckoutTime
                                             (this.props.adminDashboardState.filterDate.getHours(), this.props.adminDashboardState.filterDate.getMinutes()));
@@ -651,6 +686,11 @@ class AdminDashboardView extends Component {
 
     _clickNextDate(dispatch) {
         let date = typeof (this.props.adminDashboardState.filterDate) === "string" ? new Date(this.props.adminDashboardState.filterDate) : this.props.adminDashboardState.filterDate;
+        let todayDate = new Date();
+        if (date.setHours(0, 0, 0, 0) == todayDate.setHours(0, 0, 0, 0)) {
+            alert('Cannot edit timings for future dates')
+            return;
+        }
         date.setDate(date.getDate() + 1);
         dispatch(AdminDashboardState.setFilterDate(date));
         this._loadListData(date);
