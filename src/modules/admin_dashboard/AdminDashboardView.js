@@ -318,7 +318,6 @@ class AdminDashboardView extends Component {
 
                 //if hours are same, check minutes
                 if (hour === this.props.adminDashboardState.editModalCheckinHour) {
-                    alert('gaan tuji'+minute)
                     if (minute < this.props.adminDashboardState.editModalCheckinMins) {
                         alert('Checkout Time cannot be before Checkin Time')
                         return;
