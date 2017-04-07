@@ -312,48 +312,73 @@ class TimelineView extends Component {
                                                 {
                                                     console.log("going to checkin checkout");
                                                      var current = new Date();
-                                                     
-                                                    if(!checkin){
-                                                      //  console.log("time is ",d.getHours(),":",d.getMinutes(),":",d.getSeconds());
-                                                        var earlyCheckinStart = new Date();
-                                                        earlyCheckinStart.setHours(0, 0, 0);
-                                                        var earlyCheckinEnd = new Date();
-                                                        earlyCheckinEnd.setHours(8, 59, 59);
+                                                     isUserValidLocation().then((isValid) => {
+                                                         if (isValid) {
+                                                             // user Within location range
+                                                             if(!checkin){
+                                                            //  console.log("time is ",d.getHours(),":",d.getMinutes(),":",d.getSeconds());
+                                                                var earlyCheckinStart = new Date();
+                                                                earlyCheckinStart.setHours(0, 0, 0);
+                                                                var earlyCheckinEnd = new Date();
+                                                                earlyCheckinEnd.setHours(8, 59, 59);
 
-                                                        if (current >=  earlyCheckinStart && current <= earlyCheckinEnd) {
-                                                            Alert.alert(
-                                                                'You are early!',
-                                                                'Are you sure you want to check-in',
-                                                                [
-                                                                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                                                                    {text: 'OK', onPress: () => checkinUser(dispatch)},
-                                                                ],
-                                                                { cancelable: false }
-                                                                )
-                                                        } else {
-                                                            checkinUser(dispatch);
-                                                        }
-                                                       }
-                                                    else{
-                                                        var earlyCheckoutStart = new Date();
-                                                        earlyCheckoutStart.setHours(9, 0, 0);
-                                                        var earlyCheckoutEnd = new Date();
-                                                        earlyCheckoutEnd.setHours(18, 0, 0);
-                                                        if (current >= earlyCheckoutStart && current <= earlyCheckoutEnd) {
-                                                            Alert.alert(
-                                                                'You are early!',
-                                                                'Are you sure you want to check-out',
-                                                                [
-                                                                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                                                                    {text: 'OK', onPress: () => checkoutUser(dispatch)},
-                                                                ],
-                                                                { cancelable: false }
-                                                                )
-                                                        } else {
-                                                            checkoutUser(dispatch);
-                                                        }
-                                                    }
-
+                                                                if (current >=  earlyCheckinStart && current <= earlyCheckinEnd) {
+                                                                    Alert.alert(
+                                                                        'You are early!',
+                                                                        'Are you sure you want to check-in',
+                                                                        [
+                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                            {text: 'OK', onPress: () => checkinUser(dispatch)},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                        )
+                                                                } else {
+                                                                    checkinUser(dispatch);
+                                                                }
+                                                            }
+                                                            else{
+                                                                var earlyCheckoutStart = new Date();
+                                                                earlyCheckoutStart.setHours(9, 0, 0);
+                                                                var earlyCheckoutEnd = new Date();
+                                                                earlyCheckoutEnd.setHours(18, 0, 0);
+                                                                if (current >= earlyCheckoutStart && current <= earlyCheckoutEnd) {
+                                                                    Alert.alert(
+                                                                        'You are early!',
+                                                                        'Are you sure you want to check-out',
+                                                                        [
+                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                            {text: 'OK', onPress: () => checkoutUser(dispatch)},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                        )
+                                                                } else {
+                                                                    checkoutUser(dispatch);
+                                                                }
+                                                            }
+                                                         } else {
+                                                             // user not within location range
+                                                             Alert.alert(
+                                                                        'Oh! Snap',
+                                                                        'You are not currently within office premises, please be within office premises to checkin/checkout or contact office manager.',
+                                                                        [
+                                                                            {text: 'OK', onPress: () => {}},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                    )
+                                                         }
+                                                     }).catch((error) => {
+                                                         // some type of error occoured
+                                                         let title = (error.code === 1 ? 'Permission Error' : 'Oh! Snap');
+                                                         let message = (error.code === 1 ? 'Please check location permissions granted to this app in settings.' : 'Some location based error occoured, try again later or contact office manager.');
+                                                         Alert.alert(
+                                                                        title,
+                                                                        message,
+                                                                        [
+                                                                            {text: 'OK', onPress: () => {}},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                    )
+                                                     });
                                                 }}
                                                     underlayColor="transparent"
                                 >
