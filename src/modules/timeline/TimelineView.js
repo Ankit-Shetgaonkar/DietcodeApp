@@ -79,6 +79,49 @@ function _getDayOfWeek(day) {
     }
 }
 
+function _getHumanReadableTime(timeValue){
+        var timeStart = new Date(timeValue).getTime();
+        var timeEnd = new Date().getTime();
+        var hourDiff = timeEnd - timeStart; //in ms
+        var secDiff = hourDiff / 1000; //in s
+        var minDiff = hourDiff / 60 / 1000; //in minutes
+        var hDiff = hourDiff / 3600 / 1000; //in hours
+        var humanReadable = {};
+        humanReadable.hours = Math.floor(hDiff);
+        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+            if(humanReadable.hours<0 || humanReadable.minutes<0)
+            {
+                return "0h : 0m ago";
+            }
+        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+        return stringTime;
+    }
+
+async function _getLastCheckinCheckout(dispatch) {
+
+        await officeApi.getLastCheckinCheckout("checkin")
+            .then((resp) => {
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
+            });
+
+        await officeApi.getLastCheckinCheckout("checkout")
+            .then((resp) => {
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
+            });
+    }
+
 function checkinUser(dispatch) {
     dispatch(DashboardActions.showLoading(true));
     officeApi.checkinUser()
@@ -95,8 +138,13 @@ function checkinUser(dispatch) {
         console.log("schedule successful")
         officeApi.getUserTimeline()
         .then((resp)=>{
-            dispatch(DashboardActions.showLoading(false));
-            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                _getLastCheckinCheckout(dispatch).then((resp)=>{
+                dispatch(DashboardActions.showLoading(false));
+                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+            }).catch((err)=>{
+                 dispatch(DashboardActions.showLoading(false));
+            });
+            
         })
         .catch((err)=>{
             dispatch(DashboardActions.showLoading(false));
@@ -115,8 +163,12 @@ function checkoutUser(dispatch) {
         dispatch(TimeLineStateActions.checkUserToggle());
         officeApi.getUserTimeline()
         .then((resp)=>{
-            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-            dispatch(DashboardActions.showLoading(false));
+                _getLastCheckinCheckout(dispatch).then((resp)=>{
+                dispatch(DashboardActions.showLoading(false));
+                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+            }).catch((err)=>{
+                 dispatch(DashboardActions.showLoading(false));
+            });
         })
         .catch((err)=>{
             dispatch(DashboardActions.showLoading(false));
@@ -222,7 +274,7 @@ class TimelineView extends Component {
             console.log("Cannot find authentication token: "+err);
         });
 
-        this._getLastCheckinCheckout(this.props.dispatch);
+        _getLastCheckinCheckout(this.props.dispatch);
     }
     
 
@@ -362,48 +414,6 @@ class TimelineView extends Component {
         );
     }
 
-    _getLastCheckinCheckout = (dispatch)=> {
-
-        officeApi.getLastCheckinCheckout("checkin")
-            .then((resp) => {
-                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? this._getHumanReadableTime(resp.results[0].createdAt) : "not found"));
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
-            });
-
-        officeApi.getLastCheckinCheckout("checkout")
-            .then((resp) => {
-                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? this._getHumanReadableTime(resp.results[0].createdAt) : "not found"));
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
-            });
-    }
-
-    _getHumanReadableTime(timeValue){
-        var timeStart = new Date(timeValue).getTime();
-        var timeEnd = new Date().getTime();
-        var hourDiff = timeEnd - timeStart; //in ms
-        var secDiff = hourDiff / 1000; //in s
-        var minDiff = hourDiff / 60 / 1000; //in minutes
-        var hDiff = hourDiff / 3600 / 1000; //in hours
-        var humanReadable = {};
-        humanReadable.hours = Math.floor(hDiff);
-        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-            if(humanReadable.hours<0 || humanReadable.minutes<0)
-            {
-                return "0h : 0m ago";
-            }
-        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
-        return stringTime;
-    }
 
     refactorData(data) {
         if (data.length > 0) {
