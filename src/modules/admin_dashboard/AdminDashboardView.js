@@ -574,15 +574,15 @@ class AdminDashboardView extends Component {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
 
                                 //if hours are greater no need to check minutes
-                                if (hour > this.props.adminDashboardState.editModalCheckinHour) {
+                                if (this.props.adminDashboardState.filterDate.getHours() > this.props.adminDashboardState.editModalCheckinHour) {
                                     alert('Checkout Time cannot be before Checkin Time')
                                     return;
 
                                 }
 
                                 //if hours are same, check minutes
-                                if (hour === this.props.adminDashboardState.editModalCheckinHour) {
-                                    if (minute > this.props.adminDashboardState.editModalCheckinMins) {
+                                if (this.props.adminDashboardState.filterDate.getHours() === this.props.adminDashboardState.editModalCheckinHour) {
+                                    if (this.props.adminDashboardState.filterDate.getMinutes() > this.props.adminDashboardState.editModalCheckinMins) {
                                         alert('Checkout Time cannot be before Checkin Time')
                                         return;
                                     }
