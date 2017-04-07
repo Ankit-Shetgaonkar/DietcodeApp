@@ -8,6 +8,7 @@ const {StateUtils: NavigationStateUtils} = NavigationExperimental;
 const PUSH_ROUTE = 'DashboardState/PUSH_ROUTE';
 const POP_ROUTE = 'DashboardState/POP_ROUTE';
 const SWITCH_TAB = 'DashboardState/SWITCH_TAB';
+const SHOW_LOADING = 'DashboardState/SHOW_LOADING';
 
 // reducers for tabs and scenes are separate
 const initialState = fromJS({
@@ -51,7 +52,8 @@ const initialState = fromJS({
         index: 0,
         routes: [{key: 'AdminDashboardTab', title: 'Admin Dashboard'}]
 
-    }
+    },
+    loading: false
 });
 
 export function switchTab(key) {
@@ -72,6 +74,13 @@ export function popRoute() {
   return {type: POP_ROUTE};
 }
 
+export function showLoading(loading) {
+    console.log("show loading function called")
+    return {
+        type: SHOW_LOADING,
+        payload: loading
+    };
+}
 
 export default function DashboardStateReducer(state = initialState, action) {
     switch (action.type) {
@@ -123,6 +132,9 @@ export default function DashboardStateReducer(state = initialState, action) {
             }
             return state;
         }
+         case SHOW_LOADING:
+            console.log("going to set state to",action.payload)
+            return state.set("loading", action.payload);
 
         default:
             return state;

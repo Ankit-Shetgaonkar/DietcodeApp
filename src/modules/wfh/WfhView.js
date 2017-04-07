@@ -26,6 +26,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import * as WfhState from "./WfhState";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Api from '../../office-server/OfficeApi';
+import * as LeaveHistoryState from "../LeavesHistory/LeavesHistoryState"
 
 
 var mCakeHrId = 0;
@@ -61,7 +62,8 @@ class WfhView extends Component {
             showFromDatePicker: PropTypes.bool.isRequired,
             showToDatePicker: PropTypes.bool.isRequired
         }).isRequired,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+        pushRoute: PropTypes.func.isRequired
 
     };
 
@@ -512,6 +514,34 @@ class WfhView extends Component {
         );
     }
 
+    renderWFHHistory = (flexWeight) => {
+         return (
+        <View style={{ marginTop: 15 ,
+                 marginBottom: 50,
+                flex: flexWeight}}>
+            {Platform.OS === 'android' &&
+                <Button
+                    onPress={() => {
+                        this.showHistoryScreen();
+                    }}
+                    color='#464763'
+                    title="Work from home history" />
+            }
+
+            {Platform.OS === 'ios' &&
+                <View style={{ backgroundColor: '#464763' }}>
+                    <Button
+                        onPress={() => {
+                            this.showHistoryScreen();
+                        }}
+                        color='#ffffff'
+                        title="Work from home history" />
+                </View>
+            }
+        </View>
+         )
+    }
+
 
 
     render() {
@@ -540,6 +570,8 @@ class WfhView extends Component {
 
                     {this.rendorProgressStatus(2)}
 
+                    {this.renderWFHHistory(1)}
+
                 </ScrollView>
 
             </LinearGradient>
@@ -550,7 +582,9 @@ class WfhView extends Component {
     showFromPicker = async (options) => {
         console.log(options);
         try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                date: typeof (this.props.wfhState.fromDate) === 'string' ? new Date() : this.props.wfhState.fromDate
+            });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(WfhState.updateFromDate());
             } else {
@@ -568,7 +602,8 @@ class WfhView extends Component {
 
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                minDate: typeof(this.props.wfhState.fromDate) === 'string'? new Date():this.props.wfhState.fromDate
+                minDate: typeof(this.props.wfhState.fromDate) === 'string'? new Date():this.props.wfhState.fromDate,
+                date: typeof (this.props.wfhState.toDate) === 'string' ? new Date() : this.props.wfhState.toDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(WfhState.updateDate());
@@ -581,6 +616,15 @@ class WfhView extends Component {
             console.warn(`Error in example `, message);
         }
     };
+
+    /*
+    * showing work from home history screen
+    */
+    showHistoryScreen = () => {
+        //alert("history screen shown")
+        this.props.pushRoute({key: 'LeavesHistoryTab', title: 'Work From Home history'});
+        this.props.dispatch(LeaveHistoryState.setLeaveHistoryType("Work from home"));
+    }
 
     /**
      * Api call for applying work for home

@@ -3,7 +3,7 @@ import {Provider} from 'react-redux';
 import store from './src/redux/store';
 import AppViewContainer from './src/modules/AppViewContainer';
 import React, {Component} from 'react';
-import {AppRegistry, BackAndroid, Platform} from 'react-native';
+import {AppRegistry, BackAndroid, Platform,PermissionsAndroid} from 'react-native';
 import * as NavigationStateActions from './src/modules/dashboard/DashboardState';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 import RealmDatabse from './src/database/RealmDatabase';
@@ -19,20 +19,22 @@ class DietcodeApp extends Component {
   }
   componentDidMount() {
       FCM.getFCMToken().then(token => {
-            console.log(token)
+            console.log(token);
             // store fcm token in your server
       });
       this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
             // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
-            if(notif.local_notification){
-              console.log(notif);
-              alert(notif.body)
+              if(notif.notification){
+                alert(notif.notification.fcm.title);
+              }
+          if(notif.local_notification){
+              //alert(notif.body)
               //this is a local notification
             }
-            if(notif.opened_from_tray){
+          if(notif.opened_from_tray){
               //app is open/resumed because user clicked banner
             }
-            if(Platform.OS ==='ios'){
+          if(Platform.OS ==='ios'){
               //optional
               //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
               //This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override

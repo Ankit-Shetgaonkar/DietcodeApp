@@ -25,7 +25,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import * as LeavesState from "./LeavesState";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Api from '../../office-server/OfficeApi';
-
+import * as LeaveHistoryState from "../LeavesHistory/LeavesHistoryState"
 
 var mCakeHrIdPaid = 0;
 var mCakeHrIdUnPaid = 0;
@@ -612,7 +612,7 @@ class LeavesView extends Component {
                         this.showHistoryScreen();
                     }}
                     color='#464763'
-                    title="View History" />
+                    title="Leave History" />
             }
 
             {Platform.OS === 'ios' &&
@@ -622,7 +622,7 @@ class LeavesView extends Component {
                             this.showHistoryScreen();
                         }}
                         color='#ffffff'
-                        title="View History" />
+                        title="Leave History" />
                 </View>
             }
         </View>
@@ -671,7 +671,9 @@ class LeavesView extends Component {
     showFromPicker = async (options) => {
         console.log(options);
         try {
-            const { action, year, month, day } = await DatePickerAndroid.open(null);
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                date: typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate
+            });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(LeavesState.updateFromDate());
             } else {
@@ -688,7 +690,7 @@ class LeavesView extends Component {
     showToPicker = async (options) => {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
-                minDate: typeof (this.props.LeavesState.fromDate) === 'string' ? new Date() : this.props.LeavesState.fromDate
+                date: typeof (this.props.LeavesState.toDate) === 'string' ? new Date() : this.props.LeavesState.toDate
             });
             if (action === DatePickerAndroid.dismissedAction) {
                 //this.props.dispatch(LeavesState.updateDate());
@@ -704,7 +706,8 @@ class LeavesView extends Component {
 
     showHistoryScreen = () => {
         //alert("history screen shown")
-        this.props.pushRoute({key: 'LeavesHistoryTab', title: 'LeavesHistory'});
+        this.props.pushRoute({key: 'LeavesHistoryTab', title: 'Leaves History'});
+        this.props.dispatch(LeaveHistoryState.setLeaveHistoryType("Vacation"));
     }
 
     /**

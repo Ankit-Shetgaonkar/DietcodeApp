@@ -111,7 +111,7 @@ export async function registerDevice(deviceToken, userID, deviceType) {
         type: deviceType,
         firebaseDeviceToken: deviceToken
     };
-    console.log("device obj is ", deviceObj);
+
     try {
         const resp = await api.post("http://dc-office.herokuapp.com/api/v1/devices", deviceObj, true);
         return resp;
@@ -121,8 +121,18 @@ export async function registerDevice(deviceToken, userID, deviceType) {
     }
 }
 
+export async function getAllUserstimelineforDay(date) {
+    console.log(date + " THE DATE IS");
+    try {
+        const resp = await api.get("http://dc-office.herokuapp.com/api/v1/timelines/all-user-timeline?createdAt=" + date, true);
+        console.log(resp);
+        return resp;
+    } catch (err) {
+        throw err;
+    }
+}
 
-export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid) {
+export async function applyforLeave(cakeHrId, from, to, day_part, message, isPaid) {
 
     if (day_part === "First Half") {
         day_part = 1;
@@ -138,8 +148,8 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
         timeoffString = "10267"
     }
 
-    let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
-    let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
+    let fromString = from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate();
+    let toString = to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate();
     let leaveBody;
     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
@@ -174,18 +184,18 @@ export async function applyforLeave(cakeHrId, from, to, day_part, message,isPaid
 
 export async function applyforWfh(cakeHrId, from, to, day_part, message) {
 
-   if (day_part === "First Half") {
+    if (day_part === "First Half") {
         day_part = 1;
     } else if (day_part === "Second Half") {
         day_part = 2;
     } else {
         day_part = 0;
     }
-    let fromString = from.getFullYear()+"-"+(from.getMonth()+1)+"-"+from.getDate();
-    let toString = to.getFullYear()+"-"+(to.getMonth()+1)+"-"+to.getDate();
+    let fromString = from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate();
+    let toString = to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate();
 
- let leaveBody;
-     if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
+    let leaveBody;
+    if ((fromString == toString) && ((day_part == 1) || (day_part == 2))) {
         console.log("inside");
         leaveBody = {
 
@@ -209,6 +219,33 @@ export async function applyforWfh(cakeHrId, from, to, day_part, message) {
     }
     try {
         const resp = await api.post("https://dc-office.herokuapp.com/api/cakehr/addtimeoff", leaveBody, true);
+        return resp;
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+export async function adminUpdateCheckinCheckoutTime(userId, timelineId, type, createdAt) {
+
+    let timelineObj = null;
+
+    if (timelineId === null) {
+        timelineObj = {
+            createdAt: createdAt,
+            user: userId,
+            description: type + ' successfully',
+            type: type
+        };
+        timelineId = "";
+    } else {
+        timelineObj = {
+            createdAt: createdAt
+        };
+    }
+
+    try {
+        const resp = await api.post("http://dc-office.herokuapp.com/api/v1/timelines/" + timelineId, timelineObj, true);
         return resp;
     }
     catch (error) {
