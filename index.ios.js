@@ -3,7 +3,7 @@ import store from './src/redux/store';
 import AppViewContainer from './src/modules/AppViewContainer';
 
 import React, {Component} from 'react';
-import {AppRegistry, Platform} from 'react-native';
+import {AppRegistry, Platform,Alert} from 'react-native';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 import RealmDatabse from './src/database/RealmDatabase';
 import * as officeApi from './src/office-server/OfficeApi';
@@ -14,7 +14,15 @@ class DietcodeApp extends Component {
         console.log("ios notif",notif);
         // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
         if (notif.fcm) {
-            alert(notif.fcm.body);
+            Alert.alert(
+                notif.fcm.title,
+                notif.fcm.body,
+                [
+                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    {text: 'OK', onPress: () => console.log('Ok Pressed')},
+                ],
+                { cancelable: false }
+            )
         }
         if(notif.local_notification){
           //this is a local notification
