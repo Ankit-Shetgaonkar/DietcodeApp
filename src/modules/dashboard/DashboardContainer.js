@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {switchTab,pushRoute,popRoute} from './DashboardState';
+import {switchTab,pushRoute,popRoute, showLoading} from './DashboardState';
 import {logoutSessionState} from '../session/SessionState';
 import DashboardView from './DashboardView';
 

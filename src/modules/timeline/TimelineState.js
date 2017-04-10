@@ -5,7 +5,7 @@ export const LAST_CHECKOUT = 'TimelineState/LAST_CHECKOUT';
 export const ERROR_MESSAGE = 'TimelineState/ERROR_MESSAGE';
 export const CHECKIN = 'TimelineState/CHECKIN';
 export const TIMELINE_DATA = 'TimelineState/TIMELINE_DATA';
-export const SHOW_PROGRESS = 'TimelineState/SHOW_PROGRESS';
+export const SHOW_LOADING = 'TimelineState/SHOW_LOADING';
 
 const initialState = fromJS({
     lastCheckin: "no-data",
@@ -14,8 +14,8 @@ const initialState = fromJS({
     lastCheckout: "no-data",
     timelineData: {
         data: []
-    }/*,
-    showProgress: false*/
+    },
+    showLoading: true
 });
 
 
@@ -47,12 +47,12 @@ export function setLastCheckout(time) {
     };
 }
 
-/*export function toggleShowProgress(progress) {
+export function toggleShowLoading(loading) {
     return {
-        type: SHOW_PROGRESS,
-        payload: progress
+        type: SHOW_LOADING,
+        payload: loading
     };
-}*/
+}
 // Reducer
 export default function TimelineStateReducer(state = initialState, action = {}) {
     switch (action.type) {
@@ -64,8 +64,8 @@ export default function TimelineStateReducer(state = initialState, action = {}) 
             return state.set("checkin", !state.get('checkin'));
         case TIMELINE_DATA:
             return state.set("timelineData", action.payload);
-        /*case SHOW_PROGRESS:
-            return state.set("showProgress", action.payload);*/
+        case SHOW_LOADING:
+            return state.set("showLoading", action.payload);
         default:
             return state;
     }
