@@ -100,10 +100,13 @@ function checkinUser(dispatch) {
         })
         .catch((err)=>{
             dispatch(DashboardActions.showLoading(false));
+            alert(err);
             console.log(err);
         });
     })
     .catch((err)=>{
+        dispatch(DashboardActions.showLoading(false));
+        alert(err);
         console.log(err);
     });
 }
@@ -120,10 +123,13 @@ function checkoutUser(dispatch) {
         })
         .catch((err)=>{
             dispatch(DashboardActions.showLoading(false));
+            alert(err);
             console.log(err);
         });
     })
     .catch((err)=>{
+        dispatch(DashboardActions.showLoading(false));
+        alert(err);
         console.log(err);
     });
 }

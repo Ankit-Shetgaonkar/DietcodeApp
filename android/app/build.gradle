@@ -90,8 +90,8 @@ android {
         applicationId "com.dietcodeapp"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
-        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        versionCode 2
+        versionName "1.0.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
