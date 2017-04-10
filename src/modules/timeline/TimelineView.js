@@ -152,6 +152,7 @@ function checkinUser(dispatch) {
         });
     })
     .catch((err)=>{
+        dispatch(DashboardActions.showLoading(false));
         console.log(err);
     });
 }
@@ -210,10 +211,11 @@ async function createUser(token) {
 
 function scheduleCheckinNotification() {
     var notificationTime = new Date();
-    notificationTime.setHours(17, 34, 0);
-    console.log("gong to fcm")
+    notificationTime.setHours(9, 30, 0);
+    console.log("gong to fcm ",Platform);
     FCM.scheduleLocalNotification({
-        fire_date: notificationTime.toISOString(),
+        //fire_date: notificationTime.toISOString(),
+        fire_date: Platform.OS === 'ios'? notificationTime.toISOString() : notificationTime.getTime(),
         id: "checkinNotification",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
         body: "Good Morning. It's 9:30 AM. Please don't forget to checkin.",
         repeat_interval: "day"
@@ -221,6 +223,7 @@ function scheduleCheckinNotification() {
 }
 
 async function setCheckinNotification() {
+    FCM.cancelLocalNotification("checkinNotification")
     FCM.getScheduledLocalNotifications().then((notifs)=>{
         console.log("already notifications ", notifs);
         if (notifs.length > 0) {

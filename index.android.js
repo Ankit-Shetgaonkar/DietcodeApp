@@ -30,6 +30,7 @@ class DietcodeApp extends Component {
           if(notif.local_notification){
               //alert(notif.body)
               //this is a local notification
+              alert(notif.body)
             }
           if(notif.opened_from_tray){
               //app is open/resumed because user clicked banner
