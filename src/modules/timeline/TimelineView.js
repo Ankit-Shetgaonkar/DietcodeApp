@@ -74,7 +74,7 @@ function _getDayOfWeek(day) {
             return "Friday";
         case 6:
             return "Saturday";
-        case 7:
+        case 0:
             return "Sunday";
     }
 }
