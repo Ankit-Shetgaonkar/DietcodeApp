@@ -13,6 +13,9 @@ class DietcodeApp extends Component {
     this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
         console.log("ios notif",notif);
         // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
+        if (notif.fcm) {
+            alert(notif.fcm.body);
+        }
         if(notif.local_notification){
           //this is a local notification
           alert(notif.body)
