@@ -539,6 +539,7 @@ class TimelineView extends Component {
                         <View style={{backgroundColor:"#eee", width: 1, flex: 0.3}} />
                         <View style={{flexDirection:'column', backgroundColor: '#eee', justifyContent: 'center', height: 1, width: Dimensions.get('window').width}}>
                         </View>
+                    
                 </View>
                 <View style={{flex: .8, flexDirection:'column', backgroundColor: '#fff', justifyContent: 'center'}}>
                     <View style={{flex: 1, marginTop: (items.length > 0 ? (Platform.OS === 'ios' ? 24 : 8) : 8), marginBottom: 8}}>{items}</View>
