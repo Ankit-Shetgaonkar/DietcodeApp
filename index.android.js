@@ -44,45 +44,44 @@ class DietcodeApp extends Component {
                 alert(notif.body)
                 //this is a local notification
             }
-            if (notif.opened_from_tray) {
-                //app is open/resumed because user clicked banner
+            if(notif.opened_from_tray){
+              //app is open/resumed because user clicked banner
             }
-            if (Platform.OS === 'ios') {
-                //optional
-                //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
-                //This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
-                //notif._notificationType is available for iOS platfrom
-                switch (notif._notificationType) {
-                    case NotificationType.Remote:
-                        notif.finish(RemoteNotificationResult.NewData) //other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
-                        break;
-                    case NotificationType.NotificationResponse:
-                        notif.finish();
-                        break;
-                    case NotificationType.WillPresent:
-                        notif.finish(WillPresentNotificationResult.All) //other types available: WillPresentNotificationResult.None
-                        break;
-                }
+            if(Platform.OS ==='ios'){
+              //optional
+              //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
+              //This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
+              //notif._notificationType is available for iOS platfrom
+              switch(notif._notificationType){
+                case NotificationType.Remote:
+                  notif.finish(RemoteNotificationResult.NewData) //other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
+                  break;
+                case NotificationType.NotificationResponse:
+                  notif.finish();
+                  break;
+                case NotificationType.WillPresent:
+                  notif.finish(WillPresentNotificationResult.All) //other types available: WillPresentNotificationResult.None
+                  break;
+              }
             }
         });
-        this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
+         this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
             //console.log(token)
             //console.log("firebase token refreshed",token, "user data ", RealmDatabse.findUser()[0])
-            if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
-                if (typeof token != 'undefined') {
-                    officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS)
-                }
-            }
+          if (typeof RealmDatabse.findUser()[0] != 'undefined' && typeof RealmDatabse.findUser()[0].serverId !== 'undefined') {
+              if (typeof token != 'undefined') {
+                  officeApi.registerDevice(token, RealmDatabse.findUser()[0].serverId, Platform.OS)
+              }
+          }
         });
-    }
+  }
+  componentWillUnmount() {
+      // stop listening for events
+      this.notificationListener.remove();
+      this.refreshTokenListener.remove();
+  }
 
-    componentWillUnmount() {
-        // stop listening for events
-        this.notificationListener.remove();
-        this.refreshTokenListener.remove();
-    }
-
-    askAndroidLocationPermissions() {
+   askAndroidLocationPermissions() {
         PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(
             (status) => {
                 // Status of permission
@@ -96,7 +95,7 @@ class DietcodeApp extends Component {
                 // error occoured
                 console.log('SOME ERROR OCCOURED DURING THE CHECKING OF PERMISSIONS. ' + JSON.stringify(error));
             }
-        );
+            );
     }
 
     async getAndroidLocationPermissions() {
@@ -116,10 +115,7 @@ class DietcodeApp extends Component {
                     'Oh! Well',
                     'You may not be able to checkin/checkout, until you provide the permission to access your location, you can change this later in settings.',
                     [
-                        {
-                            text: 'OK', onPress: () => {
-                        }
-                        },
+                        { text: 'OK', onPress: () => { } },
                     ]
                 );
             }
@@ -129,36 +125,33 @@ class DietcodeApp extends Component {
                 'Oh! Snap',
                 'Some location services error occoured, try again later.',
                 [
-                    {
-                        text: 'OK', onPress: () => {
-                    }
-                    },
+                    { text: 'OK', onPress: () => { } },
                 ]
             );
         }
     }
 
-    navigateBack() {
-        const navigationState = store.getState().get('dashboardState');
-        const tabs = navigationState.get('tabs');
-        const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
-        const currentTab = navigationState.get(tabKey);
-        // if we are in the beginning of our tab stack
+  navigateBack() {
+    const navigationState = store.getState().get('dashboardState');
+    const tabs = navigationState.get('tabs');
+    const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
+    const currentTab = navigationState.get(tabKey);
+    // if we are in the beginning of our tab stack
 
-        if (currentTab.get('index') === 0) {
-            return false;
-        }
-        store.dispatch(NavigationStateActions.popRoute());
-        return true;
+    if (currentTab.get('index') === 0) {
+      return false;
     }
+    store.dispatch(NavigationStateActions.popRoute());
+    return true;
+  }
 
-    render() {
-        return (
-            <Provider store={store}>
-                <AppViewContainer />
-            </Provider>
-        );
-    }
+  render() {
+    return (
+      <Provider store={store}>
+        <AppViewContainer />
+      </Provider>
+    );
+  }
 }
 
 AppRegistry.registerComponent('DietcodeApp', () => DietcodeApp);

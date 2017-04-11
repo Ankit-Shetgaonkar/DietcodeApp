@@ -208,7 +208,8 @@ export function toogleEditModalCheckoutProgress() {
  * Returns e.g. '3:05 am'.
  */
 function _formatTime(hour, minute) {
-    return (hour < 13 ? hour : (hour - 12)) + ':' + (minute < 10 ? '0' + minute : minute) + " " + (hour < 13 ? 'am' : 'pm');
+    //alert('Test AM '+(hour < 13 ? 'am' : 'pm'))
+    return (hour < 13 ? hour : (hour - 12)) + ':' + (minute < 10 ? '0' + minute : minute) + " " + (hour < 12 ? 'am' : 'pm');
 }
 
 // Reducer

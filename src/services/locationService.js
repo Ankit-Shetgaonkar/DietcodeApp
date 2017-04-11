@@ -8,12 +8,12 @@ const officeLocation = {
     long: 73.8222992
 };
 
-const expectedRange = 200;
+const expectedRange = 200; // meters
 
 var locationServiceOptions = {
     enableHighAccuracy: Platform.OS === 'ios'? true:false,
     timeout: 5000,
-    maximumAge: 10000
+    maximumAge: 2000
 };
 
 function getDistanceBetween(locationOne, locationTwo) {

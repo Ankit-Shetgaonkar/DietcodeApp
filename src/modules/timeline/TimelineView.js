@@ -79,6 +79,49 @@ function _getDayOfWeek(day) {
     }
 }
 
+function _getHumanReadableTime(timeValue){
+        var timeStart = new Date(timeValue).getTime();
+        var timeEnd = new Date().getTime();
+        var hourDiff = timeEnd - timeStart; //in ms
+        var secDiff = hourDiff / 1000; //in s
+        var minDiff = hourDiff / 60 / 1000; //in minutes
+        var hDiff = hourDiff / 3600 / 1000; //in hours
+        var humanReadable = {};
+        humanReadable.hours = Math.floor(hDiff);
+        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
+            if(humanReadable.hours<0 || humanReadable.minutes<0)
+            {
+                return "0h : 0m ago";
+            }
+        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
+        return stringTime;
+    }
+
+async function _getLastCheckinCheckout(dispatch) {
+
+        await officeApi.getLastCheckinCheckout("checkin")
+            .then((resp) => {
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
+            });
+
+        await officeApi.getLastCheckinCheckout("checkout")
+            .then((resp) => {
+                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
+                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
+            });
+    }
+
 function checkinUser(dispatch) {
     dispatch(DashboardActions.showLoading(true));
     officeApi.checkinUser()
@@ -95,8 +138,13 @@ function checkinUser(dispatch) {
         console.log("schedule successful")
         officeApi.getUserTimeline()
         .then((resp)=>{
-            dispatch(DashboardActions.showLoading(false));
-            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+                _getLastCheckinCheckout(dispatch).then((resp)=>{
+                dispatch(DashboardActions.showLoading(false));
+                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+            }).catch((err)=>{
+                 dispatch(DashboardActions.showLoading(false));
+            });
+            
         })
         .catch((err)=>{
             dispatch(DashboardActions.showLoading(false));
@@ -118,8 +166,12 @@ function checkoutUser(dispatch) {
         dispatch(TimeLineStateActions.checkUserToggle());
         officeApi.getUserTimeline()
         .then((resp)=>{
-            dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
-            dispatch(DashboardActions.showLoading(false));
+                _getLastCheckinCheckout(dispatch).then((resp)=>{
+                dispatch(DashboardActions.showLoading(false));
+                dispatch(TimeLineStateActions.setTimelineData({data:resp.results}));
+            }).catch((err)=>{
+                 dispatch(DashboardActions.showLoading(false));
+            });
         })
         .catch((err)=>{
             dispatch(DashboardActions.showLoading(false));
@@ -229,7 +281,7 @@ class TimelineView extends Component {
             console.log("Cannot find authentication token: "+err);
         });
 
-        this._getLastCheckinCheckout(this.props.dispatch);
+        _getLastCheckinCheckout(this.props.dispatch);
     }
     
 
@@ -267,48 +319,73 @@ class TimelineView extends Component {
                                                 {
                                                     console.log("going to checkin checkout");
                                                      var current = new Date();
-                                                     
-                                                    if(!checkin){
-                                                      //  console.log("time is ",d.getHours(),":",d.getMinutes(),":",d.getSeconds());
-                                                        var earlyCheckinStart = new Date();
-                                                        earlyCheckinStart.setHours(0, 0, 0);
-                                                        var earlyCheckinEnd = new Date();
-                                                        earlyCheckinEnd.setHours(8, 59, 59);
+                                                     isUserValidLocation().then((isValid) => {
+                                                         if (isValid) {
+                                                             // user Within location range
+                                                             if(!checkin){
+                                                            //  console.log("time is ",d.getHours(),":",d.getMinutes(),":",d.getSeconds());
+                                                                var earlyCheckinStart = new Date();
+                                                                earlyCheckinStart.setHours(0, 0, 0);
+                                                                var earlyCheckinEnd = new Date();
+                                                                earlyCheckinEnd.setHours(8, 59, 59);
 
-                                                        if (current >=  earlyCheckinStart && current <= earlyCheckinEnd) {
-                                                            Alert.alert(
-                                                                'You are early!',
-                                                                'Are you sure you want to check-in',
-                                                                [
-                                                                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                                                                    {text: 'OK', onPress: () => checkinUser(dispatch)},
-                                                                ],
-                                                                { cancelable: false }
-                                                                )
-                                                        } else {
-                                                            checkinUser(dispatch);
-                                                        }
-                                                       }
-                                                    else{
-                                                        var earlyCheckoutStart = new Date();
-                                                        earlyCheckoutStart.setHours(9, 0, 0);
-                                                        var earlyCheckoutEnd = new Date();
-                                                        earlyCheckoutEnd.setHours(18, 0, 0);
-                                                        if (current >= earlyCheckoutStart && current <= earlyCheckoutEnd) {
-                                                            Alert.alert(
-                                                                'You are early!',
-                                                                'Are you sure you want to check-out',
-                                                                [
-                                                                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                                                                    {text: 'OK', onPress: () => checkoutUser(dispatch)},
-                                                                ],
-                                                                { cancelable: false }
-                                                                )
-                                                        } else {
-                                                            checkoutUser(dispatch);
-                                                        }
-                                                    }
-
+                                                                if (current >=  earlyCheckinStart && current <= earlyCheckinEnd) {
+                                                                    Alert.alert(
+                                                                        'You are early!',
+                                                                        'Are you sure you want to check-in',
+                                                                        [
+                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                            {text: 'OK', onPress: () => checkinUser(dispatch)},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                        )
+                                                                } else {
+                                                                    checkinUser(dispatch);
+                                                                }
+                                                            }
+                                                            else{
+                                                                var earlyCheckoutStart = new Date();
+                                                                earlyCheckoutStart.setHours(9, 0, 0);
+                                                                var earlyCheckoutEnd = new Date();
+                                                                earlyCheckoutEnd.setHours(18, 0, 0);
+                                                                if (current >= earlyCheckoutStart && current <= earlyCheckoutEnd) {
+                                                                    Alert.alert(
+                                                                        'You are early!',
+                                                                        'Are you sure you want to check-out',
+                                                                        [
+                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                            {text: 'OK', onPress: () => checkoutUser(dispatch)},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                        )
+                                                                } else {
+                                                                    checkoutUser(dispatch);
+                                                                }
+                                                            }
+                                                         } else {
+                                                             // user not within location range
+                                                             Alert.alert(
+                                                                        'Oh! Snap',
+                                                                        'You are not currently within office premises, please be within office premises to checkin/checkout or contact office manager.',
+                                                                        [
+                                                                            {text: 'OK', onPress: () => {}},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                    )
+                                                         }
+                                                     }).catch((error) => {
+                                                         // some type of error occoured
+                                                         let title = (error.code === 1 ? 'Permission Error' : 'Oh! Snap');
+                                                         let message = (error.code === 1 ? 'Please check location permissions granted to this app in settings.' : 'Some location based error occoured, try again later or contact office manager.');
+                                                         Alert.alert(
+                                                                        title,
+                                                                        message,
+                                                                        [
+                                                                            {text: 'OK', onPress: () => {}},
+                                                                        ],
+                                                                        { cancelable: false }
+                                                                    )
+                                                     });
                                                 }}
                                                     underlayColor="transparent"
                                 >
@@ -369,48 +446,6 @@ class TimelineView extends Component {
         );
     }
 
-    _getLastCheckinCheckout = (dispatch)=> {
-
-        officeApi.getLastCheckinCheckout("checkin")
-            .then((resp) => {
-                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? this._getHumanReadableTime(resp.results[0].createdAt) : "not found"));
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
-            });
-
-        officeApi.getLastCheckinCheckout("checkout")
-            .then((resp) => {
-                if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? this._getHumanReadableTime(resp.results[0].createdAt) : "not found"));
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-                dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
-            });
-    }
-
-    _getHumanReadableTime(timeValue){
-        var timeStart = new Date(timeValue).getTime();
-        var timeEnd = new Date().getTime();
-        var hourDiff = timeEnd - timeStart; //in ms
-        var secDiff = hourDiff / 1000; //in s
-        var minDiff = hourDiff / 60 / 1000; //in minutes
-        var hDiff = hourDiff / 3600 / 1000; //in hours
-        var humanReadable = {};
-        humanReadable.hours = Math.floor(hDiff);
-        humanReadable.minutes = minDiff - 60 * humanReadable.hours;
-            if(humanReadable.hours<0 || humanReadable.minutes<0)
-            {
-                return "0h : 0m ago";
-            }
-        let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
-        return stringTime;
-    }
 
     refactorData(data) {
         if (data.length > 0) {
