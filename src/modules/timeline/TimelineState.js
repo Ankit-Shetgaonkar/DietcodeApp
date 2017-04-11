@@ -8,7 +8,7 @@ export const TIMELINE_DATA = 'TimelineState/TIMELINE_DATA';
 export const SHOW_LOADING = 'TimelineState/SHOW_LOADING';
 
 const initialState = fromJS({
-    lastCheckin: "no-data",
+    lastCheckin: "--:--:--",
     errorMessage: "",
     checkin: false,
     lastCheckout: "no-data",

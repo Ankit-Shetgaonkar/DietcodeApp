@@ -79,7 +79,7 @@ function _getDayOfWeek(day) {
     }
 }
 
-function _getHumanReadableTime(timeValue){
+function _getHumanReadableTime(timeValue) {
         var timeStart = new Date(timeValue).getTime();
         var timeEnd = new Date().getTime();
         var hourDiff = timeEnd - timeStart; //in ms
@@ -95,14 +95,33 @@ function _getHumanReadableTime(timeValue){
             }
         let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
         return stringTime;
-    }
+}
+function formatAMPM(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = hours + ':' + minutes + ' ' + ampm;
+  return strTime;
+}
+
+function _getLocalTimeForUTC(dateTimeValue) {
+    var date = new Date(dateTimeValue);
+    console.log("hour ",date.getHours(), "time ",date.getMinutes(), " seconds", date.getSeconds());
+    console.log("formatted checkin ",formatAMPM(date), "date is ",date, "formatted ",date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear());
+    return  date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " "+formatAMPM(date);
+}
 
 async function _getLastCheckinCheckout(dispatch) {
 
         await officeApi.getLastCheckinCheckout("checkin")
             .then((resp) => {
                 if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                    //console.log("last checkin details from server ",resp.results[0].createdAt, "converted time ",_getLocalTimeForUTC(resp.results[0].createdAt));
+                    //dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getLocalTimeForUTC(resp.results[0].createdAt) : "--:--:--"));
                 }
             })
             .catch((err) => {
@@ -110,16 +129,16 @@ async function _getLastCheckinCheckout(dispatch) {
                 dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
             });
 
-        await officeApi.getLastCheckinCheckout("checkout")
+        /*await officeApi.getLastCheckinCheckout("checkout")
             .then((resp) => {
                 if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
+                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "--:--:--"));
                 }
             })
             .catch((err) => {
                 console.log(err);
                 dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
-            });
+            });*/
     }
 
 function checkinUser(dispatch) {
@@ -129,6 +148,7 @@ function checkinUser(dispatch) {
         dispatch(TimeLineStateActions.checkUserToggle());
         console.log("time slot", new Date().getTime());
         console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
+        console.log("checkin response ", JSON.stringify(resp));
         FCM.scheduleLocalNotification({
             fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
             // fire_date: new Date().getTime() + (20 * 1000),
@@ -251,6 +271,7 @@ class TimelineView extends Component {
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                     officeApi.setUserName(RealmDatabse.findUser()[0]);
+                    _getLastCheckinCheckout(this.props.dispatch);
                     //alert(RealmDatabse.findUser()[0].serverId+" SERVER ID");
                     officeApi.getUserTimeline()
                         .then((resp)=>{
@@ -281,7 +302,6 @@ class TimelineView extends Component {
             console.log("Cannot find authentication token: "+err);
         });
 
-        _getLastCheckinCheckout(this.props.dispatch);
     }
     
 
@@ -396,18 +416,16 @@ class TimelineView extends Component {
                             </View>
 
                         </View>
-                        <View style={{ flex: 0.4, flexDirection: "row" }}>
+                        <View style={{ flex: 0.4, flexDirection: "row"}}>
 
-                            <View style={{ alignItems: "center", margin: 20 }}>
-                                <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
-                                    Checkin</Text>
-                                <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckin}</Text>
+                            <View style={{  flex: 1, flexDirection: "row", alignItems: "center", margin: 20 }}>
+                                <Text style={{ backgroundColor: "transparent", fontSize: 14, color: "#ffffff" }}>Last Checkin: </Text>
+                                <Text style={{ backgroundColor: "transparent", fontSize: 14, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin}</Text>
                             </View>
-                            <View style={{ alignItems: "center", margin: 20 }}>
-                                <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
-                                    Checkout</Text>
+                            {/*<View style={{ alignItems: "center", margin: 20 }}>
+                                <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last Checkout</Text>
                                 <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckout === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckout}</Text>
-                            </View>
+                            </View>*/}
                         </View>
                     </Image>
 
