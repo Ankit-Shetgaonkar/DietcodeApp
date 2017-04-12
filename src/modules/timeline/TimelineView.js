@@ -142,7 +142,6 @@ async function _getLastCheckinCheckout(dispatch) {
     }
 
 function checkinUser(dispatch) {
-    dispatch(DashboardActions.showLoading(true));
     officeApi.checkinUser()
     .then((resp)=>{
         dispatch(TimeLineStateActions.checkUserToggle());
@@ -338,6 +337,7 @@ class TimelineView extends Component {
                                 <TouchableHighlight onPress={function()
                                                 {
                                                     console.log("going to checkin checkout");
+                                                     dispatch(DashboardActions.showLoading(true));
                                                      var current = new Date();
                                                      isUserValidLocation().then((isValid) => {
                                                          if (isValid) {
@@ -384,6 +384,7 @@ class TimelineView extends Component {
                                                             }
                                                          } else {
                                                              // user not within location range
+                                                             dispatch(DashboardActions.showLoading(false));
                                                              Alert.alert(
                                                                         'Oh! Snap',
                                                                         'You are not currently within office premises, please be within office premises to checkin/checkout or contact office manager.',
@@ -395,6 +396,7 @@ class TimelineView extends Component {
                                                          }
                                                      }).catch((error) => {
                                                          // some type of error occoured
+                                                         dispatch(DashboardActions.showLoading(false));
                                                          let title = (error.code === 1 ? 'Permission Error' : 'Oh! Snap');
                                                          let message = (error.code === 1 ? 'Please check location permissions granted to this app in settings.' : 'Some location based error occoured, try again later or contact office manager.');
                                                          Alert.alert(
