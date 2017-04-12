@@ -442,7 +442,6 @@ class TimelineView extends Component {
                     verticalOrientation={Platform.OS === 'ios' ? "down" : "up"}
                     offsetX={30}
                     onPress={() => {
-                        console.log("OH FUCK!!!");
                     }}
                     offsetY={Platform.OS === 'ios' ? actionButtonY : 20}
                 >
