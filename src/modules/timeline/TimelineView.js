@@ -354,7 +354,7 @@ class TimelineView extends Component {
                                                                         'You are early!',
                                                                         'Are you sure you want to check-in',
                                                                         [
-                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                            {text: 'Cancel', onPress: () =>  dispatch(DashboardActions.showLoading(false)), style: 'cancel'},
                                                                             {text: 'OK', onPress: () => checkinUser(dispatch)},
                                                                         ],
                                                                         { cancelable: false }
@@ -373,7 +373,7 @@ class TimelineView extends Component {
                                                                         'You are early!',
                                                                         'Are you sure you want to check-out',
                                                                         [
-                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                                                                            {text: 'Cancel', onPress: () => dispatch(DashboardActions.showLoading(false)), style: 'cancel'},
                                                                             {text: 'OK', onPress: () => checkoutUser(dispatch)},
                                                                         ],
                                                                         { cancelable: false }
