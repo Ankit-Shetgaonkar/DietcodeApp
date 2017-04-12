@@ -241,7 +241,7 @@ function scheduleCheckinNotification() {
         //fire_date: notificationTime.toISOString(),
         fire_date: Platform.OS === 'ios'? notificationTime.toISOString() : notificationTime.getTime(),
         id: "checkinNotification",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
-        body: "Good Morning. It's 9:30 AM. Please don't forget to checkin.",
+        body: "It's 9:30 AM. Please checkin.",
         repeat_interval: "day"
     });
 }
