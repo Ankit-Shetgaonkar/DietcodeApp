@@ -74,12 +74,12 @@ function _getDayOfWeek(day) {
             return "Friday";
         case 6:
             return "Saturday";
-        case 7:
+        case 0:
             return "Sunday";
     }
 }
 
-function _getHumanReadableTime(timeValue) {
+function _getHumanReadableTime(timeValue){
         var timeStart = new Date(timeValue).getTime();
         var timeEnd = new Date().getTime();
         var hourDiff = timeEnd - timeStart; //in ms
@@ -150,7 +150,7 @@ function checkinUser(dispatch) {
         console.log("checkin response ", JSON.stringify(resp));
         FCM.scheduleLocalNotification({
             fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
-            // fire_date: new Date().getTime() + (20 * 1000),
+             //fire_date: new Date().getTime() + (20 * 1000),
             id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
             body: "It has been 9 hours since you checkedin. Please check out before leaving."
         });
@@ -233,6 +233,40 @@ async function createUser(token) {
     }
 }
 
+function scheduleCheckinNotification() {
+    var notificationTime = new Date();
+    notificationTime.setHours(9, 30, 0);
+    console.log("gong to fcm ",Platform);
+    FCM.scheduleLocalNotification({
+        //fire_date: notificationTime.toISOString(),
+        fire_date: Platform.OS === 'ios'? notificationTime.toISOString() : notificationTime.getTime(),
+        id: "checkinNotification",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
+        body: "Good Morning. It's 9:30 AM. Please don't forget to checkin.",
+        repeat_interval: "day"
+    });
+}
+
+async function setCheckinNotification() {
+    FCM.cancelLocalNotification("checkinNotification")
+    FCM.getScheduledLocalNotifications().then((notifs)=>{
+        console.log("already notifications ", notifs);
+        if (notifs.length > 0) {
+            var existing = notifs.filter((notif) => {
+               return notif.id == "checkinNotification";
+            });
+            if (existing.length == 0) {
+                console.log("successfully scheduled notification");
+                scheduleCheckinNotification()
+            }
+        } else {
+            console.log("successfully scheduled notification1");
+            scheduleCheckinNotification()
+        }
+    }).catch((err)=>{
+        console.log("notifications fetching error ",err);
+    });
+}
+
 var restructuredData = [];
 var checkinState = false;
 var toggleRenderRow = false;
@@ -267,6 +301,7 @@ class TimelineView extends Component {
 
     
     componentDidMount(){
+        setCheckinNotification()
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                     officeApi.setUserName(RealmDatabse.findUser()[0]);
