@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Api from '../../office-server/OfficeApi';
 import * as officeApi from '../../office-server/OfficeApi';
 import * as LeavesHistoryStateActions from './LeavesHistoryState'
+import * as DashboardActions from '../dashboard/DashboardState';
 
 function formatDate(serverDate) {
     let components = serverDate.split("-");
@@ -51,6 +52,7 @@ class LeavesHistoryView extends Component {
     }*/
     componentDidMount() {
         this.props.dispatch(LeavesHistoryStateActions.setLeaveHistoryData({data:[]}));
+        this.props.dispatch(DashboardActions.showLoading(true));
          officeApi.getLeaveHistory()
         .then((resp)=>{
             //console.log("leave history response ",resp, "count ", resp.result.length)
@@ -70,8 +72,10 @@ class LeavesHistoryView extends Component {
                 leavesData = resp.result;
             }
             this.props.dispatch(LeavesHistoryStateActions.setLeaveHistoryData({data:leavesData}));
+            this.props.dispatch(DashboardActions.showLoading(false));
         }).catch((err) => {
             alert("Network error. Try after some time");
+            this.props.dispatch(DashboardActions.showLoading(false));
             console.log(err);
         });
     }
