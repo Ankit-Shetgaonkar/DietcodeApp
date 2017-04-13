@@ -65,7 +65,7 @@ class SettingsView extends Component {
                                 Checkin Notification Alert Time:
                             </Text>
                             <View style={{height: 50, marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width-32), borderRadius: 4, marginBottom: 8}}>
-                                <TouchableHighlight style={{flex: 1, width: (Dimensions.get('window').width-32), borderRadius: 4}} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => {Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showPicker()}}>
+                                <TouchableHighlight style={{flex: 1, width: (Dimensions.get('window').width-32), borderRadius: 4}} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => {Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showAndroidPicker()}}>
                                     <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'center'}}>
                                         <Icon size={26} color='#000000' name={"clock-o"} style={styles.iconStyle} />
                                         <Text style={styles.textInput_TextStyle}>{(dateToDisplay.getHours() > 12 ? (dateToDisplay.getHours() - 12) : dateToDisplay.getHours()) + ':' + dateToDisplay.getMinutes() + ' ' + (dateToDisplay.getHours() > 12 ? 'pm' : 'am')}</Text>
@@ -99,7 +99,7 @@ class SettingsView extends Component {
   showAndroidPicker = async (options) => {
       let date = new Date(this.props.settingsState.time);
       this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
-      const {action, hour, minute} = await TimePickerAndroid({
+      const {action, hour, minute} = await TimePickerAndroid.open({
           hour: date.getHours(),
           minute: date.getMinutes(),
           is24Hour: false,
@@ -108,9 +108,9 @@ class SettingsView extends Component {
           var updatedDate = new Date();
           updatedDate.setHours(hour);
           updatedDate.setMinutes(minute);
-          this.props.dispatch(SettingsView.updateDateTime(updatedDate));
+          this.props.dispatch(SettingsState.updateDateTime(updatedDate));
       } else {
-          this.props.dispatch(SettingsView.showPickerView(!this.settingsState.showPicker));
+          this.props.dispatch(SettingsState.showPickerView(!this.settingsState.showPicker));
       }
   }
 }
