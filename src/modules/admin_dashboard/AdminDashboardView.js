@@ -98,7 +98,12 @@ class AdminDashboardView extends Component {
 
 
                         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                            <Image style={[styles.circularImage]} source={{ uri: this.props.adminDashboardState.editTimingData.image }} />
+                            {this.props.adminDashboardState.editTimingData.image !== 'http://dietco.de' &&
+                                <Image style={[styles.circularImage]} source={{ uri: this.props.adminDashboardState.editTimingData.image }} />
+                            }
+                            {this.props.adminDashboardState.editTimingData.image === 'http://dietco.de' &&
+                                <Image style={[styles.circularImage]} source={require('../../../images/default_pro.png')} />
+                            }
                             <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{this.props.adminDashboardState.editTimingData.name}</Text>
                         </View>
 
@@ -310,7 +315,7 @@ class AdminDashboardView extends Component {
                 date.setHours(hour, minute, 0);
 
                 //if hours are greater no need to check minutes
-                if (hour <  this.props.adminDashboardState.editModalCheckinHour) {
+                if (hour < this.props.adminDashboardState.editModalCheckinHour) {
                     alert('Checkout Time cannot be before Checkin Time')
                     return;
 
@@ -318,7 +323,7 @@ class AdminDashboardView extends Component {
 
                 //if hours are same, check minutes
                 if (hour === this.props.adminDashboardState.editModalCheckinHour) {
-                    alert('gaan tuji'+minute)
+                    alert('gaan tuji' + minute)
                     if (minute < this.props.adminDashboardState.editModalCheckinMins) {
                         alert('Checkout Time cannot be before Checkin Time')
                         return;
@@ -465,7 +470,13 @@ class AdminDashboardView extends Component {
                             }}>
                                 <View style={{ flex: 1, flexDirection: 'row' }}>
                                     <View style={{ flex: .2, height: 70, flexDirection: 'column', backgroundColor: '#fff', justifyContent: 'center', alignItems: "center" }}>
-                                        <Image style={styles.image} source={{ uri: rowData.image }} />
+                                        {
+                                            rowData.image !== 'http://dietco.de' &&
+                                            <Image style={styles.image} source={{ uri: rowData.image }} />
+                                        }
+                                        {rowData.image === 'http://dietco.de' &&
+                                            <Image style={styles.image} source={require('../../../images/default_pro.png')} />
+                                        }
                                     </View>
                                     <View style={{ flex: .3, height: 70, flexDirection: 'column', backgroundColor: '#fff', justifyContent: 'center' }}>
                                         <Text style={{ backgroundColor: "transparent", color: "#999", fontSize: 12 }}> {rowData.name} </Text>
@@ -572,7 +583,7 @@ class AdminDashboardView extends Component {
                         <Button
                             onPress={() => {
                                 //this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
-                                
+
 
                                 //if hours are greater no need to check minutes
                                 if (this.props.adminDashboardState.filterDate.getHours() < this.props.adminDashboardState.editModalCheckinHour) {
@@ -592,7 +603,7 @@ class AdminDashboardView extends Component {
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutPicker());
                                 this.props.dispatch(AdminDashboardState.toogleEditModalCheckoutProgress());
 
-                                
+
                                 officeApi.adminUpdateCheckinCheckoutTime(this.props.adminDashboardState.editTimingData.userId,
                                     this.props.adminDashboardState.editTimingData.timeline.checkoutId, 'checkout',
                                     this.props.adminDashboardState.filterDate).then((resp) => {
