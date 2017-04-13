@@ -8,7 +8,8 @@ import {
     ActivityIndicator,
     StyleSheet, 
     Platform,
-    Dimensions
+    Dimensions,
+    ScrollView
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -45,6 +46,7 @@ class ProfileView extends Component {
         let userObj = RealmDatabse.findUser()[0];
         return (
             <View style={styles.baseContainer}>
+                <ScrollView style={styles.scrollView} horizontal={false} contentContainerStyle={styles.contentContainerStyle}>
                 <LinearGradient
                     start={{x: 0.0, y: 0.0}}
                     end={{x: 1.0, y: 1.0}}
@@ -101,6 +103,7 @@ class ProfileView extends Component {
                             </View>
                         </ View>
                     </LinearGradient>
+                    </ ScrollView>
             </View>
         );
     }
@@ -208,6 +211,14 @@ const styles = StyleSheet.create({
             backgroundColor:"transparent",
             fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto',
             alignSelf: 'center'
+        },
+        scrollView: {
+            backgroundColor: '#000000',
+            width: Dimensions.get('window').width
+        },
+        contentContainerStyle:{
+            flex: 1,
+            backgroundColor: 'transparent'
         }
     });
 
