@@ -428,11 +428,14 @@ class TimelineView extends Component {
                     }}
                     offsetY={Platform.OS === 'ios' ? actionButtonY : 20}
                 >
-                    <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
+                    <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves" 
                                        onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
                         <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
+                        <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#ff6600' title="About Us" onPress={() => {this.props.pushRoute({key: 'AboutUsTab', title: 'About Us'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
                     {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
@@ -706,6 +709,9 @@ const styles = StyleSheet.create({
         borderRadius: 20 / 2,
         borderWidth: 2,
         borderColor: 'red'
+    },
+    actionButtonIcon:{
+    
     }
 });
 
