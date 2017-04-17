@@ -124,7 +124,7 @@ const _slackAuthRespose = (dispatcher, accessToken) => {
         .then((resp) => {
             console.log("slack data");
             console.log(resp);
-            RealmDatabase.saveUser(new UserModel(resp.user.name,resp.user.email,accessToken,resp.team.name,resp.user.id,resp.user.image_192,"",""))
+            RealmDatabase.saveUser(new UserModel(resp.user.name,resp.user.email,accessToken,resp.team.name,resp.user.id,resp.user.image_192,"","",""))
                 .then((response) => {
                     dispatcher(LoginState.loginSuccess("Welcome to Dietcode"));
                     dispatcher(LoginState.toggleProgress(false));

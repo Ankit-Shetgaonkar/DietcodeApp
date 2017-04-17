@@ -14,13 +14,16 @@ import {
     TimePickerAndroid,
     TouchableHighlight,
     Modal,
-    Button
+    Button,
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import RealmDatabse from '../../database/RealmDatabase';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Kohana } from 'react-native-textinput-effects';
+import { Fumi } from 'react-native-textinput-effects';
 import * as SettingsState from './SettingsState';
+import * as OfficeAPIs from '../../office-server/OfficeApi';
 
 var isModalVisible = false
 
@@ -35,19 +38,47 @@ class SettingsView extends Component {
 
     static propTypes = {
         settingsState: PropTypes.shape({
-            showPicker: PropTypes.bool.isRequired
+            showPicker: PropTypes.bool.isRequired,
+            officeLocation: PropTypes.shape({
+                latitude: PropTypes.number.isRequired,
+                longitude: PropTypes.number.isRequired
+            }).isRequired,
+            activityIndicatorAnimating: PropTypes.bool.isRequired
         }).isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     componentDidMount() {
         // called when the component is mounted
+        this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
+        OfficeAPIs.fetchOfficeLocationAPI().then((response) => {
+            //console.log('RESPONSE API: ' + JSON.stringify(response.results[0]));
+            this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
+            if (typeof response != 'undefined') {
+                this.props.dispatch(SettingsState.updateOfficeLocationLatitude(Number(response.results[0].latitude)));
+                this.props.dispatch(SettingsState.updateOfficeLocationLongitude(Number(response.results[0].longitude)));
+                let userObj = RealmDatabse.findUser()[0];
+                let newObject = {
+                    ...userObj,
+                    officaLocationID:response.results[0].id
+                };
+                RealmDatabse.saveUser(newObject);
+                OfficeAPIs.setUserName(newObject);
+            } else {
+                this.props.dispatch(SettingsState.updateOfficeLocationLatitude(this.props.settingsState.officeLocation.latitude));
+                this.props.dispatch(SettingsState.updateOfficeLocationLongitude(this.props.settingsState.officeLocation.longitude));
+            }
+        }).catch((error) => {
+            this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
+            this.props.dispatch(SettingsState.updateOfficeLocationLatitude(this.props.settingsState.officeLocation.latitude));
+            this.props.dispatch(SettingsState.updateOfficeLocationLongitude(this.props.settingsState.officeLocation.longitude));
+        });
     }
 
     render() {
-        console.log('PROPS: ' + JSON.stringify(this.props) + ' TIME: ' + JSON.stringify((new Date((new Date().getFullYear()), (new Date().getMonth()), (new Date().getDate()), 0, 0, 0, 0))));
+        //console.log('PROPS: ' + JSON.stringify(this.props) + ' TIME: ' + JSON.stringify((new Date((new Date().getFullYear()), (new Date().getMonth()), (new Date().getDate()), 0, 0, 0, 0))));
         let dateToDisplay = new Date(this.props.settingsState.time);
-        console.log('dateToDisplay: ' + dateToDisplay.getHours());
+        let userRole = (RealmDatabse.findUser()[0]).role;
         return (
             <LinearGradient 
                 style={styles.linearGradient} 
@@ -73,8 +104,20 @@ class SettingsView extends Component {
                                 </TouchableHighlight>
                             </View>
                             <Text style={styles.subHeadingText}>
-                                Office Co-ordinates:
+                                Office Location:
                             </Text>
+                            <View style={{marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width-32), borderRadius: 4, marginBottom: 8}}>
+                                <ActivityIndicator style={styles.activityIndicatorStyle} hidesWhenStopped={true} animating={this.props.settingsState.activityIndicatorAnimating} size={'large'} color ={'white'} />
+                                <View style={{flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'flex-start', height: 50, justifyContent: 'center'}}>
+                                    <Icon size={26} color='#000000' name={"map-marker"} style={styles.iconStyle} />
+                                    <Text style={styles.labelTextStyle}>{'Co-ordinates'}</Text>
+                                </View>
+                                <View style={{backgroundColor:'transparent', width: (Dimensions.get('window').width - 52), alignItems:'center', marginLeft: 8, marginRight: 8, marginBottom: 4}} pointerEvents={userRole !== 'user' && this.props.settingsState.activityIndicatorAnimating === false ? 'auto' : 'none'}>
+                                    <Fumi style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Latitude'} value={this.props.settingsState.officeLocation.latitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(latitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLatitude(Number(latitude)))}}/>
+                                    <Fumi style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Longitude'} value={this.props.settingsState.officeLocation.longitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(longitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLongitude(Number(longitude)))}}/>
+                                </View>
+                                {this.DisplaySaveButton(userRole)}
+                            </View>
                             <Modal animationType={'slide'} visible={Platform.OS === 'ios' ? this.props.settingsState.showPicker : false} transparent={true} onRequestClose={() => {console.log('DID CLOSE MODAL BY CLICKING DONE')}}>
                                 <View style={{flex:1, backgroundColor:'transparent'}}>
                                 </View>
@@ -90,6 +133,35 @@ class SettingsView extends Component {
                 </View>
             </ LinearGradient>
         );
+    }
+
+    updateOfficeCoordinates() {
+        let ordinates = {
+            latitude: this.props.settingsState.officeLocation.latitude,
+            longitude: this.props.settingsState.officeLocation.longitude
+        }
+        this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
+        OfficeAPIs.updateNewOfficeLocation(ordinates).then((response) => {
+            this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
+            Alert.alert(
+                        'Location Updated',
+                        'The new office location has been updated.',
+                        [
+                            {text: 'OK', onPress: () => {}}
+                        ],
+                        { cancelable: false }
+                        )
+        }).catch((error) => {
+            this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
+            Alert.alert(
+                        'Location Error',
+                        'The new office location could not be updated try again later.',
+                        [
+                            {text: 'OK', onPress: () => {}}
+                        ],
+                        { cancelable: false }
+                        )
+        })
     }
 
   updateTime(time) {
@@ -113,6 +185,27 @@ class SettingsView extends Component {
           this.props.dispatch(SettingsState.showPickerView(!this.settingsState.showPicker));
       }
   }
+
+  DisplaySaveButton = (params) => {
+      //console.log('PARAMs: '+ JSON.stringify(params))
+    if (params !== 'user') {
+        return (
+            <View style={{backgroundColor:'transparent', flexDirection:'row', height: 40, justifyContent: 'center', alignItems:'flex-end'}}>
+                <View style={{ backgroundColor: 'transparent', flex: 1, justifyContent: 'center', alignItems:'center'}}>
+                    <Text style={styles.smallText}>
+                        The entered data will not be updated, on server until you press save.
+                    </Text>
+                </ View>
+                <View style={{ backgroundColor: 'transparent', borderRadius: 2}}>
+                    <Button title={'Save'} accessibilityLabel={'Save specified office location.'} color={'#000080'} onPress={() => {this.updateOfficeCoordinates()}}/>
+                </View>
+            </View>
+        );
+    } else {
+        return null;
+    }
+}
+
 }
 
 const styles = StyleSheet.create({
@@ -182,7 +275,29 @@ const styles = StyleSheet.create({
             marginLeft: 16,
             marginRight: 8,
             backgroundColor: 'transparent'
-        }
+        },
+    labelTextStyle: {
+            marginTop: 14,
+            textAlign: 'center',
+            color: '#000000',
+            fontSize: 16,
+            backgroundColor:"transparent",
+            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+    },
+    activityIndicatorStyle: {
+        position: 'absolute',
+        left: (Dimensions.get('window').width - 32)/2 - 15,
+        top: 77 - 15
+    },
+    smallText: {
+            marginLeft: 8,
+            marginBottom: 8,
+            textAlign: 'left',
+            color: '#000000',
+            fontSize: 10,
+            backgroundColor:"transparent",
+            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+    },
 });
 
 export default SettingsView;
