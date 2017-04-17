@@ -3,7 +3,7 @@ import store from './src/redux/store';
 import AppViewContainer from './src/modules/AppViewContainer';
 
 import React, {Component} from 'react';
-import {AppRegistry, Platform,Alert} from 'react-native';
+import {AppState, AppRegistry, Platform,Alert} from 'react-native';
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 import RealmDatabse from './src/database/RealmDatabase';
 import * as officeApi from './src/office-server/OfficeApi';
@@ -11,22 +11,37 @@ import * as officeApi from './src/office-server/OfficeApi';
 class DietcodeApp extends Component {
   componentDidMount() {
     this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
-        console.log("ios notif",notif);
+        console.log("ios notification",JSON.stringify(notif));
+        console.log("payload ",notif.notification)
         // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
         if (notif.fcm) {
             Alert.alert(
                 notif.fcm.title,
                 notif.fcm.body,
                 [
-                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                     {text: 'OK', onPress: () => console.log('Ok Pressed')},
                 ],
                 { cancelable: false }
-            )
+            );
+        } else if (notif.aps && notif.aps.alert && !notif.opened_from_tray) {
+              console.log("push notificaiton else")
+              if (AppState.currentState === 'active') {
+                Alert.alert(
+                    notif.aps.alert.title,
+                    notif.aps.alert.body,
+                    [
+                        {text: 'OK', onPress: () => console.log('Ok Pressed')},
+                    ],
+                    { cancelable: false }
+                );
+              }
         }
-        if(notif.local_notification){
+        if(notif.local_notification && !notif.opened_from_tray){
           //this is a local notification
-          alert(notif.body)
+          console.log("local notification if1")
+          if (AppState.currentState === 'active') {
+            alert(notif.body)
+          }
         }
         if(notif.opened_from_tray){
           //app is open/resumed because user clicked banner

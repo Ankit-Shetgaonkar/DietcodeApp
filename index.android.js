@@ -3,7 +3,7 @@ import {Provider} from 'react-redux';
 import store from './src/redux/store';
 import AppViewContainer from './src/modules/AppViewContainer';
 import React, {Component} from 'react';
-import {AppRegistry, BackAndroid, Platform, PermissionsAndroid,Alert} from 'react-native';
+import {AppState, AppRegistry, BackAndroid, Platform, PermissionsAndroid,Alert} from 'react-native';
 import * as NavigationStateActions from './src/modules/dashboard/DashboardState';
 import FCM, {
     FCMEvent,
@@ -29,7 +29,8 @@ class DietcodeApp extends Component {
         });
         this.notificationListener = FCM.on(FCMEvent.Notification, async(notif) => {
             // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
-            if (notif.fcm) {
+            if (notif.fcm && (notif.fcm.title || notif.fcm.body)) {
+                console.log("going to show fcm notification android ",notif);
                 Alert.alert(
                     notif.fcm.title,
                     notif.fcm.body,
@@ -41,7 +42,10 @@ class DietcodeApp extends Component {
                 )
             }
             if (notif.local_notification) {
-                alert(notif.body)
+                if (AppState.currentState === 'active') {
+                    console.log("going to show local notification android");
+                    alert(notif.body)
+                }
                 //this is a local notification
             }
             if(notif.opened_from_tray){

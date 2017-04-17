@@ -49,9 +49,9 @@
                           annotation:annotation];
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+/*- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
      [RNFIRMessaging willPresentNotification:notification withCompletionHandler:completionHandler];
-  }
+  }*/
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler {
      [RNFIRMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
