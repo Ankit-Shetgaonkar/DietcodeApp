@@ -46,7 +46,7 @@ class ProfileView extends Component {
         let userObj = RealmDatabse.findUser()[0];
         return (
             <View style={styles.baseContainer}>
-                <ScrollView style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} bounces={false} contentContainerStyle={styles.scrollviewContentContainerStyle}>
+                {/*<ScrollView style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} bounces={false} contentContainerStyle={styles.scrollviewContentContainerStyle}>*/}
                     <LinearGradient
                         start={{x: 0.0, y: 0.0}}
                         end={{x: 1.0, y: 1.0}}
@@ -60,7 +60,7 @@ class ProfileView extends Component {
                             </ View>
                         </LinearGradient>
 
-                        <LinearGradient
+                        {/*<LinearGradient
                         start={{x: 0.0, y: 0.0}}
                         end={{x: 1.0, y: 1.0}}
                         style={styles.linearGradient} 
@@ -102,8 +102,8 @@ class ProfileView extends Component {
                                     </ AnimatedCircularProgress>
                                 </View>
                             </ View>
-                        </LinearGradient>
-                    </ ScrollView>
+                        </LinearGradient>*/}
+                    {/*</ ScrollView>*/}
             </View>
         );
     }
@@ -178,7 +178,8 @@ const styles = StyleSheet.create({
                 height: 0
             },
             shadowOpacity: 0.7,
-            backgroundColor: 'transparent'
+            backgroundColor: 'transparent',
+            flex: 1
         },
         iconStyle: {
             alignSelf:"center",
