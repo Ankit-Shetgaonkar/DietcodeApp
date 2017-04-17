@@ -485,13 +485,13 @@ class TimelineView extends Component {
                     offsetY={Platform.OS === 'ios' ? actionButtonY : 20}
                 >
                     <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                       onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
+                                      textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText} onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
                         <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText} onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
                         <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
                     </ActionButton.Item>
-                    {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" onPress={() => {
+                    {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText} onPress={() => {
                         this.props.pushRoute({key: 'AdminDashboardTab', title: 'Admin Dashboard'})
 
                     }}>
@@ -762,6 +762,13 @@ const styles = StyleSheet.create({
         borderRadius: 20 / 2,
         borderWidth: 2,
         borderColor: 'red'
+    },
+      actionButtonText: {
+        color: 'white',
+    },
+    actionButtonContainerText: {
+        backgroundColor: '#409fbf',
+        borderColor: '#409fbf' 
     }
 });
 
