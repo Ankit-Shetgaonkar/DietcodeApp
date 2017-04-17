@@ -8,7 +8,8 @@ import {
     ActivityIndicator,
     StyleSheet, 
     Platform,
-    Dimensions
+    Dimensions,
+    ScrollView
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -45,62 +46,64 @@ class ProfileView extends Component {
         let userObj = RealmDatabse.findUser()[0];
         return (
             <View style={styles.baseContainer}>
-                <LinearGradient
-                    start={{x: 0.0, y: 0.0}}
-                    end={{x: 1.0, y: 1.0}}
-                    style={styles.linearGradientShadow} 
-                    colors={['#48E2FF', '#508FF5', '#5933EA']} 
-                    locations={[0.0, 0.5, 1.0]}>
-                        <View style={styles.topContainer}>
-                            <Image style={ styles.image } source={{ uri: userObj.image_link }}/>
-                            <Text style={styles.headingText}>{userObj.name}</ Text>
-                            <Text style={styles.descriptionText}>{userObj.email}</ Text>
-                        </ View>
-                    </LinearGradient>
-
+                <ScrollView style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} bounces={false} contentContainerStyle={styles.scrollviewContentContainerStyle}>
                     <LinearGradient
-                    start={{x: 0.0, y: 0.0}}
-                    end={{x: 1.0, y: 1.0}}
-                    style={styles.linearGradient} 
-                    colors={['#48E2FF', '#508FF5', '#5933EA']} 
-                    locations={[0.0, 0.5, 1.0]}>
-                        <View style={styles.bottomContainer}>
-                            <View style={styles.rowContainer}>
-                                    <View style={styles.holderContainer}>
-                                        <Icon size={15} color='#ff1493' name={"circle-o"} style={styles.iconStyle} />
-                                        <Text style={styles.baseText}>{0}</Text>
-                                        <Text style={styles.baseText}>{devReady}</Text>
-                                    </View>
-                                    <View style={styles.holderContainer}>
-                                        <Icon size={15} color='#ff8c00' name={"circle-o"} style={styles.iconStyle} />
-                                        <Text style={styles.baseText}>{0}</Text>
-                                        <Text style={styles.baseText}>{inProgress}</Text>
-                                    </View>
-                                    <View style={styles.holderContainer}>
-                                        <Icon size={15} color='#008000' name={"circle-o"} style={styles.iconStyle} />
-                                        <Text style={styles.baseText}>{0}</Text>
-                                        <Text style={styles.baseText}>{completed}</Text>
-                                    </View>
-                            </View>
-                            <View style={styles.baseContainer}> 
-                                <AnimatedCircularProgress
-                                    style={{marginTop:20, alignItems:'center'}}
-                                    size={200}
-                                    width={4}
-                                    fill={80}
-                                    tintColor="#00e0ff"
-                                    backgroundColor="#3d5875">
-                                    {
-                                        () => (
-                                        <Text style={styles.progressIndicatorText}>
-                                            80%
-                                        </Text>
-                                        )
-                                    }
-                                </ AnimatedCircularProgress>
-                            </View>
-                        </ View>
-                    </LinearGradient>
+                        start={{x: 0.0, y: 0.0}}
+                        end={{x: 1.0, y: 1.0}}
+                        style={styles.linearGradientShadow} 
+                        colors={['#48E2FF', '#508FF5', '#5933EA']} 
+                        locations={[0.0, 0.5, 1.0]}>
+                            <View style={styles.topContainer}>
+                                <Image style={ styles.image } source={{ uri: userObj.image_link }}/>
+                                <Text style={styles.headingText}>{userObj.name}</ Text>
+                                <Text style={styles.descriptionText}>{userObj.email}</ Text>
+                            </ View>
+                        </LinearGradient>
+
+                        <LinearGradient
+                        start={{x: 0.0, y: 0.0}}
+                        end={{x: 1.0, y: 1.0}}
+                        style={styles.linearGradient} 
+                        colors={['#48E2FF', '#508FF5', '#5933EA']} 
+                        locations={[0.0, 0.5, 1.0]}>
+                            <View style={styles.bottomContainer}>
+                                <View style={styles.rowContainer}>
+                                        <View style={styles.holderContainer}>
+                                            <Icon size={15} color='#ff1493' name={"circle-o"} style={styles.iconStyle} />
+                                            <Text style={styles.baseText}>{0}</Text>
+                                            <Text style={styles.baseText}>{devReady}</Text>
+                                        </View>
+                                        <View style={styles.holderContainer}>
+                                            <Icon size={15} color='#ff8c00' name={"circle-o"} style={styles.iconStyle} />
+                                            <Text style={styles.baseText}>{0}</Text>
+                                            <Text style={styles.baseText}>{inProgress}</Text>
+                                        </View>
+                                        <View style={styles.holderContainer}>
+                                            <Icon size={15} color='#008000' name={"circle-o"} style={styles.iconStyle} />
+                                            <Text style={styles.baseText}>{0}</Text>
+                                            <Text style={styles.baseText}>{completed}</Text>
+                                        </View>
+                                </View>
+                                <View style={styles.baseContainer}> 
+                                    <AnimatedCircularProgress
+                                        style={{marginTop:20, alignItems:'center'}}
+                                        size={200}
+                                        width={4}
+                                        fill={80}
+                                        tintColor="#00e0ff"
+                                        backgroundColor="#3d5875">
+                                        {
+                                            () => (
+                                            <Text style={styles.progressIndicatorText}>
+                                                80%
+                                            </Text>
+                                            )
+                                        }
+                                    </ AnimatedCircularProgress>
+                                </View>
+                            </ View>
+                        </LinearGradient>
+                    </ ScrollView>
             </View>
         );
     }
@@ -208,6 +211,14 @@ const styles = StyleSheet.create({
             backgroundColor:"transparent",
             fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto',
             alignSelf: 'center'
+        },
+        scrollView: {
+            backgroundColor: 'transparent',
+            width: Dimensions.get('window').width
+        },
+        scrollviewContentContainerStyle:{
+            flex: 1,
+            backgroundColor: 'transparent'
         }
     });
 
