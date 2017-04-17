@@ -247,7 +247,9 @@ function scheduleCheckinNotification() {
 }
 
 async function setCheckinNotification() {
-    FCM.cancelLocalNotification("checkinNotification")
+    if (Platform.OS === 'ios') {
+        FCM.cancelLocalNotification("checkinNotification")
+    }
     FCM.getScheduledLocalNotifications().then((notifs)=>{
         console.log("already notifications ", notifs);
         if (notifs.length > 0) {
