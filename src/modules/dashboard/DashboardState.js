@@ -22,6 +22,8 @@ const initialState = fromJS({
             {key: 'LeavesHistoryTab', title: 'LeavesHistory'},
             {key: 'AdminDashboardTab', title: 'Admin Dashboard'},
             {key: 'SettingsTab', title: 'Settings'}
+            {key: 'AdminDashboardTab', title: 'Admin Dashboard'},
+            {key: 'AboutUsTab', title: 'About Us'}
         ]
     },
     // Scenes for the `Dashboard` tab.
@@ -57,6 +59,11 @@ const initialState = fromJS({
     SettingsTab: {
         index: 0,
         routes: [{key: 'SettingsTab', title: 'Settings'}]
+
+    },
+    AboutUsTab: {
+        index: 0,
+        routes: [{key: 'AboutUsTab', title: 'About Us'}]
 
     },
     loading: false

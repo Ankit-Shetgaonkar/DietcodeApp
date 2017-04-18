@@ -13,6 +13,7 @@ import * as wfh from './wfh/WfhView'
 import ProfileView from './profile/ProfileView';
 import LeavesHistoryContainer from './LeavesHistory/LeavesHistoryContainer'
 import * as LHView from './LeavesHistory/LeavesHistoryView'
+import AboutUsView from './aboutUs/AboutUsView'
 
 /**
  * AppRouter is responsible for mapping a navigator scene to a view
@@ -35,6 +36,8 @@ export default function AppRouter(props,pushRoute) {
     return <AdminDashboardController />;
   }else if (key === 'SettingsTab') {
     return <LeavesContainer pushRoute = {pushRoute} />;
+  }else if (key === 'AboutUsTab') {
+    return <AboutUsView />;
   }
 
   if (key.indexOf('ProfileTab') === 0) {
@@ -70,6 +73,14 @@ export default function AppRouter(props,pushRoute) {
     );
   }
     if (key.indexOf('LeavesHistoryTab') === 0) {
+        const index = props.scenes.indexOf(props.scene);
+        return (
+            <ColorViewContainer
+        index={index}
+        />
+    );
+  }
+      if (key.indexOf('AboutUsTab') === 0) {
         const index = props.scenes.indexOf(props.scene);
         return (
             <ColorViewContainer
