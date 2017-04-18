@@ -11,6 +11,7 @@ class DrawerView extends Component {
   static displayName = 'TabBarButton';
 
   static propTypes = {
+    pushRoute: PropTypes.func.isRequired
   };
 
   render() {
@@ -20,7 +21,11 @@ class DrawerView extends Component {
           <TouchableOpacity
               style={{flex:1,flexDirection:"row"}}
               onPress={()=>{
-          console.log("I am working");
+            this.props.closeFunction.close();
+            setTimeout(()=> {
+               this.props.pushRoute({key: 'SettingsTab', title: 'Settings'});
+            }, 300);
+
         }}
           >
             <Icon
@@ -39,7 +44,10 @@ class DrawerView extends Component {
           <TouchableOpacity
               style={{flex:1,flexDirection:"row"}}
               onPress={()=>{
-          console.log("I am working");
+                    this.props.closeFunction.close();
+            setTimeout(()=> {
+               this.props.pushRoute({key: 'AboutUsTab', title: 'About Us'});
+            }, 300);
         }}
           >
             <Icon

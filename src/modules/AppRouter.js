@@ -12,6 +12,7 @@ import LeavesContainer from './leaves/LeavesContainer'
 import * as wfh from './wfh/WfhView'
 import ProfileView from './profile/ProfileView';
 import LeavesHistoryContainer from './LeavesHistory/LeavesHistoryContainer'
+import AboutUsView from './aboutUs/AboutUsView'
 import * as LHView from './LeavesHistory/LeavesHistoryView'
 
 /**
@@ -34,7 +35,9 @@ export default function AppRouter(props,pushRoute) {
   } else if (key === 'AdminDashboardTab') {
     return <AdminDashboardController />;
   }else if (key === 'SettingsTab') {
-    return <AdminDashboardController />;
+    return <LeavesContainer pushRoute = {pushRoute} />;
+  }else if (key === 'AboutUsTab') {
+    return <AboutUsView />;
   }
 
   if (key.indexOf('ProfileTab') === 0) {

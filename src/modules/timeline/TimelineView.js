@@ -74,7 +74,7 @@ function _getDayOfWeek(day) {
             return "Friday";
         case 6:
             return "Saturday";
-        case 0:
+        case 7:
             return "Sunday";
     }
 }
@@ -95,33 +95,14 @@ function _getHumanReadableTime(timeValue){
             }
         let stringTime = humanReadable.hours+"h "+Math.floor(humanReadable.minutes)+"m ago";
         return stringTime;
-}
-function formatAMPM(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? '0'+minutes : minutes;
-  var strTime = hours + ':' + minutes + ' ' + ampm;
-  return strTime;
-}
-
-function _getLocalTimeForUTC(dateTimeValue) {
-    var date = new Date(dateTimeValue);
-    console.log("hour ",date.getHours(), "time ",date.getMinutes(), " seconds", date.getSeconds());
-    console.log("formatted checkin ",formatAMPM(date), "date is ",date, "formatted ",date.getDay() + "-" + date.getMonth() + "-" + date.getFullYear());
-    return  date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear() + " "+formatAMPM(date);
-}
+    }
 
 async function _getLastCheckinCheckout(dispatch) {
 
         await officeApi.getLastCheckinCheckout("checkin")
             .then((resp) => {
                 if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    //console.log("last checkin details from server ",resp.results[0].createdAt, "converted time ",_getLocalTimeForUTC(resp.results[0].createdAt));
-                    //dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
-                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getLocalTimeForUTC(resp.results[0].createdAt) : "--:--:--"));
+                    dispatch(TimeLineStateActions.setLastCheckin(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
                 }
             })
             .catch((err) => {
@@ -129,28 +110,28 @@ async function _getLastCheckinCheckout(dispatch) {
                 dispatch(TimeLineStateActions.setLastCheckin("0h 0m"));
             });
 
-        /*await officeApi.getLastCheckinCheckout("checkout")
+        await officeApi.getLastCheckinCheckout("checkout")
             .then((resp) => {
                 if (typeof resp != 'undefined' && typeof resp.results != 'undefined') {
-                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "--:--:--"));
+                    dispatch(TimeLineStateActions.setLastCheckout(resp.results.length > 0 ? _getHumanReadableTime(resp.results[0].createdAt) : "not found"));
                 }
             })
             .catch((err) => {
                 console.log(err);
                 dispatch(TimeLineStateActions.setLastCheckout("0h 0m"));
-            });*/
+            });
     }
 
 function checkinUser(dispatch) {
+    dispatch(DashboardActions.showLoading(true));
     officeApi.checkinUser()
     .then((resp)=>{
         dispatch(TimeLineStateActions.checkUserToggle());
         console.log("time slot", new Date().getTime());
         console.log("time slot", Platform.OS, Platform.OS === 'ios'? new Date(Date.now() + (9 * 60 * 60 * 1000)).toISOString() : new Date().getTime() + (9 * 60 * 60 * 1000));
-        console.log("checkin response ", JSON.stringify(resp));
         FCM.scheduleLocalNotification({
             fire_date: new Date().getTime() + (9 * 60 * 60 * 1000),
-             //fire_date: new Date().getTime() + (20 * 1000),
+            // fire_date: new Date().getTime() + (20 * 1000),
             id: "UNIQ_ID_STRING",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
             body: "It has been 9 hours since you checkedin. Please check out before leaving."
         });
@@ -233,42 +214,6 @@ async function createUser(token) {
     }
 }
 
-function scheduleCheckinNotification() {
-    var notificationTime = new Date();
-    notificationTime.setHours(9, 30, 0);
-    console.log("gong to fcm ",Platform);
-    FCM.scheduleLocalNotification({
-        //fire_date: notificationTime.toISOString(),
-        fire_date: Platform.OS === 'ios'? notificationTime.toISOString() : notificationTime.getTime(),
-        id: "checkinNotification",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
-        body: "It's 9:30 AM. Please checkin.",
-        repeat_interval: "day"
-    });
-}
-
-async function setCheckinNotification() {
-    if (Platform.OS === 'ios') {
-        FCM.cancelLocalNotification("checkinNotification")
-    }
-    FCM.getScheduledLocalNotifications().then((notifs)=>{
-        console.log("already notifications ", notifs);
-        if (notifs.length > 0) {
-            var existing = notifs.filter((notif) => {
-               return notif.id == "checkinNotification";
-            });
-            if (existing.length == 0) {
-                console.log("successfully scheduled notification");
-                scheduleCheckinNotification()
-            }
-        } else {
-            console.log("successfully scheduled notification1");
-            scheduleCheckinNotification()
-        }
-    }).catch((err)=>{
-        console.log("notifications fetching error ",err);
-    });
-}
-
 var restructuredData = [];
 var checkinState = false;
 var toggleRenderRow = false;
@@ -303,11 +248,9 @@ class TimelineView extends Component {
 
     
     componentDidMount(){
-        setCheckinNotification()
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                     officeApi.setUserName(RealmDatabse.findUser()[0]);
-                    _getLastCheckinCheckout(this.props.dispatch);
                     //alert(RealmDatabse.findUser()[0].serverId+" SERVER ID");
                     officeApi.getUserTimeline()
                         .then((resp)=>{
@@ -338,6 +281,7 @@ class TimelineView extends Component {
             console.log("Cannot find authentication token: "+err);
         });
 
+        _getLastCheckinCheckout(this.props.dispatch);
     }
     
 
@@ -374,7 +318,6 @@ class TimelineView extends Component {
                                 <TouchableHighlight onPress={function()
                                                 {
                                                     console.log("going to checkin checkout");
-                                                     dispatch(DashboardActions.showLoading(true));
                                                      var current = new Date();
                                                      isUserValidLocation().then((isValid) => {
                                                          if (isValid) {
@@ -391,7 +334,7 @@ class TimelineView extends Component {
                                                                         'You are early!',
                                                                         'Are you sure you want to check-in',
                                                                         [
-                                                                            {text: 'Cancel', onPress: () =>  dispatch(DashboardActions.showLoading(false)), style: 'cancel'},
+                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                                                                             {text: 'OK', onPress: () => checkinUser(dispatch)},
                                                                         ],
                                                                         { cancelable: false }
@@ -410,7 +353,7 @@ class TimelineView extends Component {
                                                                         'You are early!',
                                                                         'Are you sure you want to check-out',
                                                                         [
-                                                                            {text: 'Cancel', onPress: () => dispatch(DashboardActions.showLoading(false)), style: 'cancel'},
+                                                                            {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                                                                             {text: 'OK', onPress: () => checkoutUser(dispatch)},
                                                                         ],
                                                                         { cancelable: false }
@@ -421,7 +364,6 @@ class TimelineView extends Component {
                                                             }
                                                          } else {
                                                              // user not within location range
-                                                             dispatch(DashboardActions.showLoading(false));
                                                              Alert.alert(
                                                                         'Oh! Snap',
                                                                         'You are not currently within office premises, please be within office premises to checkin/checkout or contact office manager.',
@@ -433,7 +375,6 @@ class TimelineView extends Component {
                                                          }
                                                      }).catch((error) => {
                                                          // some type of error occoured
-                                                         dispatch(DashboardActions.showLoading(false));
                                                          let title = (error.code === 1 ? 'Permission Error' : 'Oh! Snap');
                                                          let message = (error.code === 1 ? 'Please check location permissions granted to this app in settings.' : 'Some location based error occoured, try again later or contact office manager.');
                                                          Alert.alert(
@@ -455,16 +396,18 @@ class TimelineView extends Component {
                             </View>
 
                         </View>
-                        <View style={{ flex: 0.4, flexDirection: "row"}}>
+                        <View style={{ flex: 0.4, flexDirection: "row" }}>
 
-                            <View style={{  flex: 1, flexDirection: "row", alignItems: "center", margin: 20 }}>
-                                <Text style={{ backgroundColor: "transparent", fontSize: 14, color: "#ffffff" }}>Last Checkin: </Text>
-                                <Text style={{ backgroundColor: "transparent", fontSize: 14, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin}</Text>
+                            <View style={{ alignItems: "center", margin: 20 }}>
+                                <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
+                                    Checkin</Text>
+                                <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckin === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckin}</Text>
                             </View>
-                            {/*<View style={{ alignItems: "center", margin: 20 }}>
-                                <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last Checkout</Text>
+                            <View style={{ alignItems: "center", margin: 20 }}>
+                                <Text style={{ backgroundColor: "transparent", fontSize: 12, color: "#ffffff" }}>Last
+                                    Checkout</Text>
                                 <Text style={{ backgroundColor: "transparent", marginTop: 5, fontSize: 10, color: "#ffffff" }}>{this.props.timeLineState.lastCheckout === '-1h 59m ago' ? '0h 0m ago' : this.props.timeLineState.lastCheckout}</Text>
-                            </View>*/}
+                            </View>
                         </View>
                     </Image>
 
@@ -481,21 +424,27 @@ class TimelineView extends Component {
                     verticalOrientation={Platform.OS === 'ios' ? "down" : "up"}
                     offsetX={30}
                     onPress={() => {
+                        console.log("OH FUCK!!!");
                     }}
                     offsetY={Platform.OS === 'ios' ? actionButtonY : 20}
                 >
-                    <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves"
-                                      textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText} onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
-                        <Icon name="gamepad" color="#fff" style={styles.actionButtonIcon}/>
+                    <ActionButton.Item buttonColor='#9b59b6' title="Apply Leaves" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText}
+                                       onPress={() => this.props.pushRoute({key: 'LeavesTab', title: 'Leaves Status'})}>
+                        <Icon name="gamepad" color="#fff" />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText} onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
-                        <Icon name="laptop" color="#fff" style={styles.actionButtonIcon}/>
+                    <ActionButton.Item buttonColor='#3498db' title="Apply work from home" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText}
+                    onPress={() => {this.props.pushRoute({key: 'WorkFromHomeTab', title: 'Work From Home Status'})}}>
+                        <Icon name="laptop" color="#fff" />
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#ff6600' title="About Us" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText}
+                    onPress={() => {this.props.pushRoute({key: 'AboutUsTab', title: 'About Us'})}}>
+                        <Icon name="laptop" color="#fff" />
                     </ActionButton.Item>
                     {RealmDatabse.findUser()[0].role === "admin" && <ActionButton.Item buttonColor='#313638' title="Admin Dashboard" textStyle={styles.actionButtonText} textContainerStyle = {styles.actionButtonContainerText} onPress={() => {
                         this.props.pushRoute({key: 'AdminDashboardTab', title: 'Admin Dashboard'})
 
                     }}>
-                        <Icon name="user-circle" color="#fff" style={styles.actionButtonIcon}/>
+                        <Icon name="user-circle" color="#fff" />
                     </ActionButton.Item>}
                 </ActionButton>
             </View>
@@ -764,6 +713,7 @@ const styles = StyleSheet.create({
         borderColor: 'red'
     },
       actionButtonText: {
+        // backgroundColor : 'orange' ,
         color: 'white',
     },
     actionButtonContainerText: {
