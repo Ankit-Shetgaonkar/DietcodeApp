@@ -130,7 +130,7 @@ class DashboardView extends Component {
                     openDrawerOffset={0.3} // 20% gap on the right side of drawer
                     panCloseMask={0.3}
                     acceptPan={true}
-                    closedDrawerOffset={-10}
+                    closedDrawerOffset={0}
                     styles={drawerStyles}
                     tweenHandler={(ratio) => ({
                     main: { opacity:(2-ratio)/2 }
@@ -178,14 +178,14 @@ const styles = StyleSheet.create({
         elevation: 5,
         backgroundColor: "transparent",
         paddingLeft: 10,
-        paddingRight: 10,
+        paddingRight: 10
     },
     linearGradientWithoutPadding: {
         height: 50,
         elevation: 5,
         backgroundColor: "transparent",
         paddingLeft: 10,
-        paddingRight: 10,
+        paddingRight: 10
     },
     container: {
         flex: 1,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
 });
 
 const drawerStyles = {
-    drawer: { shadowColor: '#000000', shadowOpacity: 0.6, shadowRadius: 5,padding:15},
+    drawer: { shadowColor: '#000000', shadowOpacity: 0.6, shadowRadius: 5,margin:0},
     main: {padding:0}
 }
 

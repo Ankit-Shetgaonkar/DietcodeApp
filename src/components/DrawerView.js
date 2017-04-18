@@ -46,7 +46,7 @@ class DrawerView extends Component {
               onPress={()=>{
             this.props.closeFunction.close();
             setTimeout(()=> {
-               this.props.pushRoute({key: 'SettingsTab', title: 'Settings'});
+               this.props.pushRoute({key: 'AboutUsTab', title: 'About Us'});
             }, 300);
         }}
           >
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd'
   },
   oneRow:{
+    padding:10,
     flex:1,
     flexDirection:"column",
     backgroundColor:"#fff"

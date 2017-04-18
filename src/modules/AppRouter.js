@@ -5,6 +5,7 @@ import CounterViewContainer from './counter/CounterViewContainer';
 import ColorViewContainer from './colors/ColorViewContainer';
 import {Text,View} from 'react-native';
 import WfhContainer from './wfh/WfhContainer'
+import AboutUsView from '../components/AboutUsView'
 import TimeLineView from './timeline/TimelineView'
 import TimeLineContainer from './timeline/TimelineViewContainer'
 import AdminDashboardController from './admin_dashboard/AdminDashboardController'
@@ -35,6 +36,8 @@ export default function AppRouter(props,pushRoute) {
     return <AdminDashboardController />;
   }else if (key === 'SettingsTab') {
     return <LeavesContainer pushRoute = {pushRoute} />;
+  }else if (key === 'AboutUsTab') {
+    return <AboutUsView pushRoute = {pushRoute} />;
   }
 
   if (key.indexOf('ProfileTab') === 0) {
