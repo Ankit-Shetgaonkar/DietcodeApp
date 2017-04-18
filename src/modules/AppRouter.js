@@ -10,6 +10,7 @@ import TimeLineView from './timeline/TimelineView'
 import TimeLineContainer from './timeline/TimelineViewContainer'
 import AdminDashboardController from './admin_dashboard/AdminDashboardController'
 import LeavesContainer from './leaves/LeavesContainer'
+import SettingsViewContainer from './settings/SettingsViewContainer'
 import * as wfh from './wfh/WfhView'
 import ProfileView from './profile/ProfileView';
 import LeavesHistoryContainer from './LeavesHistory/LeavesHistoryContainer'
@@ -35,7 +36,7 @@ export default function AppRouter(props,pushRoute) {
   } else if (key === 'AdminDashboardTab') {
     return <AdminDashboardController />;
   }else if (key === 'SettingsTab') {
-    return <LeavesContainer pushRoute = {pushRoute} />;
+    return <SettingsViewContainer pushRoute = {pushRoute} />;
   }else if (key === 'AboutUsTab') {
     return <AboutUsView pushRoute = {pushRoute} />;
   }

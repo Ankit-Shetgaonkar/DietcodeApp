@@ -182,7 +182,7 @@ class SettingsView extends Component {
           updatedDate.setMinutes(minute);
           this.props.dispatch(SettingsState.updateDateTime(updatedDate));
       } else {
-          this.props.dispatch(SettingsState.showPickerView(!this.settingsState.showPicker));
+          this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
       }
   }
 
