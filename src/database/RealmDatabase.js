@@ -12,7 +12,8 @@ let repository = new Realm({
             serverId: 'string',
             id: 'string',
             role: 'string',
-            image_link: 'string'
+            image_link: 'string',
+            officaLocationID: 'string'
         }}]
 });
 
