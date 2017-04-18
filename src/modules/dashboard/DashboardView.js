@@ -130,7 +130,7 @@ class DashboardView extends Component {
                     openDrawerOffset={0.3} // 20% gap on the right side of drawer
                     panCloseMask={0.3}
                     acceptPan={true}
-                    closedDrawerOffset={-10}
+                    closedDrawerOffset={0}
                     styles={drawerStyles}
                     tweenHandler={(ratio) => ({
                     main: { opacity:(2-ratio)/2 }
