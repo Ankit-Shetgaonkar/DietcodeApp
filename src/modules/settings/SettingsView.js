@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
             fontSize: 10,
             backgroundColor:"transparent",
             fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
-    },
+    }
 });
 
 export default SettingsView;
