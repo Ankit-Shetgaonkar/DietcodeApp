@@ -34,7 +34,7 @@ export default function AppRouter(props,pushRoute) {
   } else if (key === 'AdminDashboardTab') {
     return <AdminDashboardController />;
   }else if (key === 'SettingsTab') {
-    return <AdminDashboardController />;
+    return <LeavesContainer pushRoute = {pushRoute} />;
   }
 
   if (key.indexOf('ProfileTab') === 0) {

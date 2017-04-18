@@ -136,7 +136,7 @@ class DashboardView extends Component {
                     main: { opacity:(2-ratio)/2 }
                     })}
                     ref = {(ref) => this._drawer = ref}
-                    content={<DrawerView/>}
+                    content={<DrawerView pushRoute = {this.props.pushRoute} closeFunction = {this._drawer} />}
                 >
                 <View style={styles.container}>
                 <NavigationCardStack
