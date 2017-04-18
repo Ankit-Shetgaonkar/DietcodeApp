@@ -21,8 +21,7 @@ const initialState = fromJS({
             {key: 'WorkFromHomeTab', title: 'Wfh'},
             {key: 'LeavesHistoryTab', title: 'LeavesHistory'},
             {key: 'AdminDashboardTab', title: 'Admin Dashboard'},
-            {key: 'SettingsTab', title: 'Settings'}
-            {key: 'AdminDashboardTab', title: 'Admin Dashboard'},
+            {key: 'SettingsTab', title: 'Settings'},
             {key: 'AboutUsTab', title: 'About Us'}
         ]
     },

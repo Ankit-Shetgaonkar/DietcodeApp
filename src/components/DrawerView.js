@@ -44,9 +44,9 @@ class DrawerView extends Component {
           <TouchableOpacity
               style={{flex:1,flexDirection:"row"}}
               onPress={()=>{
-            this.props.closeFunction.close();
+                    this.props.closeFunction.close();
             setTimeout(()=> {
-               this.props.pushRoute({key: 'SettingsTab', title: 'Settings'});
+               this.props.pushRoute({key: 'AboutUsTab', title: 'About Us'});
             }, 300);
         }}
           >

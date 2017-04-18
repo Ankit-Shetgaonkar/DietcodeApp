@@ -17,7 +17,6 @@ class AboutUsView extends Component {
   static displayName = 'AboutUsView';
 
   static propTypes = {
-    index: PropTypes.number.isRequired,
     navigationStateActions: PropTypes.shape({
       pushRoute: PropTypes.func.isRequired
     })
