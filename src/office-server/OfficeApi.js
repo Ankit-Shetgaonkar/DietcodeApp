@@ -252,3 +252,34 @@ export async function adminUpdateCheckinCheckoutTime(userId, timelineId, type, c
         throw error;
     }
 }
+
+export async function fetchOfficeLocationAPI() {
+    try {
+        const response = await api.get('http://dc-office.herokuapp.com/api/v1/gps', true);
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function updateNewOfficeLocation(coordinates) {
+    let ofcLocation = {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        officeName: 'Landscape Town',
+        city: 'Goa',
+        radius: '500'
+    };
+
+    if (typeof userName != 'undefined' && typeof userName.officaLocationID != "undefined" && userName.officaLocationID !== "") {
+        try {
+            console.log('UPDATE OFFICE LOCATION: ' + JSON.stringify(ofcLocation));
+            const response = await api.post('http://dc-office.herokuapp.com/api/v1/gps/' + userName.officaLocationID, ofcLocation, true);
+            console.log('UPDATE OFFICE LOCATION RESPONSE: ' + JSON.stringify(response));
+            return response;
+        } catch(error) {
+            console.log('UPDATE OFFICE LOCATION ERROR: ' + JSON.stringify(error));
+            throw error;
+        }
+    }
+}

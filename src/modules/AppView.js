@@ -4,6 +4,7 @@ import React, {PropTypes, Component} from 'react';
 import {View, StyleSheet, ActivityIndicator, Text, Button} from 'react-native';
 import DashboardViewContainer from './dashboard/DashboardContainer';
 import LoginViewContainer from './login/LoginViewContainer';
+import SettingViewContainer from './settings/SettingsViewContainer';
 import * as snapshotUtil from '../utils/snapshot';
 import * as SessionStateActions from '../modules/session/SessionState';
 import store from '../redux/store';
