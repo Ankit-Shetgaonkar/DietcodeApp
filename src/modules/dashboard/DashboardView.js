@@ -12,7 +12,9 @@ import {
     Image,
     ActivityIndicator
 } from 'react-native';
-import Dimensions from 'Dimensions'
+import Dimensions from 'Dimensions';
+import Drawer from 'react-native-drawer'
+import DrawerView from '../../components/DrawerView'
 import AppRouter from '../AppRouter';
 import TabBar from '../../components/TabBar';
 import LinearGradient from 'react-native-linear-gradient';
@@ -66,8 +68,11 @@ class DashboardView extends Component {
                     style={Platform.OS === 'ios' ?styles.linearGradientWithPadding:styles.linearGradientWithoutPadding}>
                     <View style={styles.header}>
                         <TouchableHighlight style={{width:40,marginTop:5,height:40}} underlayColor="transparent" onPress={()=>{
-
-                            this.props.popRoute();
+                           if(sceneProps.scene.route.title==="Timeline"){
+                            this.openControlPanel()
+                           }else{
+                             this.props.popRoute();
+                           }
 //                                this.props.switchTab(0);
                                 //sceneProps.switchTab(1);
                         }}>
@@ -99,6 +104,13 @@ class DashboardView extends Component {
         );
     };
 
+    closeControlPanel = () => {
+        this._drawer.close()
+    };
+    openControlPanel = () => {
+        this._drawer.open()
+    };
+
     renderScene = (sceneProps) => {
         return (
             <View style={styles.sceneContainer}>
@@ -112,7 +124,21 @@ class DashboardView extends Component {
         const tabKey = tabs.routes[tabs.index].key;
         const scenes = this.props.dashboardState[tabKey];
         return (
-            <View style={styles.container}>
+                <Drawer
+                    type="overlay"
+                    tapToClose={true}
+                    openDrawerOffset={0.3} // 20% gap on the right side of drawer
+                    panCloseMask={0.3}
+                    acceptPan={true}
+                    closedDrawerOffset={-10}
+                    styles={drawerStyles}
+                    tweenHandler={(ratio) => ({
+                    main: { opacity:(2-ratio)/2 }
+                    })}
+                    ref = {(ref) => this._drawer = ref}
+                    content={<DrawerView/>}
+                >
+                <View style={styles.container}>
                 <NavigationCardStack
                     key={'stack_' + tabKey}
                     // onNavigateBack={this.props.onNavigateBack}
@@ -120,8 +146,8 @@ class DashboardView extends Component {
                     renderHeader={this.renderHeader}
                     renderScene={this.renderScene}
                 />
-
-            </View>
+                </View>
+               </Drawer>
         );
     }
 }
@@ -179,8 +205,13 @@ const styles = StyleSheet.create({
         top: 0,
         opacity: 0.5,
         backgroundColor: 'black',
-        width: Dimensions.get('window').width,
+        width: Dimensions.get('window').width
     }
 });
+
+const drawerStyles = {
+    drawer: { shadowColor: '#000000', shadowOpacity: 0.6, shadowRadius: 5,padding:15},
+    main: {padding:0}
+}
 
 export default DashboardView;

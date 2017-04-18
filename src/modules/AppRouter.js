@@ -30,9 +30,10 @@ export default function AppRouter(props,pushRoute) {
   }else if (key === 'WorkFromHomeTab') {
       return <WfhContainer pushRoute = {pushRoute} />;
   }else if (key === 'LeavesHistoryTab') {
-    console.log("returning lhcontainer")
     return <LeavesHistoryContainer/>;
   } else if (key === 'AdminDashboardTab') {
+    return <AdminDashboardController />;
+  }else if (key === 'SettingsTab') {
     return <AdminDashboardController />;
   }
 
