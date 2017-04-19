@@ -16,7 +16,8 @@ import {
     Modal,
     Button,
     ActivityIndicator,
-    Alert
+    Alert,
+    Keyboard
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import RealmDatabse from '../../database/RealmDatabase';
@@ -26,7 +27,12 @@ import * as SettingsState from './SettingsState';
 import * as OfficeAPIs from '../../office-server/OfficeApi';
 import * as notification from '../../utils/notification';
 
-var isModalVisible = false
+var isModalVisible = false;
+var isKeyboardVisible = false;
+var keyBoardDidShowListner = null;
+var keyBoardDidHideListner = null;
+var keyBoardDidChangeFrameListner = null;
+var supplymentryHeight = 0;
 
 class SettingsView extends Component {
 
@@ -44,13 +50,17 @@ class SettingsView extends Component {
                 latitude: PropTypes.number.isRequired,
                 longitude: PropTypes.number.isRequired
             }).isRequired,
-            activityIndicatorAnimating: PropTypes.bool.isRequired
+            activityIndicatorAnimating: PropTypes.bool.isRequired,
+            keyboardVisible: PropTypes.bool.isRequired
         }).isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     componentDidMount() {
         // called when the component is mounted
+        this.props.dispatch(SettingsState.toggleKeyboardVisibility(isKeyboardVisible));
+        keyBoardDidShowListner = Keyboard.addListener('keyboardDidShow', this.keyBoardDidShow);
+        keyBoardDidHideListner = Keyboard.addListener('keyboardDidHide', this.keyBoardDidHide);
         this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
         OfficeAPIs.fetchOfficeLocationAPI().then((response) => {
             //console.log('RESPONSE API: ' + JSON.stringify(response.results[0]));
@@ -76,6 +86,11 @@ class SettingsView extends Component {
         });
     }
 
+    componentWillUnmount() {
+        keyBoardDidShowListner.remove();
+        keyBoardDidHideListner.remove();
+    }
+
     render() {
         //console.log('PROPS: ' + JSON.stringify(this.props) + ' TIME: ' + JSON.stringify((new Date((new Date().getFullYear()), (new Date().getMonth()), (new Date().getDate()), 0, 0, 0, 0))));
         let dateToDisplay = new Date(this.props.settingsState.time);
@@ -88,7 +103,7 @@ class SettingsView extends Component {
                 end={{x: 1.0, y: 1.0}}
                 locations={[0.0, 0.5, 1.0]}>
                 <View style={styles.center}>
-                    <ScrollView style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} contentContainerStyle={styles.scrollviewContentContainerStyle}>
+                    <ScrollView style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} contentContainerStyle={styles.scrollviewContentContainerStyle} contentInset={{top: 0, left: 0, bottom: supplymentryHeight, right: 0}}>
                         <View style={{flex: 1, backgroundColor: 'transparent', alignItems: 'flex-start', width: Dimensions.get('window').width}}>
                             <Text style={styles.headingText}>
                                 Settings
@@ -211,6 +226,25 @@ class SettingsView extends Component {
     }
 }
 
+    keyBoardDidShow = (options) => {
+        if (isKeyboardVisible === false && Platform.OS === 'ios') {
+            //console.log('KEYBOARD DID SHOW: ' + JSON.stringify(options.endCoordinates.height));
+            isKeyboardVisible = !isKeyboardVisible;
+            supplymentryHeight += options.endCoordinates.height;
+            this.props.dispatch(SettingsState.toggleKeyboardVisibility(isKeyboardVisible));
+            //console.log('KEYBOARD DID HIDE: SUPPLYMENTRY HEIGHT: ' + JSON.stringify(supplymentryHeight));
+        }
+    }
+
+    keyBoardDidHide = (options) => {
+        if (isKeyboardVisible && Platform.OS === 'ios') {
+            //console.log('KEYBOARD DID HIDE: ' + JSON.stringify(options.endCoordinates.height));
+            isKeyboardVisible = !isKeyboardVisible;
+            supplymentryHeight -= options.endCoordinates.height;
+            this.props.dispatch(SettingsState.toggleKeyboardVisibility(isKeyboardVisible));
+            //console.log('KEYBOARD DID HIDE: SUPPLYMENTRY HEIGHT: ' + JSON.stringify(supplymentryHeight));
+        }
+    }
 }
 
 const styles = StyleSheet.create({
