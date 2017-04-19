@@ -19,7 +19,6 @@ const initialState = fromJS({
 });
 
 
-
 export function setLastCheckin(time) {
     return {
         type: LAST_CHECKIN,
