@@ -14,11 +14,12 @@ export function scheduleCheckinNotification(platform, hours, mins) {
     
 
     console.log("gong to fcm ",platform);
+    var displaymins = mins <= 9 ? "0" + mins : mins
     FCM.scheduleLocalNotification({
         //fire_date: notificationTime.toISOString(),
         fire_date: platform === 'ios'? notificationTime.toISOString() : notificationTime.getTime(),
         id: "checkinNotification",    //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
-        body: "It's " + hoursInPm+ ":"+ mins + " "+pmoram+ ". Please checkin.",
+        body: "It's " + hoursInPm+ ":" + displaymins + " "+pmoram+ ". Please checkin.",
         repeat_interval: "day"
     });
 }
