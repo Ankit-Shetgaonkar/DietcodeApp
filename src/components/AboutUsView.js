@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginBottom: 10,
     marginTop: 10,
-    alignSelf: 'center',
+    alignSelf: 'center'
   },
   scrollView: {
     backgroundColor: 'transparent',
