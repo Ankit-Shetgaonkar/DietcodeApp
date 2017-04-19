@@ -125,13 +125,14 @@ class DashboardView extends Component {
         const scenes = this.props.dashboardState[tabKey];
         return (
                 <Drawer
-                    type="overlay"
+                    type="displace"
                     tapToClose={true}
                     openDrawerOffset={0.3} // 20% gap on the right side of drawer
                     panCloseMask={0.3}
                     acceptPan={true}
                     closedDrawerOffset={0}
                     styles={drawerStyles}
+                    acceptPan={false}
                     tweenHandler={(ratio) => ({
                     main: { opacity:(2-ratio)/2 }
                     })}
