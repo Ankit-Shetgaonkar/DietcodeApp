@@ -14,13 +14,15 @@ import {
     PermissionsAndroid,
     Modal
 } from 'react-native';
-import FCM from 'react-native-fcm'
+import FCM from 'react-native-fcm';
+import store from '../../redux/store';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ActionButton from 'react-native-action-button';
 import RealmDatabse from '../../database/RealmDatabase';
 import * as auth from '../../utils/authentication';
 
 import * as TimeLineStateActions from './TimelineState';
+import * as SettingState from '../settings/SettingsState'
 
 import * as DashboardActions from '../dashboard/DashboardState';
 
@@ -28,8 +30,8 @@ import * as officeApi from '../../office-server/OfficeApi';
 import Dimensions from 'Dimensions'
 
 import { isUserValidLocation } from '../../services/locationService';
-import * as notification from '../../notification/Notification'
-
+//import * as notification from '../../notification/Notification'
+import * as notification from '../../utils/notification'
 function _getMonthInString(month) {
     switch (month) {
         case 1:
@@ -233,7 +235,7 @@ async function createUser(token) {
     }
 }
 
-function scheduleCheckinNotification() {
+/*function scheduleCheckinNotification() {
     var notificationTime = new Date();
     notificationTime.setHours(9, 30, 0);
     console.log("gong to fcm ",Platform);
@@ -267,7 +269,7 @@ async function setCheckinNotification() {
     }).catch((err)=>{
         console.log("notifications fetching error ",err);
     });
-}
+}*/
 
 var restructuredData = [];
 var checkinState = false;
@@ -303,7 +305,10 @@ class TimelineView extends Component {
 
     
     componentDidMount(){
-        setCheckinNotification()
+        //setCheckinNotification()
+        var settingDate =  new Date(store.getState().get('settingsState').get('time'));
+        console.log("setting state is ",settingDate.getHours(), " time is", settingDate.getMinutes());
+        notification.setCheckinNotification(Platform.OS, settingDate.getHours(), settingDate.getMinutes(), false);
         auth.getAuthenticationToken().then((resp)=>{
             createUser(resp).then((resp) => {
                     officeApi.setUserName(RealmDatabse.findUser()[0]);
