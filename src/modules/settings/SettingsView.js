@@ -25,6 +25,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import * as SettingsState from './SettingsState';
 import * as OfficeAPIs from '../../office-server/OfficeApi';
+import * as notification from '../../utils/notification';
 
 var isModalVisible = false;
 var isKeyboardVisible = false;
@@ -181,6 +182,8 @@ class SettingsView extends Component {
 
   updateTime(time) {
       this.props.dispatch(SettingsState.updateDateTime(time));
+      console.log("time ios is hours ", time.getHours(), "minutes ",time.getMinutes());
+      notification.setCheckinNotification(Platform.OS, time.getHours(), time.getMinutes(), true);
   }
 
   showAndroidPicker = async (options) => {
@@ -195,6 +198,8 @@ class SettingsView extends Component {
           var updatedDate = new Date();
           updatedDate.setHours(hour);
           updatedDate.setMinutes(minute);
+          console.log("time andoid is", hour, " ",minute);
+          notification.setCheckinNotification(Platform.OS, hour, minute, true);
           this.props.dispatch(SettingsState.updateDateTime(updatedDate));
       } else {
           this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
