@@ -68,7 +68,7 @@ class AboutUsView extends Component {
           Arun
          </Text>
           <Text style={styles.namePlainText}>
-         Santhosh
+         Santosh
        </Text>
         </ScrollView>
       </View>
