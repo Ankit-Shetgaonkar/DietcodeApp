@@ -115,7 +115,7 @@ class SettingsView extends Component {
                                 <TouchableHighlight style={{flex: 1, width: (Dimensions.get('window').width-32), borderRadius: 4}} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => {Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showAndroidPicker()}}>
                                     <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'center'}}>
                                         <Icon size={26} color='#000000' name={"clock-o"} style={styles.iconStyle} />
-                                        <Text style={styles.textInput_TextStyle}>{(dateToDisplay.getHours() > 12 ? (dateToDisplay.getHours() - 12) : dateToDisplay.getHours()) + ':' + dateToDisplay.getMinutes() + ' ' + (dateToDisplay.getHours() > 12 ? 'pm' : 'am')}</Text>
+                                        <Text style={styles.textInput_TextStyle}>{this.formatDate(dateToDisplay)}</Text>
                                     </View>
                                 </TouchableHighlight>
                             </View>
@@ -244,6 +244,31 @@ class SettingsView extends Component {
             this.props.dispatch(SettingsState.toggleKeyboardVisibility(isKeyboardVisible));
             //console.log('KEYBOARD DID HIDE: SUPPLYMENTRY HEIGHT: ' + JSON.stringify(supplymentryHeight));
         }
+    }
+
+    formatDate = (date) => {
+        var d = new Date(date);
+        var hh = d.getHours();
+        var m = d.getMinutes();
+        var s = d.getSeconds();
+        var dd = "AM";
+        var h = hh;
+        if (h >= 12) {
+            h = hh - 12;
+            dd = "PM";
+        }
+        if (h == 0) {
+            h = 12;
+        }
+        m = m < 10 ? "0" + m : m;
+        s = s < 10 ? "0" + s : s;
+        /* if you want 2 digit hours:
+        h = h<10?"0"+h:h; */
+        var replacement = h + ":" + m;
+        /* if you want to add seconds
+        replacement += ":"+s;  */
+        replacement += " " + dd;
+        return replacement
     }
 }
 
