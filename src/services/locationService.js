@@ -3,7 +3,7 @@ import {
     Platform
 } from 'react-native';
 
-const officeLocation = {
+var officeLocation = {
     lat: 15.4561103,
     long: 73.8222992
 };
@@ -53,11 +53,15 @@ function fetchLocation(success, failure) {
 }
 
 // Method handles both callbacks and Promises (if arguments not passed in)
-export function isUserValidLocation(validity, err) {
+export function isUserValidLocation(officePos, validity, err) {
     //console.log('ARGUMETS: ' + arguments.length);
-    if (arguments.length === 2) {
+    if (typeof officePos == 'undefined') {
+        // console.log('RETURNED NULL');
+        return null;
+    }
+    if (arguments.length === 3) {
         fetchLocation((coordinates) => {
-            var distance = getDistanceBetween(coordinates, officeLocation);
+            var distance = getDistanceBetween(coordinates, officePos);
             distance = Math.trunc(distance);
             (distance <= expectedRange ? validity(true) : validity(false));
         }, 
@@ -67,7 +71,8 @@ export function isUserValidLocation(validity, err) {
     } else {
         return new Promise((resolve, reject) => {
             fetchLocation((coordinates) => {
-                var distance = getDistanceBetween(coordinates, officeLocation);
+                var distance = getDistanceBetween(coordinates, officePos);
+                // console.log('OFFICE POS ' + JSON.stringify(officePos));
                 distance = Math.trunc(distance);
                 (distance <= expectedRange ? resolve(true) : resolve(false));
             },

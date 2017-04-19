@@ -298,6 +298,10 @@ class TimelineView extends Component {
         // errorMessage: PropTypes.string.isRequired,
         // lastCheckout: PropTypes.string.isRequired,
         // checkin:PropTypes.bool.isRequired,
+        officeLocation: PropTypes.shape({
+            latitude: PropTypes.number.isRequired,
+            longitude: PropTypes.number.isRequired
+        }).isRequired,
         pushRoute: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired
     };
@@ -359,7 +363,8 @@ class TimelineView extends Component {
         var day = today.getDay();
         var mm = _getMonthInString(today.getMonth()+1);
         var yyyy = today.getFullYear();
-        var actionButtonY = ((Dimensions.get('window').height - 90) * 0.4) - 19
+        var actionButtonY = ((Dimensions.get('window').height - 90) * 0.4) - 19;
+        var officeCoordinates = this.props.officeLocation;
         return (
             <View style={styles.container}>
                 <View style={{ flex: 0.4 }}>
@@ -381,7 +386,7 @@ class TimelineView extends Component {
                                                     console.log("going to checkin checkout");
                                                      dispatch(DashboardActions.showLoading(true));
                                                      var current = new Date();
-                                                     isUserValidLocation().then((isValid) => {
+                                                     isUserValidLocation(officeCoordinates).then((isValid) => {
                                                          if (isValid) {
                                                              // user Within location range
                                                              if(!checkin){
