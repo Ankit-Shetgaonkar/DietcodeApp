@@ -6,6 +6,7 @@ export const UPDATE_OFFICE_COORDINATES_LATITUDE = 'SettingsState/UPDATE_OFFICE_C
 export const UPDATE_OFFICE_COORDINATES_LONGITUDE = 'SettingsState/UPDATE_OFFICE_COORDINATES_LONGITUDE';
 export const TOGGLE_ACTIVITY_INDICATOR = 'SettingsState/TOGGLE_ACTIVITY_INDICATOR';
 export const RESET_OFFICE_COORDINATES = 'SettingsState/RESET_OFFICE_COORDINATES';
+export const TOGGLE_KEYBOARD_VISIBILITY = 'SettingsState/TOGGLE_KEYBOARD_VISIBILITY'; 
 
 // initialState
 const initialState = fromJS({
@@ -15,7 +16,8 @@ const initialState = fromJS({
         latitude: 15.4561103,
         longitude: 73.8222992
     },
-    activityIndicatorAnimating: false
+    activityIndicatorAnimating: false,
+    keyboardVisible: false
 });
 
 // ACTION METHODS
@@ -61,6 +63,13 @@ export function resetCoordinates() {
     }
 }
 
+export function toggleKeyboardVisibility(visibility) {
+    return {
+        type: TOGGLE_KEYBOARD_VISIBILITY,
+        payload: visibility
+    }
+}
+
 // REDUCER
 export default function SettingsViewReducer(state = initialState, action = {}) {
     switch (action.type) {
@@ -77,14 +86,15 @@ export default function SettingsViewReducer(state = initialState, action = {}) {
         case UPDATE_OFFICE_COORDINATES_LONGITUDE:
         console.log('COORDINATE LONGITUDE: ' + JSON.stringify(action.payload));
             return state.setIn(['officeLocation', 'longitude'], action.payload);
-            
-            
 
         case TOGGLE_ACTIVITY_INDICATOR: 
             return state.set('activityIndicatorAnimating', action.payload);
 
         case RESET_OFFICE_COORDINATES:
             return state.set('officeLocation', action.payload);
+
+        case TOGGLE_KEYBOARD_VISIBILITY:
+            return state.set('keyboardVisible', action.payload);
 
         default:
             return state;
