@@ -103,7 +103,7 @@ class SettingsView extends Component {
                 end={{x: 1.0, y: 1.0}}
                 locations={[0.0, 0.5, 1.0]}>
                 <View style={styles.center}>
-                    <ScrollView style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} contentContainerStyle={styles.scrollviewContentContainerStyle} contentInset={{top: 0, left: 0, bottom: supplymentryHeight, right: 0}}>
+                    <ScrollView ref={'scrollView'} style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} contentContainerStyle={styles.scrollviewContentContainerStyle} contentInset={{top: 0, left: 0, bottom: supplymentryHeight, right: 0}}>
                         <View style={{flex: 1, backgroundColor: 'transparent', alignItems: 'flex-start', width: Dimensions.get('window').width}}>
                             <Text style={styles.headingText}>
                                 Settings
@@ -129,8 +129,8 @@ class SettingsView extends Component {
                                     <Text style={styles.labelTextStyle}>{'Co-ordinates'}</Text>
                                 </View>
                                 <View style={{backgroundColor:'transparent', width: (Dimensions.get('window').width - 52), alignItems:'center', marginLeft: 8, marginRight: 8, marginBottom: 4}} pointerEvents={userRole !== 'user' && this.props.settingsState.activityIndicatorAnimating === false ? 'auto' : 'none'}>
-                                    <Fumi style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Latitude'} value={this.props.settingsState.officeLocation.latitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(latitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLatitude(Number(latitude)))}}/>
-                                    <Fumi style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Longitude'} value={this.props.settingsState.officeLocation.longitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(longitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLongitude(Number(longitude)))}}/>
+                                    <Fumi ref={'latitude'} style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Latitude'} value={this.props.settingsState.officeLocation.latitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(latitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLatitude(Number(latitude)))}} onFocus={() => {this.textFieldWasFocussed('latitude')}}/>
+                                    <Fumi ref={'longitude'} style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Longitude'} value={this.props.settingsState.officeLocation.longitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(longitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLongitude(Number(longitude)))}} onFocus={() => {this.textFieldWasFocussed('longitude')}}/>
                                 </View>
                                 {this.DisplaySaveButton(userRole)}
                             </View>
@@ -269,6 +269,19 @@ class SettingsView extends Component {
         replacement += ":"+s;  */
         replacement += " " + dd;
         return replacement
+    }
+
+    textFieldWasFocussed(refName) {
+        if (Platform.OS === 'Android') {
+            setTimeout(() => {
+                let scrollResponder = this.refs.scrollView.getScrollResponder();
+                scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
+                    React.findNodeHandle(this.refs[refName]),
+                    216,
+                    true
+                );
+            }, 50);
+        }
     }
 }
 
