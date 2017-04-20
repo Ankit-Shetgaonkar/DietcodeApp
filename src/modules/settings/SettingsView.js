@@ -26,7 +26,7 @@ import { Fumi } from 'react-native-textinput-effects';
 import * as SettingsState from './SettingsState';
 import * as OfficeAPIs from '../../office-server/OfficeApi';
 import * as notification from '../../utils/notification';
-
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 var isModalVisible = false;
 var isKeyboardVisible = false;
 var keyBoardDidShowListner = null;
@@ -71,7 +71,7 @@ class SettingsView extends Component {
                 let userObj = RealmDatabse.findUser()[0];
                 let newObject = {
                     ...userObj,
-                    officaLocationID:response.results[0].id
+                    officaLocationID: response.results[0].id
                 };
                 RealmDatabse.saveUser(newObject);
                 OfficeAPIs.setUserName(newObject);
@@ -96,56 +96,79 @@ class SettingsView extends Component {
         let dateToDisplay = new Date(this.props.settingsState.time);
         let userRole = (RealmDatabse.findUser()[0]).role;
         return (
-            <LinearGradient 
-                style={styles.linearGradient} 
-                colors={['#48E2FF', '#508FF5', '#5933EA']} 
-                start={{x: 0.0, y: 0.0}} 
-                end={{x: 1.0, y: 1.0}}
-                locations={[0.0, 0.5, 1.0]}>
+            <LinearGradient
+                style={styles.linearGradient}
+                colors={['#48E2FF', '#508FF5', '#5933EA']}
+                start={{ x: 0.0, y: 0.0 }}
+                end={{ x: 1.0, y: 1.0 }}
+                locations={[0.0, 0.5, 1.0]}>
                 <View style={styles.center}>
-                    <ScrollView ref={'scrollView'} style={styles.scrollView} automaticallyAdjustContentInsets={false} horizontal={false} contentContainerStyle={styles.scrollviewContentContainerStyle} contentInset={{top: 0, left: 0, bottom: supplymentryHeight, right: 0}}>
-                        <View style={{flex: 1, backgroundColor: 'transparent', alignItems: 'flex-start', width: Dimensions.get('window').width}}>
-                            <Text style={styles.headingText}>
-                                Settings
+                    <ScrollView ref={'scrollView'} style={styles.scrollView}
+                        automaticallyAdjustContentInsets={false} horizontal={false}
+                        contentContainerStyle={styles.scrollviewContentContainerStyle}
+                        contentInset={{ top: 0, left: 0, bottom: supplymentryHeight, right: 0 }}>
+                        <View style={{ flex: 1, backgroundColor: 'transparent', alignItems: 'flex-start', width: Dimensions.get('window').width }}>
+                            {
+                                !this.props.settingsState.keyboardVisible && <View>
+                                    <Text style={styles.headingText}>
+                                        Settings
                             </Text>
-                            <Text style={styles.subHeadingText}>
-                                Checkin Notification Alert Time:
+                                    <Text style={styles.subHeadingText}>
+                                        Checkin Notification Alert Time:
                             </Text>
-                            <View style={{height: 50, marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width-32), borderRadius: 4, marginBottom: 8}}>
-                                <TouchableHighlight style={{flex: 1, width: (Dimensions.get('window').width-32), borderRadius: 4}} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => {Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showAndroidPicker()}}>
-                                    <View style={{flex: 1, flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'center'}}>
-                                        <Icon size={26} color='#000000' name={"clock-o"} style={styles.iconStyle} />
-                                        <Text style={styles.textInput_TextStyle}>{this.formatDate(dateToDisplay)}</Text>
+                                    <View style={{ height: 50, marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width - 32), borderRadius: 4, marginBottom: 8 }}>
+                                        <TouchableHighlight style={{ flex: 1, width: (Dimensions.get('window').width - 32), borderRadius: 4 }} underlayColor='#d3d3d3' activeOpacity={0.7} onPress={() => { Platform.OS === 'ios' ? this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) : this.showAndroidPicker() }}>
+                                            <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'center' }}>
+                                                <Icon size={26} color='#000000' name={"clock-o"} style={styles.iconStyle} />
+                                                <Text style={styles.textInput_TextStyle}>{this.formatDate(dateToDisplay)}</Text>
+                                            </View>
+                                        </TouchableHighlight>
                                     </View>
-                                </TouchableHighlight>
-                            </View>
+                                </View>}
+
                             <Text style={styles.subHeadingText}>
                                 Office Location:
                             </Text>
-                            <View style={{marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width-32), borderRadius: 4, marginBottom: 8}}>
-                                <ActivityIndicator style={styles.activityIndicatorStyle} hidesWhenStopped={true} animating={this.props.settingsState.activityIndicatorAnimating} size={'large'} color ={'white'} />
-                                <View style={{flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'flex-start', height: 50, justifyContent: 'center'}}>
+                            <View style={{ marginLeft: 16, marginRight: 16, backgroundColor: '#d3d3d3', alignItems: 'flex-start', width: (Dimensions.get('window').width - 32), borderRadius: 4, marginBottom: 8 }}>
+                                <ActivityIndicator style={styles.activityIndicatorStyle} hidesWhenStopped={true} animating={this.props.settingsState.activityIndicatorAnimating} size={'large'} color={'white'} />
+                                <View style={{ flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'flex-start', height: 50, justifyContent: 'center' }}>
                                     <Icon size={26} color='#000000' name={"map-marker"} style={styles.iconStyle} />
                                     <Text style={styles.labelTextStyle}>{'Co-ordinates'}</Text>
                                 </View>
-                                <View style={{backgroundColor:'transparent', width: (Dimensions.get('window').width - 52), alignItems:'center', marginLeft: 8, marginRight: 8, marginBottom: 4}} pointerEvents={userRole !== 'user' && this.props.settingsState.activityIndicatorAnimating === false ? 'auto' : 'none'}>
-                                    <Fumi ref={'latitude'} style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Latitude'} value={this.props.settingsState.officeLocation.latitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(latitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLatitude(Number(latitude)))}} onFocus={() => {this.textFieldWasFocussed('latitude')}}/>
-                                    <Fumi ref={'longitude'} style={{backgroundColor:'transparent', height:50, width:(Dimensions.get('window').width - 52)}} label={'Longitude'} value={this.props.settingsState.officeLocation.longitude.toString()} labelStyle={{fontFamily : Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'} onChangeText={(longitude) => {this.props.dispatch(SettingsState.updateOfficeLocationLongitude(Number(longitude)))}} onFocus={() => {this.textFieldWasFocussed('longitude')}}/>
+                                <View style={{ backgroundColor: 'transparent', width: (Dimensions.get('window').width - 52), alignItems: 'center', marginLeft: 8, marginRight: 8, marginBottom: 4 }} pointerEvents={userRole !== 'user' && this.props.settingsState.activityIndicatorAnimating === false ? 'auto' : 'auto'}>
+                                    <Fumi ref={'latitude'}
+                                        style={{ backgroundColor: 'transparent', height: 50, width: (Dimensions.get('window').width - 52) }} label={'Latitude'}
+                                        value={this.props.settingsState.officeLocation.latitude.toString()} labelStyle={{
+                                            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto',
+                                            fontSize: 14, color: '#000000', fontWeight: 'normal'
+                                        }} iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'}
+                                        returnKeyType={'done'}
+                                        onChangeText={(latitude) => { this.props.dispatch(SettingsState.updateOfficeLocationLatitude(Number(latitude))) }}
+                                    />
+
+                                    <Fumi ref={'longitude'}
+                                        style={{ backgroundColor: 'transparent', height: 50, width: (Dimensions.get('window').width - 52) }}
+                                        label={'Longitude'} value={this.props.settingsState.officeLocation.longitude.toString()}
+                                        labelStyle={{ fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto', fontSize: 14, color: '#000000', fontWeight: 'normal' }}
+                                        iconClass={Icon} iconName={'globe'} iconColor={'#000000'} keyboardType={'numeric'} returnKeyType={'done'}
+                                        onChangeText={(longitude) => { this.props.dispatch(SettingsState.updateOfficeLocationLongitude(Number(longitude))) }}
+                                    />
+
                                 </View>
                                 {this.DisplaySaveButton(userRole)}
                             </View>
-                            <Modal animationType={'slide'} visible={Platform.OS === 'ios' ? this.props.settingsState.showPicker : false} transparent={true} onRequestClose={() => {console.log('DID CLOSE MODAL BY CLICKING DONE')}}>
-                                <View style={{flex:1, backgroundColor:'transparent'}}>
+                            <Modal animationType={'slide'} visible={Platform.OS === 'ios' ? this.props.settingsState.showPicker : false} transparent={true} onRequestClose={() => { console.log('DID CLOSE MODAL BY CLICKING DONE') }}>
+                                <View style={{ flex: 1, backgroundColor: 'transparent' }}>
                                 </View>
-                                <View style={{backgroundColor:'#d7d7d7', alignItems: 'flex-end', height: 40, justifyContent: 'center'}}>
+                                <View style={{ backgroundColor: '#d7d7d7', alignItems: 'flex-end', height: 40, justifyContent: 'center' }}>
                                     <View style={{ backgroundColor: 'transparent', borderRadius: 2 }}>
-                                        <Button title={'Done'} accessibilityLabel={'Finish selection of time.'} color={'#000080'} onPress={() => {this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker))}}/>
+                                        <Button title={'Done'} accessibilityLabel={'Finish selection of time.'} color={'#000080'} onPress={() => { this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker)) }} />
                                     </View>
                                 </View>
-                                <DatePickerIOS style={{backgroundColor: '#d7d7d7'}} date={dateToDisplay} mode={'time'} onDateChange={(date) => {this.updateTime(date)}}/>
+                                <DatePickerIOS style={{ backgroundColor: '#d7d7d7' }} date={dateToDisplay} mode={'time'} onDateChange={(date) => { this.updateTime(date) }} />
                             </Modal>
                         </View>
-                    </ScrollView>                 
+                    </ScrollView>
                 </View>
             </ LinearGradient>
         );
@@ -160,87 +183,100 @@ class SettingsView extends Component {
         OfficeAPIs.updateNewOfficeLocation(ordinates).then((response) => {
             this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
             Alert.alert(
-                        'Location Updated',
-                        'The new office location has been updated.',
-                        [
-                            {text: 'OK', onPress: () => {}}
-                        ],
-                        { cancelable: false }
-                        )
+                'Location Updated',
+                'The new office location has been updated.',
+                [
+                    { text: 'OK', onPress: () => { } }
+                ],
+                { cancelable: false }
+            )
         }).catch((error) => {
             this.props.dispatch(SettingsState.toggleActivityIndicator(!this.props.settingsState.activityIndicatorAnimating));
             Alert.alert(
-                        'Location Error',
-                        'The new office location could not be updated try again later.',
-                        [
-                            {text: 'OK', onPress: () => {}}
-                        ],
-                        { cancelable: false }
-                        )
+                'Location Error',
+                'The new office location could not be updated try again later.',
+                [
+                    { text: 'OK', onPress: () => { } }
+                ],
+                { cancelable: false }
+            )
         })
     }
 
-  updateTime(time) {
-      this.props.dispatch(SettingsState.updateDateTime(time));
-      console.log("time ios is hours ", time.getHours(), "minutes ",time.getMinutes());
-      notification.setCheckinNotification(Platform.OS, time.getHours(), time.getMinutes(), true);
-  }
-
-  showAndroidPicker = async (options) => {
-      let date = new Date(this.props.settingsState.time);
-      this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
-      const {action, hour, minute} = await TimePickerAndroid.open({
-          hour: date.getHours(),
-          minute: date.getMinutes(),
-          is24Hour: false,
-      });
-      if (action === TimePickerAndroid.timeSetAction) {
-          var updatedDate = new Date();
-          updatedDate.setHours(hour);
-          updatedDate.setMinutes(minute);
-          console.log("time andoid is", hour, " ",minute);
-          notification.setCheckinNotification(Platform.OS, hour, minute, true);
-          this.props.dispatch(SettingsState.updateDateTime(updatedDate));
-      } else {
-          this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
-      }
-  }
-
-  DisplaySaveButton = (params) => {
-      //console.log('PARAMs: '+ JSON.stringify(params))
-    if (params !== 'user') {
-        return (
-            <View style={{backgroundColor:'transparent', flexDirection:'row', height: 40, justifyContent: 'center', alignItems:'flex-end'}}>
-                <View style={{ backgroundColor: 'transparent', flex: 1, justifyContent: 'center', alignItems:'center'}}>
-                    <Text style={styles.smallText}>
-                        The entered data will not be updated, on server until you press save.
-                    </Text>
-                </ View>
-                <View style={{ backgroundColor: 'transparent', borderRadius: 2}}>
-                    <Button title={'Save'} accessibilityLabel={'Save specified office location.'} color={'#000080'} onPress={() => {this.updateOfficeCoordinates()}}/>
-                </View>
-            </View>
-        );
-    } else {
-        return null;
+    updateTime(time) {
+        this.props.dispatch(SettingsState.updateDateTime(time));
+        console.log("time ios is hours ", time.getHours(), "minutes ", time.getMinutes());
+        notification.setCheckinNotification(Platform.OS, time.getHours(), time.getMinutes(), true);
     }
-}
+
+    showAndroidPicker = async (options) => {
+        let date = new Date(this.props.settingsState.time);
+        this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
+        const { action, hour, minute } = await TimePickerAndroid.open({
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            is24Hour: false,
+        });
+        if (action === TimePickerAndroid.timeSetAction) {
+            var updatedDate = new Date();
+            updatedDate.setHours(hour);
+            updatedDate.setMinutes(minute);
+            console.log("time andoid is", hour, " ", minute);
+            notification.setCheckinNotification(Platform.OS, hour, minute, true);
+            this.props.dispatch(SettingsState.updateDateTime(updatedDate));
+        } else {
+            this.props.dispatch(SettingsState.showPickerView(!this.props.settingsState.showPicker));
+        }
+    }
+
+    DisplaySaveButton = (params) => {
+        //console.log('PARAMs: '+ JSON.stringify(params))
+        if (params !== 'user') {
+            return (
+                <View style={{ backgroundColor: 'transparent', flexDirection: 'row', height: 40, justifyContent: 'center', alignItems: 'flex-end' }}>
+                    <View style={{ backgroundColor: 'transparent', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={styles.smallText}>
+                            The entered data will not be updated, on server until you press save.
+                    </Text>
+                    </ View>
+                    <View style={{ backgroundColor: 'transparent', borderRadius: 2 }}>
+                        <Button title={'Save'} accessibilityLabel={'Save specified office location.'} color={'#000080'} onPress={() => { this.updateOfficeCoordinates() }} />
+                    </View>
+                </View>
+            );
+        } else {
+            return null;
+        }
+    }
 
     keyBoardDidShow = (options) => {
-        if (isKeyboardVisible === false && Platform.OS === 'ios') {
-            //console.log('KEYBOARD DID SHOW: ' + JSON.stringify(options.endCoordinates.height));
-            isKeyboardVisible = !isKeyboardVisible;
-            supplymentryHeight += options.endCoordinates.height;
+        if (!isKeyboardVisible) {
+
+            isKeyboardVisible = true;
+
+            if (Platform.OS === 'ios') {
+                //console.log('KEYBOARD DID SHOW: ' + JSON.stringify(options.endCoordinates.height));
+                supplymentryHeight += options.endCoordinates.height;
+            }
+
+            alert('Keyboard  vis ' + isKeyboardVisible)
+
             this.props.dispatch(SettingsState.toggleKeyboardVisibility(isKeyboardVisible));
             //console.log('KEYBOARD DID HIDE: SUPPLYMENTRY HEIGHT: ' + JSON.stringify(supplymentryHeight));
         }
     }
 
     keyBoardDidHide = (options) => {
-        if (isKeyboardVisible && Platform.OS === 'ios') {
-            //console.log('KEYBOARD DID HIDE: ' + JSON.stringify(options.endCoordinates.height));
-            isKeyboardVisible = !isKeyboardVisible;
-            supplymentryHeight -= options.endCoordinates.height;
+        if (isKeyboardVisible) {
+
+            isKeyboardVisible = false;
+
+            if (Platform.OS === 'ios') {
+                //console.log('KEYBOARD DID HIDE: ' + JSON.stringify(options.endCoordinates.height));
+                supplymentryHeight -= options.endCoordinates.height;
+            }
+
+            alert('Keyboard  vis ' + isKeyboardVisible)
             this.props.dispatch(SettingsState.toggleKeyboardVisibility(isKeyboardVisible));
             //console.log('KEYBOARD DID HIDE: SUPPLYMENTRY HEIGHT: ' + JSON.stringify(supplymentryHeight));
         }
@@ -312,68 +348,68 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     headingText: {
-            marginTop: 16,
-            marginBottom: 8,
-            marginLeft: 8,
-            marginRight: 8,
-            textAlign: 'left',
-            color: '#ffffff',
-            fontSize: 28,
-            backgroundColor:"transparent",
-            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto',
-            textDecorationLine: 'underline'
-        },
+        marginTop: 16,
+        marginBottom: 8,
+        marginLeft: 8,
+        marginRight: 8,
+        textAlign: 'left',
+        color: '#ffffff',
+        fontSize: 28,
+        backgroundColor: "transparent",
+        fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto',
+        textDecorationLine: 'underline'
+    },
     subHeadingText: {
-            marginTop: 8,
-            marginBottom: 8,
-            marginLeft: 8,
-            marginRight: 8,
-            textAlign: 'left',
-            color: '#ffffff',
-            fontSize: 18,
-            backgroundColor:"transparent",
-            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+        marginTop: 8,
+        marginBottom: 8,
+        marginLeft: 8,
+        marginRight: 8,
+        textAlign: 'left',
+        color: '#ffffff',
+        fontSize: 18,
+        backgroundColor: "transparent",
+        fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
     },
     textInput_TextStyle: {
-            marginTop: 2,
-            marginBottom: 2,
-            marginRight: 4,
-            marginLeft: 4,
-            textAlign: 'left',
-            color: '#000000',
-            fontSize: 16,
-            backgroundColor:"transparent",
-            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+        marginTop: 2,
+        marginBottom: 2,
+        marginRight: 4,
+        marginLeft: 4,
+        textAlign: 'left',
+        color: '#000000',
+        fontSize: 16,
+        backgroundColor: "transparent",
+        fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
     },
     iconStyle: {
-            alignSelf:"center",
-            marginTop: 2,
-            marginBottom: 2,
-            marginLeft: 16,
-            marginRight: 8,
-            backgroundColor: 'transparent'
-        },
+        alignSelf: "center",
+        marginTop: 2,
+        marginBottom: 2,
+        marginLeft: 16,
+        marginRight: 8,
+        backgroundColor: 'transparent'
+    },
     labelTextStyle: {
-            marginTop: 14,
-            textAlign: 'center',
-            color: '#000000',
-            fontSize: 16,
-            backgroundColor:"transparent",
-            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+        marginTop: 14,
+        textAlign: 'center',
+        color: '#000000',
+        fontSize: 16,
+        backgroundColor: "transparent",
+        fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
     },
     activityIndicatorStyle: {
         position: 'absolute',
-        left: (Dimensions.get('window').width - 32)/2 - 15,
+        left: (Dimensions.get('window').width - 32) / 2 - 15,
         top: 77 - 15
     },
     smallText: {
-            marginLeft: 8,
-            marginBottom: 8,
-            textAlign: 'left',
-            color: '#000000',
-            fontSize: 10,
-            backgroundColor:"transparent",
-            fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
+        marginLeft: 8,
+        marginBottom: 8,
+        textAlign: 'left',
+        color: '#000000',
+        fontSize: 10,
+        backgroundColor: "transparent",
+        fontFamily: Platform.OS === 'ios' ? 'Avenir-Heavy' : 'Roboto'
     }
 });
 
